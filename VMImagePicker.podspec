@@ -44,6 +44,7 @@ TODO: Add long description of the pod here.
   s.subspec 'UI' do |subspec|
     subspec.source_files = 'VMImagePicker/Classes/UI/**/*'
     subspec.dependency 'VMImagePicker/ViewModel'
+    subspec.dependency 'Masonry'
   end
   
   # s.resource_bundles = {

@@ -11,6 +11,8 @@
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <VMImagePicker/PHPhotoLibrary+ImagePicker.h>
 #import <VMImagePicker/PHAssetCollection+ImagePicker.h>
+#import <VMImagePicker/VMIPAlbumTableController.h>
+#import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
 
 @interface ViewController ()
 
@@ -50,8 +52,10 @@
             NSArray *subtypes = @[@(PHAssetCollectionSubtypeSmartAlbumUserLibrary), 
                                   @(PHAssetCollectionSubtypeSmartAlbumFavorites),
                                   @(PHAssetCollectionSubtypeAlbumRegular),];
-            NSArray<__kindof PHCollection *> *albums = [PHAssetCollection fetchAssetCollectionsWithTypes:types subtypes:subtypes options:nil];
-//            NSArray<__kindof PHCollection *> *albums = [PHAssetCollection fetchAllAssetCollectionsWithOptions:nil];
+            VMIPAlbumTableControllerViewModel *viewModel = [[VMIPAlbumTableControllerViewModel alloc] initWithTypes:types subtypes:subtypes options:nil];
+            VMIPAlbumTableController *controller = VMIPAlbumTableController.new;
+            controller.viewModel = viewModel;
+            [self.navigationController pushViewController:controller animated:YES];
             break;
         }
         default: {

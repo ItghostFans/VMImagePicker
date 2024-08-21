@@ -8,6 +8,8 @@
 #import <ViewModel/CellViewModel+TableView.h>
 #import <ViewModel/CellViewModel+CollectionView.h>
 
+#import <Photos/Photos.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMIPAlbumCellViewModel;
@@ -22,6 +24,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPAlbumCellViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+@property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
+@property (strong, nonatomic, readonly, nonnull) NSString *name;
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection;
 
 @end
 

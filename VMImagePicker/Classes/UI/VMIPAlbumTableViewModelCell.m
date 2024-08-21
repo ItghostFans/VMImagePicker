@@ -7,19 +7,18 @@
 
 #import "VMIPAlbumTableViewModelCell.h"
 #import "VMIPAlbumTableCellViewModel.h"
+#import "VMIPAlbumCellViewModel.h"
+
+#import <Masonry/Masonry.h>
 
 @interface VMIPAlbumTableViewModelCell ()
-// TODO: 添加需要的View，建议使用懒加载
+@property (weak, nonatomic) UILabel *nameLabel;
 @end
 
 @implementation VMIPAlbumTableViewModelCell
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        self.contentView.backgroundColor = [UIColor colorWithRed:((self.hash & 0x00FF0000) >> 16) / 255.0f
-                                                           green:((self.hash & 0x0000FF00) >> 8)  / 255.0f
-                                                            blue:((self.hash & 0x000000FF) >> 0)  / 255.0f
-                                                           alpha:1.0f];
     }
     return self;
 }
@@ -31,6 +30,7 @@
         // 防止这里不必要的UI刷新。
         return;
     }
+    self.nameLabel.text = ((VMIPAlbumCellViewModel *)viewModel).name;
 }
 
 #pragma mark - Public
@@ -41,13 +41,24 @@
 
 #pragma mark - Getter
 
-// TODO: 添加需要的View，建议使用懒加载
+- (UILabel *)nameLabel {
+    if (!_nameLabel) {
+        UILabel *nameLabel = UILabel.new;
+        _nameLabel = nameLabel;
+        _nameLabel.textColor = UIColor.redColor;
+        _nameLabel.font = [UIFont systemFontOfSize:30.0f];
+        [self.contentView addSubview:_nameLabel];
+        [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(UIEdgeInsetsZero);
+        }];
+    }
+    return _nameLabel;
+}
 
 #pragma mark - TableViewModelCell
 
 + (CGFloat)heightForWidth:(CGFloat *)width viewModel:(VMIPAlbumTableCellViewModel *)viewModel {
-    NSAssert(NO, @"%@ %s Should Implement By Subclass!", NSStringFromClass(self.class), __FUNCTION__);
-    return 0.0f;
+    return 50.0f;
 }
 
 @end

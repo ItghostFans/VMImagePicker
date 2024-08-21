@@ -23,6 +23,8 @@
 @property (strong, nonatomic) VMIPAlbumCollectionViewModelCell *collectionCellViewModel;
 #endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
 
+@property (strong, nonatomic) PHAssetCollection *assetCollection;
+
 @end
 
 @implementation VMIPAlbumCellViewModel
@@ -36,6 +38,14 @@
 #if __has_include("VMIPAlbumCollectionViewModelCell.h")
         _collectionCellViewModel = VMIPAlbumCollectionViewModelCell.new;
 #endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+    }
+    return self;
+}
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection {
+    if (self = [self init]) {
+        _assetCollection = assetCollection;
+        _name = assetCollection.localizedTitle;
     }
     return self;
 }
