@@ -30,7 +30,21 @@ TODO: Add long description of the pod here.
 
   s.ios.deployment_target = '13.0'
 
-  s.source_files = 'VMImagePicker/Classes/**/*'
+  s.default_subspec = 'Photos'
+  
+  s.subspec 'Photos' do |subspec|
+    subspec.source_files = 'VMImagePicker/Classes/Photos/**/*'
+  end
+  
+  s.subspec 'ViewModel' do |subspec|
+    subspec.source_files = 'VMImagePicker/Classes/ViewModel/**/*'
+    subspec.dependency 'VMImagePicker/Photos'
+  end
+  
+  s.subspec 'UI' do |subspec|
+    subspec.source_files = 'VMImagePicker/Classes/UI/**/*'
+    subspec.dependency 'VMImagePicker/ViewModel'
+  end
   
   # s.resource_bundles = {
   #   'VMImagePicker' => ['VMImagePicker/Assets/*.png']
@@ -39,4 +53,5 @@ TODO: Add long description of the pod here.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   s.frameworks = 'UIKit', 'MapKit', 'Photos'
   # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'ViewModel'
 end

@@ -1,6 +1,6 @@
 //
 //  PHImageManager+ImagePicker.m
-//  Pods
+//  VMImagePicker
 //
 //  Created by ItghostFan on 2024/7/10.
 //
@@ -8,5 +8,30 @@
 #import "PHImageManager+ImagePicker.h"
 
 @implementation PHImageManager (ImagePicker)
+
+- (PHImageRequestID)getPhotoWithAsset:(PHAsset *)asset size:(CGSize)size completion:(void (^)(UIImage *photo,NSDictionary *info,BOOL isDegraded))completion progressHandler:(void (^)(double progress, NSError *error, BOOL *stop, NSDictionary *info))progressHandler networkAccessAllowed:(BOOL)networkAccessAllowed {
+    PHImageRequestOptions *option = PHImageRequestOptions.new;
+    option.resizeMode = PHImageRequestOptionsResizeModeFast;
+    return [PHImageManager.defaultManager requestImageForAsset:asset targetSize:size contentMode:PHImageContentModeAspectFill options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        if (![info[PHImageCancelledKey] boolValue] && result) {
+            // 返回本地相册图片。
+            return;
+        }
+        if ([info[PHImageResultIsInCloudKey] boolValue] && !result) {   // 图片在iClound上。
+            PHImageRequestOptions *options = PHImageRequestOptions.new;
+            options.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // 处理下载进度。
+                });
+            };
+            options.networkAccessAllowed = YES;
+            options.resizeMode = PHImageRequestOptionsResizeModeFast;
+            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                UIImage *resultImage = [UIImage imageWithData:imageData];
+            }];
+            
+        }
+    }];
+}
 
 @end

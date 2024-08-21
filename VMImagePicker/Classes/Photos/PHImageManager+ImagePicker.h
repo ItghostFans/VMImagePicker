@@ -1,6 +1,6 @@
 //
 //  PHImageManager+ImagePicker.h
-//  Pods
+//  VMImagePicker
 //
 //  Created by ItghostFan on 2024/7/10.
 //

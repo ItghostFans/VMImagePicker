@@ -6,10 +6,12 @@ inhibit_all_warnings!
 platform :ios, ios_deployment_target
 
 target 'VMImagePicker_Example' do
-  pod 'VMImagePicker', :path => '../'
+#  pod 'VMImagePicker', '1.0.0-dev'
+  pod 'VMImagePicker/UI', :path => '../'
   
-#  pod 'ViewModel', :path => '../../ViewModel'
-  pod 'ViewModel', '1.0.0-dev'
+  pod 'ViewModel', :path => '../../ViewModel'
+#  pod 'ViewModel', '1.0.0-dev'
+  pod 'TZImagePickerController'
 
   target 'VMImagePicker_Tests' do
     inherit! :search_paths
