@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic, nullable) id<IVMIPAlbumTableControllerViewModelDelegate> delegate;
 #pragma clang diagnostic pop
 
+@property (strong, nonatomic, readonly) PHFetchOptions *options;
+
 - (instancetype)initWithTypes:(NSArray<__kindof NSNumber *> *)types
                      subtypes:(NSArray<__kindof NSNumber *> *)subtypes
                       options:(PHFetchOptions * _Nullable)options;

@@ -17,7 +17,7 @@
 @interface VMIPAlbumTableControllerViewModel ()
 @property (strong, nonatomic, readonly) NSArray<__kindof NSNumber *> *types;
 @property (strong, nonatomic, readonly) NSArray<__kindof NSNumber *> *subtypes;
-@property (strong, nonatomic, readonly) PHFetchOptions *options;
+@property (strong, nonatomic) PHFetchOptions *options;
 @property (weak, nonatomic, readonly) SectionViewModel *sectionViewModel;
 @end
 

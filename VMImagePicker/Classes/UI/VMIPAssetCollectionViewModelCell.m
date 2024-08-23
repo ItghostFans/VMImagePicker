@@ -7,9 +7,14 @@
 
 #import "VMIPAssetCollectionViewModelCell.h"
 #import "VMIPAssetCollectionCellViewModel.h"
+#import "VMIPAssetCellViewModel.h"
+
+#import <ReactiveObjC/ReactiveObjC.h>
+#import <Masonry/Masonry.h>
 
 @interface VMIPAssetCollectionViewModelCell ()
-// TODO: 添加需要的View，建议使用懒加载
+@property (weak, nonatomic) UIImageView *previewImageView;
+@property (strong, nonatomic, nullable) RACCompoundDisposable *disposableBag;
 @end
 
 @implementation VMIPAssetCollectionViewModelCell
@@ -25,12 +30,23 @@
 }
 
 - (void)setViewModel:(VMIPAssetCollectionCellViewModel *)viewModel {
+    @weakify(self);
+    if (!viewModel) {
+        [self.disposableBag dispose];
+        self.disposableBag = nil;
+    }
     BOOL same = self.viewModel == viewModel;
     [super setViewModel:viewModel];
     if (same) {
         // 防止这里不必要的UI刷新。
         return;
     }
+    self.disposableBag = RACCompoundDisposable.new;
+    [self.disposableBag addDisposable:
+     [[RACObserve(((VMIPAssetCellViewModel *)viewModel), previewImage) takeUntil:[self rac_signalForSelector:@selector(prepareForReuse)]] subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        self.previewImageView.image = x;
+     }]];;
 }
 
 #pragma mark - Public
@@ -41,12 +57,23 @@
 
 #pragma mark - Getter
 
-// TODO: 添加需要的View，建议使用懒加载
+- (UIImageView *)previewImageView {
+    if (!_previewImageView) {
+        UIImageView *previewImageView = UIImageView.new;
+        _previewImageView = previewImageView;
+        _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
+        _previewImageView.clipsToBounds = YES;
+        [self.contentView addSubview:_previewImageView];
+        [_previewImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.edges.mas_equalTo(UIEdgeInsetsZero);
+        }];
+    }
+    return _previewImageView;
+}
 
 #pragma mark - CollectionViewModelCell
 
 + (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPAssetCollectionCellViewModel *)viewModel {
-    NSAssert(NO, @"%@ %s Should Implement By Subclass!", NSStringFromClass(self.class), __FUNCTION__);
     return CGSizeZero;
 }
 

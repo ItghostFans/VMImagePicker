@@ -34,4 +34,19 @@
     }];
 }
 
+- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
+                                   size:(CGSize)size
+                            contentMode:(PHImageContentMode)contentMode
+                             completion:(void (^)(BOOL finished, BOOL inCloud, UIImage *_Nullable result, NSDictionary *_Nullable info))completion {
+    PHImageRequestOptions *option = PHImageRequestOptions.new;
+    option.resizeMode = PHImageRequestOptionsResizeModeFast;
+    return [self requestImageForAsset:asset targetSize:size contentMode:contentMode options:option resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        if (completion) {
+            BOOL finished = ![info[PHImageCancelledKey] boolValue] && result;
+            BOOL inCloud = [info[PHImageResultIsInCloudKey] boolValue] && !result;
+            completion(finished, inCloud, result, info);
+        }
+    }];
+}
+
 @end

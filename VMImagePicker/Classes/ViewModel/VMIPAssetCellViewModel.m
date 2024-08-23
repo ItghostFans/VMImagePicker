@@ -13,6 +13,10 @@
 #import "VMIPAssetCollectionViewModelCell.h"
 #endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
 
+#import <ReactiveObjC/ReactiveObjC.h>
+
+#import "PHImageManager+ImagePicker.h"
+
 @interface VMIPAssetCellViewModel ()
 
 #if __has_include("VMIPAssetTableViewModelCell.h")
@@ -22,6 +26,10 @@
 #if __has_include("VMIPAssetCollectionViewModelCell.h")
 @property (strong, nonatomic) VMIPAssetCollectionViewModelCell *collectionCellViewModel;
 #endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+
+@property (strong, nonatomic) PHAsset *asset;
+@property (strong, nonatomic) UIImage *previewImage;
+@property (assign, nonatomic) PHImageRequestID requestId;
 
 @end
 
@@ -38,6 +46,27 @@
 #endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
     }
     return self;
+}
+
+- (instancetype)initWithAsset:(PHAsset *)asset {
+    if (self = [self init]) {
+        _asset = asset;
+        [self loadPreview];
+    }
+    return self;
+}
+
+#pragma mark - Private
+
+- (void)loadPreview {
+    @weakify(self);
+    CGSize size = UIScreen.mainScreen.bounds.size;
+    CGFloat line = MIN(size.width, size.height);
+    _requestId = [PHImageManager.defaultManager requestImageOfAsset:_asset size:CGSizeMake(line / 2, line / 2) contentMode:(PHImageContentModeAspectFill) completion:^(BOOL finished, BOOL inCloud, UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        @strongify(self);
+        NSAssert(NSThread.isMainThread, @"Not in main thread!");
+        self.previewImage = result;
+    }];
 }
 
 #pragma mark - TableView

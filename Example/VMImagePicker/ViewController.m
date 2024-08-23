@@ -52,7 +52,7 @@
             NSArray *subtypes = @[@(PHAssetCollectionSubtypeSmartAlbumUserLibrary), 
                                   @(PHAssetCollectionSubtypeSmartAlbumFavorites),
                                   @(PHAssetCollectionSubtypeAlbumRegular),];
-            VMIPAlbumTableControllerViewModel *viewModel = [[VMIPAlbumTableControllerViewModel alloc] initWithTypes:types subtypes:subtypes options:nil];
+            VMIPAlbumTableControllerViewModel *viewModel = [[VMIPAlbumTableControllerViewModel alloc] initWithTypes:types subtypes:subtypes options:PHFetchOptions.new];
             VMIPAlbumTableController *controller = VMIPAlbumTableController.new;
             controller.viewModel = viewModel;
             [self.navigationController pushViewController:controller animated:YES];

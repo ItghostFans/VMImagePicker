@@ -7,6 +7,8 @@
 
 #import <ViewModel/CollectionControllerViewModel.h>
 
+#import <Photos/Photos.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMIPAssetCollectionControllerViewModel;
@@ -21,6 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPAssetCollectionControllerViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+@property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
+@property (strong, nonatomic, readonly) PHFetchOptions *options;
+@property (strong, nonatomic, readonly, nonnull) NSString *name;
+
+- (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection
+                                options:(PHFetchOptions * _Nullable)options;
 
 @end
 

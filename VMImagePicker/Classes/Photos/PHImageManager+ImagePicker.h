@@ -11,6 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PHImageManager (ImagePicker)
 
+- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
+                                   size:(CGSize)size
+                            contentMode:(PHImageContentMode)contentMode
+                             completion:(void (^)(BOOL finished, BOOL inCloud, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END
