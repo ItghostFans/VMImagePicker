@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class VMImagePickerStyle;
 @class VMIPAssetCollectionControllerViewModel;
 
 @interface VMIPAssetCollectionController : CollectionController
@@ -18,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (strong, nonatomic, nullable) VMIPAssetCollectionControllerViewModel *viewModel;
 #pragma clang diagnostic pop
+
+@property (strong, nonatomic, readonly, nonnull) VMImagePickerStyle *style;
 
 @end
 

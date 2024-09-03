@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic pop
 
 @property (strong, nonatomic, readonly) PHAsset *asset;
+@property (assign, nonatomic, readonly) BOOL inCloud;
 @property (strong, nonatomic, readonly) UIImage *previewImage;
 
 - (instancetype)initWithAsset:(PHAsset *)asset;

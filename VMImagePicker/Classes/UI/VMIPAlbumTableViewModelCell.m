@@ -8,11 +8,15 @@
 #import "VMIPAlbumTableViewModelCell.h"
 #import "VMIPAlbumTableCellViewModel.h"
 #import "VMIPAlbumCellViewModel.h"
+#import "VMIPAlbumTableController.h"
+#import "VMImagePickerStyle.h"
 
 #import <Masonry/Masonry.h>
+#import <ViewModel/TableViewModel.h>
 
 @interface VMIPAlbumTableViewModelCell ()
 @property (weak, nonatomic) UILabel *nameLabel;
+@property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
 @end
 
 @implementation VMIPAlbumTableViewModelCell
@@ -33,6 +37,12 @@
     self.nameLabel.text = ((VMIPAlbumCellViewModel *)viewModel).name;
 }
 
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+    self.nameLabel.textColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellNameColors selected:selected];
+    self.nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:selected];
+}
+
 #pragma mark - Public
 
 #pragma mark - Actions
@@ -41,12 +51,23 @@
 
 #pragma mark - Getter
 
+- (VMImagePickerStyle *)vmipStyle {
+    if (!_vmipStyle) {
+        VMIPAlbumTableController *controller = (VMIPAlbumTableController *)self;
+        do {
+            controller = controller.nextResponder;
+        } while ([controller isKindOfClass:UIView.class]);
+        _vmipStyle = controller.style;
+    }
+    return _vmipStyle;
+}
+
 - (UILabel *)nameLabel {
     if (!_nameLabel) {
         UILabel *nameLabel = UILabel.new;
         _nameLabel = nameLabel;
-        _nameLabel.textColor = UIColor.redColor;
-        _nameLabel.font = [UIFont systemFontOfSize:30.0f];
+        _nameLabel.textColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellNameColors selected:NO];
+        _nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:NO];
         [self.contentView addSubview:_nameLabel];
         [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
             make.edges.mas_equalTo(UIEdgeInsetsZero);
@@ -58,7 +79,11 @@
 #pragma mark - TableViewModelCell
 
 + (CGFloat)heightForWidth:(CGFloat *)width viewModel:(VMIPAlbumTableCellViewModel *)viewModel {
-    return 50.0f;
+    VMIPAlbumTableController *controller = (VMIPAlbumTableController *)viewModel.tableSectionViewModel.tableViewModel.tableView;
+    do {
+        controller = controller.nextResponder;
+    } while ([controller isKindOfClass:UIView.class]);
+    return controller.style.albumCellHeight;
 }
 
 @end

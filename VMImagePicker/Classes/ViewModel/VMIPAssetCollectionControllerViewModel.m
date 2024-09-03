@@ -28,6 +28,7 @@
         _sectionViewModel = self.collectionViewModel.sectionViewModels.firstViewModel;
         _assetCollection = assetCollection;
         _options = options;
+        _name = assetCollection.localizedTitle;
         [self loadAssets];
     }
     return self;
@@ -43,9 +44,11 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             @strongify(self);
             [self collectionViewUpdate:^{
-                for (PHAsset *asset in assets) {
-                    VMIPAssetCellViewModel *cellViewModel = [[VMIPAssetCellViewModel alloc] initWithAsset:asset];
-                    [self.sectionViewModel addViewModel:cellViewModel];
+                for (NSUInteger index = 0; index < 9; ++index) {
+                    for (PHAsset *asset in assets) {
+                        VMIPAssetCellViewModel *cellViewModel = [[VMIPAssetCellViewModel alloc] initWithAsset:asset];
+                        [self.sectionViewModel addViewModel:cellViewModel];
+                    }
                 }
             } completion:^(BOOL finished) {
             }];

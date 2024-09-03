@@ -11,20 +11,27 @@
 #import "VMIPAssetCollectionController.h"
 #import "VMIPAssetCollectionControllerViewModel.h"
 #import "VMIPAlbumCellViewModel.h"
+#import "VMImagePickerStyle.h"
+#import "VMImagePickerController.h"
 
 @interface VMIPAlbumTableController () <UITableViewDelegate>
-// TODO: 添加需要的View，建议使用懒加载
+@property (strong, nonatomic) VMImagePickerStyle *style;
 @end
 
 @implementation VMIPAlbumTableController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = UIColor.whiteColor;
+    self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
     [self.view addSubview:self.tableView];
     self.tableView.frame = self.view.bounds;
     self.tableView.delegate = self;
     self.viewModel.tableViewModel.tableView = self.tableView;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = YES;
 }
 
 #pragma mark - Public
@@ -35,7 +42,17 @@
 
 #pragma mark - Getter
 
-// TODO: 添加需要的View，建议使用懒加载
+- (VMImagePickerStyle *)style {
+    if (!_style) {
+        VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
+        if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
+            _style = imagePickerController.style;
+        } else {
+            _style = VMImagePickerStyle.new;
+        }
+    }
+    return _style;
+}
 
 #pragma mark - UITableViewDelegate
 

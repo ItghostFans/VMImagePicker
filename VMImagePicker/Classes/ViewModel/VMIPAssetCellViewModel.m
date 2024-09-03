@@ -28,6 +28,7 @@
 #endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
 
 @property (strong, nonatomic) PHAsset *asset;
+@property (assign, nonatomic) BOOL inCloud;
 @property (strong, nonatomic) UIImage *previewImage;
 @property (assign, nonatomic) PHImageRequestID requestId;
 
@@ -66,6 +67,7 @@
         @strongify(self);
         NSAssert(NSThread.isMainThread, @"Not in main thread!");
         self.previewImage = result;
+        self.inCloud = inCloud;
     }];
 }
 

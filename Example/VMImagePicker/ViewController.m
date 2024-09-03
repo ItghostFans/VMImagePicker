@@ -9,34 +9,22 @@
 #import "ViewController.h"
 
 #import <ReactiveObjC/ReactiveObjC.h>
+#import <Masonry/Masonry.h>
 #import <VMImagePicker/PHPhotoLibrary+ImagePicker.h>
 #import <VMImagePicker/PHAssetCollection+ImagePicker.h>
 #import <VMImagePicker/VMIPAlbumTableController.h>
+#import <VMImagePicker/VMImagePickerController.h>
 #import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
 
 @interface ViewController ()
-
+@property (weak, nonatomic) UIButton *openImagePickerButton;
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    @weakify(self);
-    PHAuthorizationStatus status = [PHPhotoLibrary albumAuthorizationStatus];
-    switch (status) {
-        case PHAuthorizationStatusNotDetermined: {
-            [PHPhotoLibrary requestAlbumAuthorization:^(PHAuthorizationStatus status) {
-                @strongify(self);
-                [self loadAlbumIfNeed];
-            }];
-            break;
-        }
-        default: {
-            [self loadAlbumIfNeed];
-            break;
-        }
-    }
+    [self.openImagePickerButton addTarget:self action:@selector(onOpenImagePickerClicked:) forControlEvents:(UIControlEventTouchUpInside)];
 }
 
 #pragma mark - Private
@@ -55,10 +43,49 @@
             VMIPAlbumTableControllerViewModel *viewModel = [[VMIPAlbumTableControllerViewModel alloc] initWithTypes:types subtypes:subtypes options:PHFetchOptions.new];
             VMIPAlbumTableController *controller = VMIPAlbumTableController.new;
             controller.viewModel = viewModel;
-            [self.navigationController pushViewController:controller animated:YES];
+            VMImagePickerController *imagePickerController = [[VMImagePickerController alloc] initWithRootViewController:controller];
+//            [self.navigationController pushViewController:controller animated:YES];
+            [self presentViewController:imagePickerController animated:YES completion:^{
+            }];
             break;
         }
         default: {
+            break;
+        }
+    }
+}
+
+#pragma mark - Getter
+
+- (UIButton *)openImagePickerButton {
+    if (!_openImagePickerButton) {
+        UIButton *openImagePickerButton = UIButton.new;
+        _openImagePickerButton = openImagePickerButton;
+        [_openImagePickerButton setTitleColor:UIColor.blackColor forState:(UIControlStateNormal)];
+        [_openImagePickerButton setTitle:NSLocalizedString(@"Open", nil) forState:(UIControlStateNormal)];
+        [self.view addSubview:_openImagePickerButton];
+        [_openImagePickerButton mas_makeConstraints:^(MASConstraintMaker *make) {
+            make.center.equalTo(self.view);
+        }];
+    }
+    return _openImagePickerButton;
+}
+
+#pragma mark - Actions
+
+- (void)onOpenImagePickerClicked:(id)sender {
+    @weakify(self);
+    PHAuthorizationStatus status = [PHPhotoLibrary albumAuthorizationStatus];
+    switch (status) {
+        case PHAuthorizationStatusNotDetermined: {
+            [PHPhotoLibrary requestAlbumAuthorization:^(PHAuthorizationStatus status) {
+                @strongify(self);
+                [self loadAlbumIfNeed];
+            }];
+            break;
+        }
+        default: {
+            [self loadAlbumIfNeed];
             break;
         }
     }
