@@ -41,6 +41,15 @@
     collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
+    
+    UIButton *backButton = UIButton.new;
+    [backButton setTitle:self.navigationController.navigationBar.topItem.title forState:(UIControlStateNormal)];
+    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    [backButton addTarget:self action:@selector(onBackClicked:) forControlEvents:(UIControlEventTouchUpInside)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -51,6 +60,10 @@
 #pragma mark - Public
 
 #pragma mark - Actions
+
+- (void)onBackClicked:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 #pragma mark - Private
 

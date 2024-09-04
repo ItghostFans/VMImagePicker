@@ -52,10 +52,7 @@
         NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarBackTitleColors state:(UIControlStateFocused)],
     };
 //    backButtonAppearance.focused.backgroundImage = [self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateFocused)];
-    appearance.backButtonAppearance = backButtonAppearance;
-    
-    [appearance setBackIndicatorImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateNormal)]
-                  transitionMaskImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateNormal)]];
+    appearance.buttonAppearance = backButtonAppearance;
     
     self.navigationBar.standardAppearance = appearance;
     self.navigationBar.scrollEdgeAppearance = appearance;
