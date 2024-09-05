@@ -134,7 +134,6 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 #pragma mark - Private
 
 - (UIImage *)imageNamed:(NSString *)name {
-//    return [UIImage imageNamed:name inBundle:self.bundle withConfiguration:nil];
     NSString *imageName = [name stringByAppendingString:@"@2x"];
     NSString *subPath = [NSString stringWithFormat:@"Images.xcassets/%@.imageset", name];
     NSString *imagePath = [self.bundle pathForResource:imageName ofType:@"png" inDirectory:subPath];
@@ -167,15 +166,11 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 #pragma mark - Album
 
-- (VMIPThemeColors *)albumBkgColors {
-    if (!_albumBkgColors) {
-        _albumBkgColors = @{
-            @(UIUserInterfaceStyleUnspecified): UIColor.clearColor,
-            @(UIUserInterfaceStyleLight): UIColor.whiteColor,
-            @(UIUserInterfaceStyleDark): UIColor.blackColor,
-        };
+- (NSString *)albumTitle {
+    if (!_albumTitle) {
+        _albumTitle = VMIPLocalizedString(@"Fucking", @"");
     }
-    return _albumBkgColors;
+    return _albumTitle;
 }
 
 - (CGFloat)albumCellHeight {

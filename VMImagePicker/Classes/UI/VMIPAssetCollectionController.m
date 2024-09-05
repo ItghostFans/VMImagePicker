@@ -12,22 +12,24 @@
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
 #import "VMImagePickerStyle.h"
+#import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
 
 @interface VMIPAssetCollectionController ()
 @property (strong, nonatomic) VMImagePickerStyle *style;
+@property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @end
 
 @implementation VMIPAssetCollectionController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self styleUI];
     @weakify(self);
     [[RACObserve(self.viewModel, name) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
         @strongify(self);
         self.navigationItem.title = x;
     }];
-    self.view.backgroundColor = UIColor.whiteColor;
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
@@ -41,15 +43,6 @@
     collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
-    
-    UIButton *backButton = UIButton.new;
-    [backButton setTitle:self.navigationController.navigationBar.topItem.title forState:(UIControlStateNormal)];
-    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
-    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
-    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
-    [backButton setImage:[self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
-    [backButton addTarget:self action:@selector(onBackClicked:) forControlEvents:(UIControlEventTouchUpInside)];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -59,13 +52,13 @@
 
 #pragma mark - Public
 
-#pragma mark - Actions
-
-- (void)onBackClicked:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
-}
-
 #pragma mark - Private
+
+- (void)styleUI {
+    self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
+    self.navigationBarStyle = [[VMIPNavigationBarStyle alloc] initWithController:self];
+    [self.navigationBarStyle formatBackButtonWithStyle:self.style];
+}
 
 #pragma mark - Getter
 

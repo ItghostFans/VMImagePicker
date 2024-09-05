@@ -9,6 +9,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#define VMIPLocalizedStringWithDefaultValue(key, tbl, bundle, val, comment) \
+        [bundle localizedStringForKey:(key) value:(val) table:(tbl)]
+#define VMIPLocalizedString(key, comment) \
+        VMIPLocalizedStringWithDefaultValue(key, nil, self.bundle, @"Undefined localized string", comment)
+// 通过以下命令生成多语言文件
+// find . -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o en.lproj
+
 #pragma mark - UIControl
 // @{UIControlState: UIFont *}
 typedef NSDictionary<__kindof NSNumber *, __kindof UIFont *> VMIPControlFonts;
@@ -59,14 +66,12 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 @property (strong, nonatomic) VMIPControlThemeColors *navigationBarBackTitleFonts;
 @property (strong, nonatomic) VMIPControlThemeColors *navigationBarBackTitleColors;
 @property (strong, nonatomic) VMIPControlThemeImages *navigationBarBackImages;
-
-@property (strong, nonatomic) VMIPThemeTitles *navigationBarTitles; // TODO:
-@property (strong, nonatomic) VMIPThemeAttributedTitles *navigationBarAttributedTitles; // TODO:
 @property (strong, nonatomic) VMIPThemeColors *bkgColors;
 
 #pragma mark - Album
-@property (strong, nonatomic) VMIPThemeColors *albumBkgColors;
+@property (assign, nonatomic) NSString *albumTitle;
 @property (assign, nonatomic) CGFloat albumCellHeight;
+
 @property (strong, nonatomic) VMIPCellThemeColors *albumCellBkgColors;
 @property (strong, nonatomic) VMIPCellThemeColors *albumCellNameColors;
 @property (strong, nonatomic) VMIPCellThemeColors *albumCellNameFonts;

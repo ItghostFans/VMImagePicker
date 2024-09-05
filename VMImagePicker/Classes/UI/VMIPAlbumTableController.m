@@ -12,17 +12,19 @@
 #import "VMIPAssetCollectionControllerViewModel.h"
 #import "VMIPAlbumCellViewModel.h"
 #import "VMImagePickerStyle.h"
+#import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
 
 @interface VMIPAlbumTableController () <UITableViewDelegate>
 @property (strong, nonatomic) VMImagePickerStyle *style;
+@property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @end
 
 @implementation VMIPAlbumTableController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
+    [self styleUI];
     [self.view addSubview:self.tableView];
     self.tableView.frame = self.view.bounds;
     self.tableView.delegate = self;
@@ -31,7 +33,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    self.navigationController.navigationBarHidden = YES;
+    self.navigationController.navigationBarHidden = NO;
 }
 
 #pragma mark - Public
@@ -39,6 +41,13 @@
 #pragma mark - Actions
 
 #pragma mark - Private
+
+- (void)styleUI {
+    self.navigationItem.title = self.style.albumTitle;
+    self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
+    self.navigationBarStyle = [[VMIPNavigationBarStyle alloc] initWithController:self];
+    [self.navigationBarStyle formatBackButtonWithStyle:self.style];
+}
 
 #pragma mark - Getter
 
