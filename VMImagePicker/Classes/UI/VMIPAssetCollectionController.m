@@ -37,9 +37,14 @@
     }];
     self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     ColumnRowFlowLayout *collectionViewFlowLayout = ColumnRowFlowLayout.new;
-//    collectionViewFlowLayout.columnCount = 3;
-    collectionViewFlowLayout.rowCount = 5;
-    collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    collectionViewFlowLayout.columnCount = self.style.assetColumn;
+    collectionViewFlowLayout.rowCount = self.style.assetRow;
+    if (collectionViewFlowLayout.columnCount) {
+        collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    } else
+    if (collectionViewFlowLayout.rowCount) {
+        collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    }
     collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;

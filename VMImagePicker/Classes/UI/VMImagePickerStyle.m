@@ -31,6 +31,13 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 @implementation VMImagePickerStyle
 
+- (instancetype)init {
+    if (self = [super init]) {
+        _assetColumn = 3;
+    }
+    return self;
+}
+
 - (VMIPThemeColors *)navigationBarBkgColors {
     if (!_navigationBarBkgColors) {
         _navigationBarBkgColors = @{
@@ -214,7 +221,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 - (VMIPCellThemeColors *)albumCellNameFonts {
     if (!_albumCellNameFonts) {
-        UIFont *font = [UIFont systemFontOfSize:30.0f];
+        UIFont *font = [UIFont systemFontOfSize:18.0f];
         _albumCellNameFonts = @{
             @(NO): font,
             @(YES): font,

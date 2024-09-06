@@ -23,6 +23,7 @@
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     }
     return self;
 }
@@ -41,6 +42,7 @@
     [super setSelected:selected animated:animated];
     self.nameLabel.textColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellNameColors selected:selected];
     self.nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:selected];
+    self.contentView.backgroundColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellBkgColors selected:selected];
 }
 
 #pragma mark - Public
@@ -70,7 +72,7 @@
         _nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:NO];
         [self.contentView addSubview:_nameLabel];
         [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsZero);
+            make.edges.mas_equalTo(UIEdgeInsetsMake(0.0f, 6.0f, 0.0f, 0.0f));
         }];
     }
     return _nameLabel;
