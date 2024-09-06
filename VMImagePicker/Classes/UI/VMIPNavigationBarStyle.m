@@ -7,6 +7,7 @@
 
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerStyle.h"
+#import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMIPNavigationBarStyle ()
 @property (weak, nonatomic) UIViewController *controller;
@@ -26,11 +27,25 @@
     if (self.controller.navigationController.navigationBar.topItem != self.controller.navigationItem) {
         [backButton setTitle:self.controller.navigationController.navigationBar.topItem.title forState:(UIControlStateNormal)];
     }
-    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
-    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackImages state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
-    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackImages state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
-    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackImages state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    // Image
+    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackButtonImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackButtonImages state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackButtonImages state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackButtonImages state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
     self.controller.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    // Title Color
+    [backButton setTitleColor:[style colorWithControlThemeColors:style.navigationBarButtonTitleColors state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [backButton setTitleColor:[style colorWithControlThemeColors:style.navigationBarButtonTitleColors state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [backButton setTitleColor:[style colorWithControlThemeColors:style.navigationBarButtonTitleColors state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [backButton setTitleColor:[style colorWithControlThemeColors:style.navigationBarButtonTitleColors state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    self.controller.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:backButton];
+    // Title Font
+    @weakify(backButton, style);
+    [[RACObserve(backButton, state) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
+        UIControlState state = [x unsignedIntegerValue];
+        @strongify(backButton, style);
+        backButton.titleLabel.font = [style fontWithControlThemeFonts:style.navigationBarButtonTitleFonts state:state];
+    }];
     [backButton addTarget:self action:@selector(onBackClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     return backButton;
 }

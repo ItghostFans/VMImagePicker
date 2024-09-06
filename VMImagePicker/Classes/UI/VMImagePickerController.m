@@ -18,7 +18,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    @weakify(self);
+    [self styleUI];
+}
+
+- (void)styleUI {
     self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
     UINavigationBarAppearance *appearance = UINavigationBarAppearance.new;
     if (self.navigationBar.isTranslucent) {
@@ -30,30 +33,23 @@
     appearance.titleTextAttributes = titleTextAttributes;
     
     UIBarButtonItemAppearance *backButtonAppearance = UIBarButtonItemAppearance.new;
-    titleTextAttributes[NSFontAttributeName] = [self.style fontWithThemeFonts:self.style.navigationBarBackTitleFonts];
-    titleTextAttributes[NSForegroundColorAttributeName] = [self.style colorWithThemeColors:self.style.navigationBarBackTitleColors];
     backButtonAppearance.normal.titleTextAttributes = @{
-        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarBackTitleFonts state:(UIControlStateNormal)],
-        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarBackTitleColors state:(UIControlStateNormal)],
+        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarButtonTitleFonts state:(UIControlStateNormal)],
+        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarButtonTitleColors state:(UIControlStateNormal)],
     };
-//    backButtonAppearance.normal.backgroundImage = [self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateNormal)];
     backButtonAppearance.highlighted.titleTextAttributes = @{
-        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarBackTitleFonts state:(UIControlStateHighlighted)],
-        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarBackTitleColors state:(UIControlStateHighlighted)],
+        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarButtonTitleFonts state:(UIControlStateHighlighted)],
+        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarButtonTitleColors state:(UIControlStateHighlighted)],
     };
-//    backButtonAppearance.highlighted.backgroundImage = [self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateHighlighted)];
     backButtonAppearance.disabled.titleTextAttributes = @{
-        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarBackTitleFonts state:(UIControlStateDisabled)],
-        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarBackTitleColors state:(UIControlStateDisabled)],
+        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarButtonTitleFonts state:(UIControlStateDisabled)],
+        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarButtonTitleColors state:(UIControlStateDisabled)],
     };
-//    backButtonAppearance.disabled.backgroundImage = [self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateDisabled)];
     backButtonAppearance.focused.titleTextAttributes = @{
-        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarBackTitleFonts state:(UIControlStateFocused)],
-        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarBackTitleColors state:(UIControlStateFocused)],
+        NSFontAttributeName: [self.style fontWithControlThemeFonts:self.style.navigationBarButtonTitleFonts state:(UIControlStateFocused)],
+        NSForegroundColorAttributeName: [self.style colorWithControlThemeColors:self.style.navigationBarButtonTitleColors state:(UIControlStateFocused)],
     };
-//    backButtonAppearance.focused.backgroundImage = [self.style imageWithControlThemeImages:self.style.navigationBarBackImages state:(UIControlStateFocused)];
     appearance.buttonAppearance = backButtonAppearance;
-    
     self.navigationBar.standardAppearance = appearance;
     self.navigationBar.scrollEdgeAppearance = appearance;
 }

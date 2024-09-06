@@ -66,55 +66,55 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return _navigationBarTitleColors;
 }
 
-- (VMIPControlThemeFonts *)navigationBarBackTitleFonts {
-    if (!_navigationBarBackTitleFonts) {
+- (VMIPControlThemeFonts *)navigationBarButtonTitleFonts {
+    if (!_navigationBarButtonTitleFonts) {
         UIFont *font = [UIFont systemFontOfSize:16.0f weight:(UIFontWeightBold)];
         NSMutableDictionary *fonts = NSMutableDictionary.new;
         fonts[@(UIControlStateNormal)] = font;
         fonts[@(UIControlStateHighlighted)] = font;
         fonts[@(UIControlStateDisabled)] = font;
         fonts[@(UIControlStateFocused)] = font;
-        _navigationBarBackTitleFonts = @{
+        _navigationBarButtonTitleFonts = @{
             @(UIUserInterfaceStyleUnspecified): fonts,
             @(UIUserInterfaceStyleLight): fonts,
             @(UIUserInterfaceStyleDark): fonts,
         };
     }
-    return _navigationBarBackTitleFonts;
+    return _navigationBarButtonTitleFonts;
 }
 
-- (VMIPControlThemeColors *)navigationBarBackTitleColors {
-    if (!_navigationBarBackTitleColors) {
+- (VMIPControlThemeColors *)navigationBarButtonTitleColors {
+    if (!_navigationBarButtonTitleColors) {
         UIColor *color = RGB_HEX_COLOR(0x00C7BE);
         NSMutableDictionary *colors = NSMutableDictionary.new;
         colors[@(UIControlStateNormal)] = color;
         colors[@(UIControlStateHighlighted)] = color;
         colors[@(UIControlStateDisabled)] = color;
         colors[@(UIControlStateFocused)] = color;
-        _navigationBarBackTitleColors = @{
+        _navigationBarButtonTitleColors = @{
             @(UIUserInterfaceStyleUnspecified): colors,
             @(UIUserInterfaceStyleLight): colors,
             @(UIUserInterfaceStyleDark): colors,
         };
     }
-    return _navigationBarBackTitleColors;
+    return _navigationBarButtonTitleColors;
 }
 
-- (VMIPControlThemeImages *)navigationBarBackImages {
-    if (!_navigationBarBackImages) {
+- (VMIPControlThemeImages *)navigationBarBackButtonImages {
+    if (!_navigationBarBackButtonImages) {
         UIImage *image = [self imageNamed:@"chevron.backward"];
         NSMutableDictionary *images = NSMutableDictionary.new;
         images[@(UIControlStateNormal)] = image;
         images[@(UIControlStateHighlighted)] = image;
         images[@(UIControlStateDisabled)] = image;
         images[@(UIControlStateFocused)] = image;
-        _navigationBarBackImages = @{
+        _navigationBarBackButtonImages = @{
             @(UIUserInterfaceStyleUnspecified): images,
             @(UIUserInterfaceStyleLight): images,
             @(UIUserInterfaceStyleDark): images,
         };
     }
-    return _navigationBarBackImages;
+    return _navigationBarBackButtonImages;
 }
 
 #pragma mark - Private Getter
@@ -168,7 +168,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 - (NSString *)albumTitle {
     if (!_albumTitle) {
-        _albumTitle = VMIPLocalizedString(@"Fucking", @"");
+        _albumTitle = VMIPLocalizedString(@"Albums", @"");
     }
     return _albumTitle;
 }

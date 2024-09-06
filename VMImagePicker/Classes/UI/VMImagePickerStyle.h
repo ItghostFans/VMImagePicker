@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 #define VMIPLocalizedString(key, comment) \
         VMIPLocalizedStringWithDefaultValue(key, nil, self.bundle, @"Undefined localized string", comment)
 // 通过以下命令生成多语言文件
-// find . -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o en.lproj
+// find . -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o en.lproj -o zh-Hans.lproj
 
 #pragma mark - UIControl
 // @{UIControlState: UIFont *}
@@ -63,9 +63,9 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 @property (strong, nonatomic) VMIPThemeColors *navigationBarBkgColors;
 @property (strong, nonatomic) VMIPThemeFonts *navigationBarTitleFonts;
 @property (strong, nonatomic) VMIPThemeColors *navigationBarTitleColors;
-@property (strong, nonatomic) VMIPControlThemeColors *navigationBarBackTitleFonts;
-@property (strong, nonatomic) VMIPControlThemeColors *navigationBarBackTitleColors;
-@property (strong, nonatomic) VMIPControlThemeImages *navigationBarBackImages;
+@property (strong, nonatomic) VMIPControlThemeFonts *navigationBarButtonTitleFonts;
+@property (strong, nonatomic) VMIPControlThemeColors *navigationBarButtonTitleColors;
+@property (strong, nonatomic) VMIPControlThemeImages *navigationBarBackButtonImages;
 @property (strong, nonatomic) VMIPThemeColors *bkgColors;
 
 #pragma mark - Album
