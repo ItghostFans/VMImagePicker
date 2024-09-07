@@ -13,10 +13,11 @@
 #import <ViewModel/UICollectionView+ViewModel.h>
 #import <VMIPAssetCellViewModel.h>
 
-@interface VMIPAssetCollectionControllerViewModel ()
+@interface VMIPAssetCollectionControllerViewModel () <IVMIPAssetCellViewModelSelectedDelegate>
 @property (strong, nonatomic) PHAssetCollection *assetCollection;
 @property (strong, nonatomic) PHFetchOptions *options;
 @property (weak, nonatomic, readonly) SectionViewModel *sectionViewModel;
+@property (strong, nonatomic) NSMutableArray *selectedCellViewModels;
 @end
 
 @implementation VMIPAssetCollectionControllerViewModel
@@ -25,6 +26,7 @@
                                 options:(PHFetchOptions * _Nullable)options {
     if (self = [self initWithCollectionViewModel:CollectionViewModel.new]) {
         [self.collectionViewModel.sectionViewModels addViewModel:SectionViewModel.new];
+        _selectedCellViewModels = NSMutableArray.new;
         _sectionViewModel = self.collectionViewModel.sectionViewModels.firstViewModel;
         _assetCollection = assetCollection;
         _options = options;
@@ -47,7 +49,21 @@
                 for (NSUInteger index = 0; index < 9; ++index) {
                     for (PHAsset *asset in assets) {
                         VMIPAssetCellViewModel *cellViewModel = [[VMIPAssetCellViewModel alloc] initWithAsset:asset];
+                        cellViewModel.selectedDelegate = self;
                         [self.sectionViewModel addViewModel:cellViewModel];
+                        @weakify(cellViewModel);
+                        [RACObserve(cellViewModel, selected) subscribeNext:^(id  _Nullable x) {
+                            @strongify(self);
+                            @strongify(cellViewModel);
+                            if (!cellViewModel) {
+                                return;
+                            }
+                            if ([x boolValue]) {
+                                [[self mutableArrayValueForKey:NSStringFromSelector(@selector(selectedCellViewModels))] addObject:cellViewModel];
+                            } else {
+                                [[self mutableArrayValueForKey:NSStringFromSelector(@selector(selectedCellViewModels))] removeObject:cellViewModel];
+                            }
+                        }];
                     }
                 }
             } completion:^(BOOL finished) {

@@ -17,6 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol IVMIPAssetCellViewModelDelegate <ICellViewModelDelegate>
 @end
 
+@protocol IVMIPAssetCellViewModelSelectedDelegate <NSObject>
+
+@property (strong, nonatomic, readonly) NSArray *selectedCellViewModels;
+
+@end
+
 @interface VMIPAssetCellViewModel : CellViewModel
 
 #pragma clang diagnostic push
@@ -25,8 +31,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic, nullable) id<IVMIPAssetCellViewModelDelegate> delegate;
 #pragma clang diagnostic pop
 
+@property (weak, nonatomic, nullable) id<IVMIPAssetCellViewModelSelectedDelegate> selectedDelegate;
+
 @property (strong, nonatomic, readonly) PHAsset *asset;
 @property (assign, nonatomic, readonly) BOOL inCloud;
+@property (assign, nonatomic, readonly) BOOL selected;
 @property (strong, nonatomic, readonly) UIImage *previewImage;
 
 - (instancetype)initWithAsset:(PHAsset *)asset;

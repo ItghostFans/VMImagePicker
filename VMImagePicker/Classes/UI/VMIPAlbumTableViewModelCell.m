@@ -15,8 +15,8 @@
 #import <ViewModel/TableViewModel.h>
 
 @interface VMIPAlbumTableViewModelCell ()
-@property (weak, nonatomic) UILabel *nameLabel;
 @property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
+@property (weak, nonatomic) UILabel *nameLabel;
 @end
 
 @implementation VMIPAlbumTableViewModelCell

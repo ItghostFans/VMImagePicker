@@ -34,6 +34,8 @@ typedef NSDictionary<__kindof NSNumber *, __kindof UIColor *> VMIPCellColors;
 typedef NSDictionary<__kindof NSNumber *, __kindof NSString *> VMIPCellFonts;
 // @{BOOL: NSString *}
 typedef NSDictionary<__kindof NSNumber *, __kindof NSString *> VMIPCellTitles;
+// @{BOOL: UIImage *}
+typedef NSDictionary<__kindof NSNumber *, __kindof UIImage *> VMIPCellImages;
 // @{BOOL: NSAttributedString *}
 typedef NSDictionary<__kindof NSNumber *, __kindof NSAttributedString *> VMIPCellAttributedTitles;
 #pragma mark - Theme
@@ -55,7 +57,9 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPControlImages *> VMIPCont
 typedef NSDictionary<__kindof NSNumber *, __kindof VMIPControlAttributedTitles *> VMIPControlThemeAttributedTitles;
 
 typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellColors *> VMIPCellThemeColors;
+typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellFonts *> VMIPCellThemeFonts;
 typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellTitles *> VMIPCellThemeTitles;
+typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellImages *> VMIPCellThemeImages;
 typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> VMIPCellThemeAttributedTitles;
 
 @interface VMImagePickerStyle : NSObject
@@ -79,7 +83,9 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 #pragma mark - Asset
 @property (assign, nonatomic) NSUInteger assetColumn;
 @property (assign, nonatomic) NSUInteger assetRow;
-@property (strong, nonatomic) VMIPThemeColors *assetBkgColors;
+@property (strong, nonatomic) VMIPCellThemeImages *assetSelectedImages;
+@property (strong, nonatomic) VMIPCellThemeColors *assetSelectedTitleColors;
+@property (strong, nonatomic) VMIPCellThemeFonts *assetSelectedTitleFonts;
 
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors;
 - (UIFont *)fontWithThemeFonts:(VMIPThemeFonts *)themeFonts;
@@ -87,6 +93,7 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 - (UIColor *)colorWithControlThemeColors:(VMIPControlThemeColors *)themeColors state:(UIControlState)state;
 - (UIImage *)imageWithControlThemeImages:(VMIPControlThemeImages *)themeImages state:(UIControlState)state;
 - (UIColor *)colorWithCellThemeColors:(VMIPCellThemeColors *)themeColors selected:(BOOL)selected;
+- (UIImage *)imageWithCellThemeImages:(VMIPCellThemeImages *)themeImages selected:(BOOL)selected;
 - (UIFont *)fontWithCellFonts:(VMIPCellFonts *)themeFonts selected:(BOOL)selected;
 
 @end

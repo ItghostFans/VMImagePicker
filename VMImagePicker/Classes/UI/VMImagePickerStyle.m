@@ -230,6 +230,60 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return _albumCellNameFonts;
 }
 
+#pragma mark - Asset
+
+- (VMIPCellThemeImages *)assetSelectedImages {
+    if (!_assetSelectedImages) {
+        UIImage *normalImage = [self imageNamed:@"circle"];
+        UIImage *selectedImage = [self imageNamed:@"circle.fill"];
+        _assetSelectedImages = @{
+            @(UIUserInterfaceStyleLight): @{
+                @(NO): normalImage,
+                @(YES): selectedImage,
+            },
+            @(UIUserInterfaceStyleDark): @{
+                @(NO): normalImage,
+                @(YES): selectedImage,
+            },
+        };
+    }
+    return _assetSelectedImages;
+}
+
+- (VMIPCellThemeColors *)assetSelectedTitleColors {
+    if (!_assetSelectedTitleColors) {
+        UIColor *color = RGB_HEX_COLOR(0xFFFFFF);
+        _assetSelectedTitleColors = @{
+            @(UIUserInterfaceStyleLight): @{
+                @(NO): UIColor.clearColor,
+                @(YES): color,
+            },
+            @(UIUserInterfaceStyleDark): @{
+                @(NO): UIColor.clearColor,
+                @(YES): color,
+            },
+        };
+    }
+    return _assetSelectedTitleColors;
+}
+
+- (VMIPCellThemeFonts *)assetSelectedTitleFonts {
+    if (!_assetSelectedTitleFonts) {
+        UIFont *font = [UIFont systemFontOfSize:14.0f weight:(UIFontWeightMedium)];
+        _assetSelectedTitleFonts = @{
+            @(UIUserInterfaceStyleLight): @{
+                @(NO): font,
+                @(YES): font,
+            },
+            @(UIUserInterfaceStyleDark): @{
+                @(NO): font,
+                @(YES): font,
+            },
+        };
+    }
+    return _assetSelectedTitleFonts;
+}
+
 #pragma mark - Public
 
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors {
@@ -266,6 +320,10 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         }
         return color;
     }];
+}
+
+- (UIImage *)imageWithCellThemeImages:(VMIPCellThemeImages *)themeImages selected:(BOOL)selected {
+    return themeImages[@(UITraitCollection.currentTraitCollection.userInterfaceStyle)][@(selected)];
 }
 
 - (UIFont *)fontWithCellFonts:(VMIPCellFonts *)themeFonts selected:(BOOL)selected {

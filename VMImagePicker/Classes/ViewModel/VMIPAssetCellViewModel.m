@@ -29,6 +29,7 @@
 
 @property (strong, nonatomic) PHAsset *asset;
 @property (assign, nonatomic) BOOL inCloud;
+@property (assign, nonatomic) BOOL selected;
 @property (strong, nonatomic) UIImage *previewImage;
 @property (assign, nonatomic) PHImageRequestID requestId;
 
