@@ -9,14 +9,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-//#define VMIPLocalizedStringWithDefaultValue(key, tbl, bundle, val, comment) \
-//        [bundle localizedStringForKey:(key) value:(val) table:(tbl)]
-#define VMIPLocalizedStringWithDefaultValue NSLocalizedStringWithDefaultValue
-//#define VMIPLocalizedString(key, comment) \
-//        VMIPLocalizedStringWithDefaultValue(key, nil, self.bundle, @"Undefined localized string", comment)
-#define VMIPLocalizedString NSLocalizedString
+#define VMIPLocalizedStringWithDefaultValue(key, tbl, bundle, val, comment) \
+        [bundle localizedStringForKey:(key) value:(val) table:(tbl)]
+//#define VMIPLocalizedStringWithDefaultValue NSLocalizedStringWithDefaultValue
+#define VMIPLocalizedString(key, comment) \
+        VMIPLocalizedStringWithDefaultValue(key, nil, self.bundle, @"Undefined localized string", comment)
+//#define VMIPLocalizedString NSLocalizedString
 // 通过以下命令生成多语言文件，只能敢出1种语言
-// find . -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o en.lproj -o zh-Hans.lproj
+// find VMImagePicker -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o en.lproj
+// find VMImagePicker -name "*.[m,mm]" -print0 | xargs -0 genstrings -s VMIPLocalizedStringWithDefaultValue -s VMIPLocalizedString -o zh-Hans.lproj
 
 #pragma mark - UIControl
 // @{UIControlState: UIFont *}

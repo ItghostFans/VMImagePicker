@@ -225,14 +225,14 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 - (VMIPControlThemeTitles *)toolPreviewButtonTitles {
     if (!_toolPreviewButtonTitles) {
-        UIColor *title = VMIPLocalizedString(@"Preview", @"");
+        NSString *title = VMIPLocalizedString(@"Preview(%@)", @"");
         NSMutableDictionary *titles = NSMutableDictionary.new;
         titles[@(UIControlStateNormal)] = title;
         titles[@(UIControlStateHighlighted)] = title;
         titles[@(UIControlStateDisabled)] = title;
         titles[@(UIControlStateFocused)] = title;
         titles[@(UIControlStateSelected)] = title;
-        _toolButtonTitleColors = @{
+        _toolPreviewButtonTitles = @{
             @(UIUserInterfaceStyleUnspecified): titles,
             @(UIUserInterfaceStyleLight): titles,
             @(UIUserInterfaceStyleDark): titles,
@@ -242,8 +242,8 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 }
 
 - (VMIPControlThemeTitles *)toolOriginalButtonTitles {
-    if (_toolOriginalButtonTitles) {
-        UIColor *title = VMIPLocalizedString(@"Original", @"");
+    if (!_toolOriginalButtonTitles) {
+        NSString *title = VMIPLocalizedString(@"Original", @"");
         NSMutableDictionary *titles = NSMutableDictionary.new;
         titles[@(UIControlStateNormal)] = title;
         titles[@(UIControlStateHighlighted)] = title;
@@ -260,15 +260,15 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 }
 
 - (VMIPControlThemeTitles *)toolDoneButtonTitles {
-    if (_toolDoneButtonTitles) {
-        UIColor *title = VMIPLocalizedString(@"Select", @"");
+    if (!_toolDoneButtonTitles) {
+        NSString *title = VMIPLocalizedString(@"Done", @"");
         NSMutableDictionary *titles = NSMutableDictionary.new;
         titles[@(UIControlStateNormal)] = title;
         titles[@(UIControlStateHighlighted)] = title;
         titles[@(UIControlStateDisabled)] = title;
         titles[@(UIControlStateFocused)] = title;
         titles[@(UIControlStateSelected)] = title;
-        _toolOriginalButtonTitles = @{
+        _toolDoneButtonTitles = @{
             @(UIUserInterfaceStyleUnspecified): titles,
             @(UIUserInterfaceStyleLight): titles,
             @(UIUserInterfaceStyleDark): titles,
@@ -482,7 +482,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     @weakify(button);
     [[RACObserve(button, state) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
         @strongify(button);
-        [button setBackgroundImage:[self fontWithControlThemeFonts:fonts state:([x unsignedIntegerValue])] forState:(UIControlStateNormal)];
+        button.titleLabel.font = [self fontWithControlThemeFonts:fonts state:([x unsignedIntegerValue])];
     }];
 }
 

@@ -27,6 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
 @property (strong, nonatomic, readonly) PHFetchOptions *options;
 @property (strong, nonatomic, readonly, nonnull) NSString *name;
+@property (strong, nonatomic, readonly) NSArray *selectedCellViewModels;
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection
                                 options:(PHFetchOptions * _Nullable)options;

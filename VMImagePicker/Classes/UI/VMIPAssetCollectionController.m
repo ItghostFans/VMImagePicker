@@ -53,6 +53,21 @@
     collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
+    
+    [RACObserve(self.viewModel, selectedCellViewModels) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        VMIPToolBarControlView *controlView = self.controlBarButtonItem.customView;
+        NSString *title = [self.style titleWithControlThemeTitles:self.style.toolPreviewButtonTitles state:(UIControlStateNormal)];
+        if ([title containsString:@"(%@)"]) {
+            NSUInteger count = [x count];
+            if (count) {
+                title = [NSString stringWithFormat:title, @(count)];
+            } else {
+                title = [title stringByReplacingOccurrencesOfString:@"(%@)" withString:@""];
+            }
+        }
+        [controlView.previewButton setTitle:title forState:(UIControlStateNormal)];
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
