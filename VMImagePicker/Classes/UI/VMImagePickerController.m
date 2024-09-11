@@ -8,6 +8,7 @@
 #import "VMImagePickerController.h"
 #import "VMImagePickerStyle.h"
 
+#import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMImagePickerController ()
@@ -52,6 +53,23 @@
     appearance.buttonAppearance = backButtonAppearance;
     self.navigationBar.standardAppearance = appearance;
     self.navigationBar.scrollEdgeAppearance = appearance;
+    
+    self.toolbar.translucent = NO;
+    
+    UIImageView *bkgView = UIImageView.new;
+    bkgView.backgroundColor = [self.style colorWithThemeColors:self.style.toolBkgColors];
+    [self.toolbar insertSubview:bkgView atIndex:0];
+    [bkgView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.leading.trailing.equalTo(self.toolbar);
+        make.bottom.equalTo(self.toolbar).offset(0.0f);
+    }];
+    @weakify(bkgView);
+    [[self rac_signalForSelector:@selector(viewSafeAreaInsetsDidChange)] subscribeNext:^(RACTuple * _Nullable x) {
+        @strongify(bkgView);
+        [bkgView mas_updateConstraints:^(MASConstraintMaker *make) {
+            make.bottom.equalTo(self.toolbar).offset(self.view.safeAreaInsets.bottom);
+        }];
+    }];
 }
 
 #pragma mark - Getter
@@ -64,3 +82,5 @@
 }
 
 @end
+
+UIImagePickerControllerInfoKey const VMImagePickerControllerImages = @"VMImagePickerControllerImages";

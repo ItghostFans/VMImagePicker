@@ -7,6 +7,8 @@
 
 #import "VMImagePickerStyle.h"
 
+#import <ReactiveObjC/ReactiveObjC.h>
+
 /// RGB16进制格式的颜色。
 /// - Parameter rgb: 0xRRGGBB
 UIColor * RGB_HEX_COLOR(int32_t rgb) {
@@ -81,6 +83,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         fonts[@(UIControlStateHighlighted)] = font;
         fonts[@(UIControlStateDisabled)] = font;
         fonts[@(UIControlStateFocused)] = font;
+        fonts[@(UIControlStateSelected)] = font;
         _navigationBarButtonTitleFonts = @{
             @(UIUserInterfaceStyleUnspecified): fonts,
             @(UIUserInterfaceStyleLight): fonts,
@@ -98,6 +101,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         colors[@(UIControlStateHighlighted)] = color;
         colors[@(UIControlStateDisabled)] = color;
         colors[@(UIControlStateFocused)] = color;
+        colors[@(UIControlStateSelected)] = color;
         _navigationBarButtonTitleColors = @{
             @(UIUserInterfaceStyleUnspecified): colors,
             @(UIUserInterfaceStyleLight): colors,
@@ -115,6 +119,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         images[@(UIControlStateHighlighted)] = image;
         images[@(UIControlStateDisabled)] = image;
         images[@(UIControlStateFocused)] = image;
+        images[@(UIControlStateSelected)] = image;
         _navigationBarBackButtonImages = @{
             @(UIUserInterfaceStyleUnspecified): images,
             @(UIUserInterfaceStyleLight): images,
@@ -169,6 +174,107 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         };
     }
     return _bkgColors;
+}
+
+- (VMIPThemeColors *)toolBkgColors {
+    if (!_toolBkgColors) {
+        _toolBkgColors = @{
+            @(UIUserInterfaceStyleUnspecified): UIColor.clearColor,
+            @(UIUserInterfaceStyleLight): UIColor.lightGrayColor,
+            @(UIUserInterfaceStyleDark): UIColor.darkGrayColor,
+        };
+    }
+    return _toolBkgColors;
+}
+
+- (VMIPControlThemeColors *)toolButtonTitleFonts {
+    if (!_toolButtonTitleFonts) {
+        UIFont *font = [UIFont systemFontOfSize:16.0f weight:(UIFontWeightBold)];
+        NSMutableDictionary *fonts = NSMutableDictionary.new;
+        fonts[@(UIControlStateNormal)] = font;
+        fonts[@(UIControlStateHighlighted)] = font;
+        fonts[@(UIControlStateDisabled)] = font;
+        fonts[@(UIControlStateFocused)] = font;
+        fonts[@(UIControlStateSelected)] = font;
+        _toolButtonTitleFonts = @{
+            @(UIUserInterfaceStyleUnspecified): fonts,
+            @(UIUserInterfaceStyleLight): fonts,
+            @(UIUserInterfaceStyleDark): fonts,
+        };
+    }
+    return _toolButtonTitleFonts;
+}
+
+- (VMIPControlThemeColors *)toolButtonTitleColors {
+    if (!_toolButtonTitleColors) {
+        UIColor *color = RGB_HEX_COLOR(0x00C7BE);
+        NSMutableDictionary *colors = NSMutableDictionary.new;
+        colors[@(UIControlStateNormal)] = color;
+        colors[@(UIControlStateHighlighted)] = color;
+        colors[@(UIControlStateDisabled)] = color;
+        colors[@(UIControlStateFocused)] = color;
+        colors[@(UIControlStateSelected)] = color;
+        _toolButtonTitleColors = @{
+            @(UIUserInterfaceStyleUnspecified): colors,
+            @(UIUserInterfaceStyleLight): colors,
+            @(UIUserInterfaceStyleDark): colors,
+        };
+    }
+    return _toolButtonTitleColors;
+}
+
+- (VMIPControlThemeTitles *)toolPreviewButtonTitles {
+    if (!_toolPreviewButtonTitles) {
+        UIColor *title = VMIPLocalizedString(@"Preview", @"");
+        NSMutableDictionary *titles = NSMutableDictionary.new;
+        titles[@(UIControlStateNormal)] = title;
+        titles[@(UIControlStateHighlighted)] = title;
+        titles[@(UIControlStateDisabled)] = title;
+        titles[@(UIControlStateFocused)] = title;
+        titles[@(UIControlStateSelected)] = title;
+        _toolButtonTitleColors = @{
+            @(UIUserInterfaceStyleUnspecified): titles,
+            @(UIUserInterfaceStyleLight): titles,
+            @(UIUserInterfaceStyleDark): titles,
+        };
+    }
+    return _toolPreviewButtonTitles;
+}
+
+- (VMIPControlThemeTitles *)toolOriginalButtonTitles {
+    if (_toolOriginalButtonTitles) {
+        UIColor *title = VMIPLocalizedString(@"Original", @"");
+        NSMutableDictionary *titles = NSMutableDictionary.new;
+        titles[@(UIControlStateNormal)] = title;
+        titles[@(UIControlStateHighlighted)] = title;
+        titles[@(UIControlStateDisabled)] = title;
+        titles[@(UIControlStateFocused)] = title;
+        titles[@(UIControlStateSelected)] = title;
+        _toolOriginalButtonTitles = @{
+            @(UIUserInterfaceStyleUnspecified): titles,
+            @(UIUserInterfaceStyleLight): titles,
+            @(UIUserInterfaceStyleDark): titles,
+        };
+    }
+    return _toolOriginalButtonTitles;
+}
+
+- (VMIPControlThemeTitles *)toolDoneButtonTitles {
+    if (_toolDoneButtonTitles) {
+        UIColor *title = VMIPLocalizedString(@"Select", @"");
+        NSMutableDictionary *titles = NSMutableDictionary.new;
+        titles[@(UIControlStateNormal)] = title;
+        titles[@(UIControlStateHighlighted)] = title;
+        titles[@(UIControlStateDisabled)] = title;
+        titles[@(UIControlStateFocused)] = title;
+        titles[@(UIControlStateSelected)] = title;
+        _toolOriginalButtonTitles = @{
+            @(UIUserInterfaceStyleUnspecified): titles,
+            @(UIUserInterfaceStyleLight): titles,
+            @(UIUserInterfaceStyleDark): titles,
+        };
+    }
+    return _toolDoneButtonTitles;
 }
 
 #pragma mark - Album
@@ -304,6 +410,10 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return themeFonts[@(UITraitCollection.currentTraitCollection.userInterfaceStyle)][@(state)];
 }
 
+- (NSString *)titleWithControlThemeTitles:(VMIPControlThemeTitles *)themeTitles state:(UIControlState)state {
+    return themeTitles[@(UITraitCollection.currentTraitCollection.userInterfaceStyle)][@(state)];
+}
+
 - (UIColor *)colorWithControlThemeColors:(VMIPControlThemeColors *)themeColors state:(UIControlState)state {
     return themeColors[@(UITraitCollection.currentTraitCollection.userInterfaceStyle)][@(state)];
 }
@@ -332,6 +442,48 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         font = [UIFont systemFontOfSize:11.0f];
     }
     return font;
+}
+
+#pragma mark - Button
+
+- (void)styleButton:(UIButton *)button titles:(VMIPControlThemeTitles *)titles {
+    [button setTitle:[self titleWithControlThemeTitles:titles state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [button setTitle:[self titleWithControlThemeTitles:titles state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [button setTitle:[self titleWithControlThemeTitles:titles state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [button setTitle:[self titleWithControlThemeTitles:titles state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    [button setTitle:[self titleWithControlThemeTitles:titles state:(UIControlStateSelected)] forState:(UIControlStateSelected)];
+}
+
+- (void)styleButton:(UIButton *)button titleColors:(VMIPControlThemeColors *)titleColors {
+    [button setTitleColor:[self colorWithControlThemeColors:titleColors state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [button setTitleColor:[self colorWithControlThemeColors:titleColors state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [button setTitleColor:[self colorWithControlThemeColors:titleColors state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [button setTitleColor:[self colorWithControlThemeColors:titleColors state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    [button setTitleColor:[self colorWithControlThemeColors:titleColors state:(UIControlStateSelected)] forState:(UIControlStateSelected)];
+}
+
+- (void)styleButton:(UIButton *)button images:(VMIPControlThemeImages *)images {
+    [button setImage:[self imageWithControlThemeImages:images state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [button setImage:[self imageWithControlThemeImages:images state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [button setImage:[self imageWithControlThemeImages:images state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [button setImage:[self imageWithControlThemeImages:images state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    [button setImage:[self imageWithControlThemeImages:images state:(UIControlStateSelected)] forState:(UIControlStateSelected)];
+}
+
+- (void)styleButton:(UIButton *)button bkgImages:(VMIPControlThemeImages *)bkgImages {
+    [button setBackgroundImage:[self imageWithControlThemeImages:bkgImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
+    [button setBackgroundImage:[self imageWithControlThemeImages:bkgImages state:(UIControlStateHighlighted)] forState:(UIControlStateHighlighted)];
+    [button setBackgroundImage:[self imageWithControlThemeImages:bkgImages state:(UIControlStateDisabled)] forState:(UIControlStateDisabled)];
+    [button setBackgroundImage:[self imageWithControlThemeImages:bkgImages state:(UIControlStateFocused)] forState:(UIControlStateFocused)];
+    [button setBackgroundImage:[self imageWithControlThemeImages:bkgImages state:(UIControlStateSelected)] forState:(UIControlStateSelected)];
+}
+
+- (void)styleButton:(UIButton *)button fonts:(VMIPControlThemeFonts *)fonts {
+    @weakify(button);
+    [[RACObserve(button, state) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
+        @strongify(button);
+        [button setBackgroundImage:[self fontWithControlThemeFonts:fonts state:([x unsignedIntegerValue])] forState:(UIControlStateNormal)];
+    }];
 }
 
 @end

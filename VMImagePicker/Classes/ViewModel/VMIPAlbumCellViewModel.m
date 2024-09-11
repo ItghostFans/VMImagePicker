@@ -6,22 +6,22 @@
 //
 
 #import "VMIPAlbumCellViewModel.h"
-#if __has_include("VMIPAlbumTableViewModelCell.h")
-#import "VMIPAlbumTableViewModelCell.h"
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
-#import "VMIPAlbumCollectionViewModelCell.h"
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#if __has_include("VMIPAlbumTableCellViewModel.h")
+#import "VMIPAlbumTableCellViewModel.h"
+#endif // #if __has_include("VMIPAlbumTableCellViewModel.h")
+#if __has_include("VMIPAlbumCollectionCellViewModel.h")
+#import "VMIPAlbumCollectionCellViewModel.h"
+#endif // #if __has_include("VMIPAlbumCollectionCellViewModel.h")
 
 @interface VMIPAlbumCellViewModel ()
 
-#if __has_include("VMIPAlbumTableViewModelCell.h")
-@property (strong, nonatomic) VMIPAlbumTableViewModelCell *tableCellViewModel;
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
+#if __has_include("VMIPAlbumTableCellViewModel.h")
+@property (strong, nonatomic) VMIPAlbumTableCellViewModel *tableCellViewModel;
+#endif // #if __has_include("VMIPAlbumTableCellViewModel.h")
 
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
-@property (strong, nonatomic) VMIPAlbumCollectionViewModelCell *collectionCellViewModel;
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#if __has_include("VMIPAlbumCollectionCellViewModel.h")
+@property (strong, nonatomic) VMIPAlbumCollectionCellViewModel *collectionCellViewModel;
+#endif // #if __has_include("VMIPAlbumCollectionCellViewModel.h")
 
 @property (strong, nonatomic) PHAssetCollection *assetCollection;
 
@@ -31,13 +31,13 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-#if __has_include("VMIPAlbumTableViewModelCell.h")
-        _tableCellViewModel = VMIPAlbumTableViewModelCell.new;
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
+#if __has_include("VMIPAlbumTableCellViewModel.h")
+        _tableCellViewModel = VMIPAlbumTableCellViewModel.new;
+#endif // #if __has_include("VMIPAlbumTableCellViewModel.h")
         
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
-        _collectionCellViewModel = VMIPAlbumCollectionViewModelCell.new;
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#if __has_include("VMIPAlbumCollectionCellViewModel.h")
+        _collectionCellViewModel = VMIPAlbumCollectionCellViewModel.new;
+#endif // #if __has_include("VMIPAlbumCollectionCellViewModel.h")
     }
     return self;
 }
@@ -50,54 +50,38 @@
     return self;
 }
 
-#pragma mark - TableView
-
-#if __has_include("VMIPAlbumTableViewModelCell.h")
-- (Class)tableCellClass {
-    return VMIPAlbumTableViewModelCell.class;
-}
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
-
-#pragma mark - CollectionView
-
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
-- (Class)collectionCellClass {
-    return VMIPAlbumCollectionViewModelCell.class;
-}
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
-
 #pragma mark - Fowarding
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
     NSMethodSignature *methodSignature = nil;
-#if __has_include("VMIPAlbumTableViewModelCell.h")
+#if __has_include("VMIPAlbumTableCellViewModel.h")
     if ([_tableCellViewModel respondsToSelector:aSelector]) {
-        methodSignature = [VMIPAlbumTableViewModelCell instanceMethodSignatureForSelector:aSelector];
+        methodSignature = [VMIPAlbumTableCellViewModel instanceMethodSignatureForSelector:aSelector];
     }
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
+#endif // #if __has_include("VMIPAlbumTableCellViewModel.h")
     
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#if __has_include("VMIPAlbumCollectionCellViewModel.h")
     if ([_collectionCellViewModel respondsToSelector:aSelector]) {
-        methodSignature = [VMIPAlbumCollectionViewModelCell instanceMethodSignatureForSelector:aSelector];
+        methodSignature = [VMIPAlbumCollectionCellViewModel instanceMethodSignatureForSelector:aSelector];
     }
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#endif // #if __has_include("VMIPAlbumCollectionCellViewModel.h")
     return methodSignature;
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
-#if __has_include("VMIPAlbumTableViewModelCell.h")
+#if __has_include("VMIPAlbumTableCellViewModel.h")
     if ([_tableCellViewModel respondsToSelector:anInvocation.selector]) {
         [anInvocation invokeWithTarget:_tableCellViewModel];
         return;
     }
-#endif // #if __has_include("VMIPAlbumTableViewModelCell.h")
+#endif // #if __has_include("VMIPAlbumTableCellViewModel.h")
     
-#if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#if __has_include("VMIPAlbumCollectionCellViewModel.h")
     if ([_collectionCellViewModel respondsToSelector:anInvocation.selector]) {
         [anInvocation invokeWithTarget:_collectionCellViewModel];
         return;
     }
-#endif // #if __has_include("VMIPAlbumCollectionViewModelCell.h")
+#endif // #if __has_include("VMIPAlbumCollectionCellViewModel.h")
 }
 
 @end

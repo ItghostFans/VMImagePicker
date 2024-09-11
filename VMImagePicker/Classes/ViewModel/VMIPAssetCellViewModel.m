@@ -6,12 +6,12 @@
 //
 
 #import "VMIPAssetCellViewModel.h"
-#if __has_include("VMIPAssetTableViewModelCell.h")
-#import "VMIPAssetTableViewModelCell.h"
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
-#import "VMIPAssetCollectionViewModelCell.h"
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+#if __has_include("VMIPAssetTableCellViewModel.h")
+#import "VMIPAssetTableCellViewModel.h"
+#endif // #if __has_include("VMIPAssetTableCellViewModel.h")
+#if __has_include("VMIPAssetCollectionCellViewModel.h")
+#import "VMIPAssetCollectionCellViewModel.h"
+#endif // #if __has_include("VMIPAssetCollectionCellViewModel.h")
 
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -19,13 +19,13 @@
 
 @interface VMIPAssetCellViewModel ()
 
-#if __has_include("VMIPAssetTableViewModelCell.h")
-@property (strong, nonatomic) VMIPAssetTableViewModelCell *tableCellViewModel;
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
+#if __has_include("VMIPAssetTableCellViewModel.h")
+@property (strong, nonatomic) VMIPAssetTableCellViewModel *tableCellViewModel;
+#endif // #if __has_include("VMIPAssetTableCellViewModel.h")
 
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
-@property (strong, nonatomic) VMIPAssetCollectionViewModelCell *collectionCellViewModel;
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+#if __has_include("VMIPAssetCollectionCellViewModel.h")
+@property (strong, nonatomic) VMIPAssetCollectionCellViewModel *collectionCellViewModel;
+#endif // #if __has_include("VMIPAssetCollectionCellViewModel.h")
 
 @property (strong, nonatomic) PHAsset *asset;
 @property (assign, nonatomic) BOOL inCloud;
@@ -39,13 +39,13 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-#if __has_include("VMIPAssetTableViewModelCell.h")
-        _tableCellViewModel = VMIPAssetTableViewModelCell.new;
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
+#if __has_include("VMIPAssetTableCellViewModel.h")
+        _tableCellViewModel = VMIPAssetTableCellViewModel.new;
+#endif // #if __has_include("VMIPAssetTableCellViewModel.h")
         
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
-        _collectionCellViewModel = VMIPAssetCollectionViewModelCell.new;
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+#if __has_include("VMIPAssetCollectionCellViewModel.h")
+        _collectionCellViewModel = VMIPAssetCollectionCellViewModel.new;
+#endif // #if __has_include("VMIPAssetCollectionCellViewModel.h")
     }
     return self;
 }
@@ -72,54 +72,38 @@
     }];
 }
 
-#pragma mark - TableView
-
-#if __has_include("VMIPAssetTableViewModelCell.h")
-- (Class)tableCellClass {
-    return VMIPAssetTableViewModelCell.class;
-}
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
-
-#pragma mark - CollectionView
-
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
-- (Class)collectionCellClass {
-    return VMIPAssetCollectionViewModelCell.class;
-}
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
-
 #pragma mark - Fowarding
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
     NSMethodSignature *methodSignature = nil;
-#if __has_include("VMIPAssetTableViewModelCell.h")
+#if __has_include("VMIPAssetTableCellViewModel.h")
     if ([_tableCellViewModel respondsToSelector:aSelector]) {
-        methodSignature = [VMIPAssetTableViewModelCell instanceMethodSignatureForSelector:aSelector];
+        methodSignature = [VMIPAssetTableCellViewModel instanceMethodSignatureForSelector:aSelector];
     }
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
+#endif // #if __has_include("VMIPAssetTableCellViewModel.h")
     
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
+#if __has_include("VMIPAssetCollectionCellViewModel.h")
     if ([_collectionCellViewModel respondsToSelector:aSelector]) {
-        methodSignature = [VMIPAssetCollectionViewModelCell instanceMethodSignatureForSelector:aSelector];
+        methodSignature = [VMIPAssetCollectionCellViewModel instanceMethodSignatureForSelector:aSelector];
     }
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+#endif // #if __has_include("VMIPAssetCollectionCellViewModel.h")
     return methodSignature;
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation {
-#if __has_include("VMIPAssetTableViewModelCell.h")
+#if __has_include("VMIPAssetTableCellViewModel.h")
     if ([_tableCellViewModel respondsToSelector:anInvocation.selector]) {
         [anInvocation invokeWithTarget:_tableCellViewModel];
         return;
     }
-#endif // #if __has_include("VMIPAssetTableViewModelCell.h")
+#endif // #if __has_include("VMIPAssetTableCellViewModel.h")
     
-#if __has_include("VMIPAssetCollectionViewModelCell.h")
+#if __has_include("VMIPAssetCollectionCellViewModel.h")
     if ([_collectionCellViewModel respondsToSelector:anInvocation.selector]) {
         [anInvocation invokeWithTarget:_collectionCellViewModel];
         return;
     }
-#endif // #if __has_include("VMIPAssetCollectionViewModelCell.h")
+#endif // #if __has_include("VMIPAssetCollectionCellViewModel.h")
 }
 
 @end

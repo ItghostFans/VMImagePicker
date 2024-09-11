@@ -7,10 +7,13 @@
 
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerStyle.h"
+#import "VMImagePickerController.h"
+
 #import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMIPNavigationBarStyle ()
 @property (weak, nonatomic) UIViewController *controller;
+@property (weak, nonatomic) VMImagePickerController *imagePickerController;
 @end
 
 @implementation VMIPNavigationBarStyle
@@ -24,8 +27,8 @@
 
 - (UIButton *)formatBackButtonWithStyle:(VMImagePickerStyle *)style {
     UIButton *backButton = UIButton.new;
-    if (self.controller.navigationController.navigationBar.topItem != self.controller.navigationItem) {
-        [backButton setTitle:self.controller.navigationController.navigationBar.topItem.title forState:(UIControlStateNormal)];
+    if (self.imagePickerController.navigationBar.topItem != self.controller.navigationItem) {
+        [backButton setTitle:self.imagePickerController.navigationBar.topItem.title forState:(UIControlStateNormal)];
     }
     // Image
     [backButton setImage:[style imageWithControlThemeImages:style.navigationBarBackButtonImages state:(UIControlStateNormal)] forState:(UIControlStateNormal)];
@@ -50,25 +53,42 @@
     return backButton;
 }
 
+#pragma mark - Getter
+
+- (VMImagePickerController *)imagePickerController {
+    return (VMImagePickerController *)self.controller.navigationController;
+}
+
 #pragma mark - Actions
 
 - (void)onBackClicked:(id)sender {
-    if (self.controller.navigationController) {
-        if (self.controller.navigationController.viewControllers.count == 1) {
-            if (self.controller.navigationController.navigationController) {
-                [self.controller.navigationController.navigationController popViewControllerAnimated:YES];
+    if (self.imagePickerController) {
+        if (self.imagePickerController.viewControllers.count == 1) {
+            if (self.imagePickerController.navigationController) {
+                [self.imagePickerController.navigationController popViewControllerAnimated:YES];
+                [self cancel];
             } else
-            if (self.controller.navigationController.presentingViewController) {
-                [self.controller.navigationController dismissViewControllerAnimated:YES completion:^{
+            if (self.imagePickerController.presentingViewController) {
+                [self.imagePickerController dismissViewControllerAnimated:YES completion:^{
+                    [self cancel];
                 }];
             } else
-            if (self.controller.navigationController.parentViewController) {
-                [self.controller.navigationController.view removeFromSuperview];
-                [self.controller.navigationController removeFromParentViewController];
+            if (self.imagePickerController.parentViewController) {
+                [self.imagePickerController.view removeFromSuperview];
+                [self.imagePickerController removeFromParentViewController];
+                [self cancel];
             }
         } else {
-            [self.controller.navigationController popViewControllerAnimated:YES];
+            [self.imagePickerController popViewControllerAnimated:YES];
         }
+    }
+}
+
+#pragma mark - Private
+
+- (void)cancel {
+    if ([self.imagePickerController.imagePickerDelegate respondsToSelector:@selector(imagePickerControllerDidCancel:)]) {
+        [self.imagePickerController.imagePickerDelegate imagePickerControllerDidCancel:self.imagePickerController];
     }
 }
 

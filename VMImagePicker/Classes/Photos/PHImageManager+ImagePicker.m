@@ -27,7 +27,7 @@
             options.networkAccessAllowed = YES;
             options.resizeMode = PHImageRequestOptionsResizeModeFast;
             [[PHImageManager defaultManager] requestImageDataForAsset:asset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                UIImage *resultImage = [UIImage imageWithData:imageData];
+//                UIImage *resultImage = [UIImage imageWithData:imageData];
             }];
             
         }

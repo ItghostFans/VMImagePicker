@@ -14,16 +14,21 @@
 #import "VMImagePickerStyle.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
+#import "VMIPToolBarControlView.h"
 
 @interface VMIPAssetCollectionController ()
 @property (strong, nonatomic) VMImagePickerStyle *style;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
+@property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
 @end
 
 @implementation VMIPAssetCollectionController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.toolbarItems = @[
+        self.controlBarButtonItem,
+    ];
     [self styleUI];
     @weakify(self);
     [[RACObserve(self.viewModel, name) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
@@ -53,6 +58,7 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
+    self.navigationController.toolbarHidden = NO;
 }
 
 #pragma mark - Public
@@ -77,6 +83,35 @@
         }
     }
     return _style;
+}
+
+- (UIBarButtonItem *)controlBarButtonItem {
+    if (_controlBarButtonItem) {
+        return _controlBarButtonItem;
+    }
+    VMIPToolBarControlView *controlView = VMIPToolBarControlView.new;
+    controlView.style = self.style;
+    UIBarButtonItem *controlBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:controlView];
+    _controlBarButtonItem = controlBarButtonItem;
+    
+    [controlView.previewButton addTarget:self action:@selector(onPreviewClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [controlView.originalButton addTarget:self action:@selector(onOriginalClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [controlView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return controlBarButtonItem;
+}
+
+#pragma mark - Actions
+
+- (void)onPreviewClicked:(id)sender {
+    
+}
+
+- (void)onOriginalClicked:(id)sender {
+    
+}
+
+- (void)onDoneClicked:(id)sender {
+    
 }
 
 @end
