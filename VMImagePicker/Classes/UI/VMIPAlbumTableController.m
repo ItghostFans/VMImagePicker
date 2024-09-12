@@ -79,6 +79,13 @@
 
 #pragma mark - Forwarding
 
+- (BOOL)respondsToSelector:(SEL)aSelector {
+    if ([self.viewModel.tableViewModel respondsToSelector:aSelector]) {
+        return YES;
+    }
+    return [super respondsToSelector:aSelector];
+}
+
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
     NSMethodSignature *methodSignature = [self.viewModel.tableViewModel.class instanceMethodSignatureForSelector:aSelector];
     return methodSignature;

@@ -68,6 +68,7 @@
             make.center.equalTo(self.view);
         }];
     }
+    NSLocalizedString(@"(%@/%@)", nil);
     return _openImagePickerButton;
 }
 

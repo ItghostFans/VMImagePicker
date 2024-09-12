@@ -41,7 +41,7 @@
     }
     UIButton *previewButton = UIButton.new;
     _previewButton = previewButton;
-    [self.style styleButton:_previewButton titles:self.style.toolPreviewButtonTitles];
+//    [self.style styleButton:_previewButton titles:self.style.toolPreviewButtonTitles];
     [self.style styleButton:_previewButton titleColors:self.style.toolButtonTitleColors];
     [self.style styleButton:_previewButton fonts:self.style.toolButtonTitleFonts];
     [self addSubview:_previewButton];

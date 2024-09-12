@@ -214,11 +214,15 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         colors[@(UIControlStateDisabled)] = color;
         colors[@(UIControlStateFocused)] = color;
         colors[@(UIControlStateSelected)] = color;
-        _toolButtonTitleColors = @{
-            @(UIUserInterfaceStyleUnspecified): colors,
-            @(UIUserInterfaceStyleLight): colors,
-            @(UIUserInterfaceStyleDark): colors,
-        };
+        NSMutableDictionary *toolButtonTitleColors = NSMutableDictionary.new;
+        toolButtonTitleColors[@(UIUserInterfaceStyleUnspecified)] = colors;
+        colors = colors.mutableCopy;
+        colors[@(UIControlStateDisabled)] = UIColor.darkGrayColor;
+        toolButtonTitleColors[@(UIUserInterfaceStyleLight)] = colors;
+        colors = colors.mutableCopy;
+        colors[@(UIControlStateDisabled)] = UIColor.lightGrayColor;
+        toolButtonTitleColors[@(UIUserInterfaceStyleDark)] = colors;
+        _toolButtonTitleColors = toolButtonTitleColors.copy;
     }
     return _toolButtonTitleColors;
 }

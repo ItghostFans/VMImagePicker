@@ -7,8 +7,12 @@
 
 #import "VMIPAssetCollectionController.h"
 #import "VMIPAssetCollectionControllerViewModel.h"
+#import "VMIPPreviewCollectionController.h"
+#import "VMIPPreviewCollectionControllerViewModel.h"
+#import "VMIPAssetCellViewModel.h"
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
+#import <ViewModel/CollectionViewModel+UICollectionViewDelegate.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
 #import "VMImagePickerStyle.h"
@@ -16,7 +20,7 @@
 #import "VMImagePickerController.h"
 #import "VMIPToolBarControlView.h"
 
-@interface VMIPAssetCollectionController ()
+@interface VMIPAssetCollectionController () <UICollectionViewDelegate>
 @property (strong, nonatomic) VMImagePickerStyle *style;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
@@ -53,6 +57,8 @@
     collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
+    self.collectionView.delegate = self;
+    self.viewModel.collectionViewModel.collectionView = self.collectionView;
     
     [RACObserve(self.viewModel, selectedCellViewModels) subscribeNext:^(id  _Nullable x) {
         @strongify(self);
@@ -62,8 +68,10 @@
             NSUInteger count = [x count];
             if (count) {
                 title = [NSString stringWithFormat:title, @(count)];
+                controlView.previewButton.enabled = YES;
             } else {
                 title = [title stringByReplacingOccurrencesOfString:@"(%@)" withString:@""];
+                controlView.previewButton.enabled = NO;
             }
         }
         [controlView.previewButton setTitle:title forState:(UIControlStateNormal)];
@@ -74,6 +82,8 @@
     [super viewWillAppear:animated];
     self.navigationController.navigationBarHidden = NO;
     self.navigationController.toolbarHidden = NO;
+    self.navigationController.toolbar.subviews.firstObject.alpha = 1.0f;
+    self.navigationController.toolbar.translucent = NO;
 }
 
 #pragma mark - Public
@@ -113,6 +123,37 @@
     [controlView.originalButton addTarget:self action:@selector(onOriginalClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     [controlView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     return controlBarButtonItem;
+}
+
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    [self.viewModel.collectionViewModel collectionView:collectionView didSelectItemAtIndexPath:indexPath];
+    if (self.navigationController) {
+        VMIPAssetCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.row];
+        VMIPPreviewCollectionControllerViewModel *viewModel = VMIPPreviewCollectionControllerViewModel.new;
+        VMIPPreviewCollectionController *controller = VMIPPreviewCollectionController.new;
+        controller.viewModel = viewModel;
+        [self.navigationController pushViewController:controller animated:YES];
+    }
+}
+
+#pragma mark - Forwarding
+
+- (BOOL)respondsToSelector:(SEL)aSelector {
+    if ([self.viewModel.collectionViewModel respondsToSelector:aSelector]) {
+        return YES;
+    }
+    return [super respondsToSelector:aSelector];
+}
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
+    NSMethodSignature *methodSignature = [self.viewModel.collectionViewModel.class instanceMethodSignatureForSelector:aSelector];
+    return methodSignature;
+}
+
+- (void)forwardInvocation:(NSInvocation *)anInvocation {
+    [anInvocation invokeWithTarget:self.viewModel.collectionViewModel];
 }
 
 #pragma mark - Actions

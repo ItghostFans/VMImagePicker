@@ -55,20 +55,32 @@
     self.navigationBar.scrollEdgeAppearance = appearance;
     
     self.toolbar.translucent = NO;
+    self.toolbar.tintColor = UIColor.clearColor;
+    self.toolbar.backgroundColor = UIColor.clearColor;
+    self.toolbar.standardAppearance.shadowColor = UIColor.clearColor;
+    self.toolbar.standardAppearance.shadowImage = nil;
+    self.toolbar.standardAppearance.backgroundColor = UIColor.clearColor;
+    self.toolbar.standardAppearance.backgroundEffect = nil;
+    self.toolbar.scrollEdgeAppearance = self.toolbar.standardAppearance;
     
-    UIImageView *bkgView = UIImageView.new;
-    bkgView.backgroundColor = [self.style colorWithThemeColors:self.style.toolBkgColors];
-    [self.toolbar insertSubview:bkgView atIndex:0];
-    [bkgView mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIImageView *toolThemeView = UIImageView.new;
+    toolThemeView.backgroundColor = [self.style colorWithThemeColors:self.style.toolBkgColors];
+    [self.toolbar insertSubview:toolThemeView atIndex:0];
+    [toolThemeView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.leading.trailing.equalTo(self.toolbar);
         make.bottom.equalTo(self.toolbar).offset(0.0f);
     }];
-    @weakify(bkgView);
+    @weakify(toolThemeView);
     [[self rac_signalForSelector:@selector(viewSafeAreaInsetsDidChange)] subscribeNext:^(RACTuple * _Nullable x) {
-        @strongify(bkgView);
-        [bkgView mas_updateConstraints:^(MASConstraintMaker *make) {
+        @strongify(toolThemeView);
+        [toolThemeView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.bottom.equalTo(self.toolbar).offset(self.view.safeAreaInsets.bottom);
         }];
+    }];
+    
+    [[self.toolbar rac_signalForSelector:@selector(didAddSubview:)] subscribeNext:^(RACTuple * _Nullable x) {
+        @strongify(toolThemeView);
+        [toolThemeView.superview sendSubviewToBack:toolThemeView];
     }];
 }
 
