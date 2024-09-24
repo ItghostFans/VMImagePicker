@@ -16,6 +16,10 @@ NS_ASSUME_NONNULL_BEGIN
                             contentMode:(PHImageContentMode)contentMode
                              completion:(void (^)(BOOL finished, BOOL inCloud, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
 
+- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
+                            progressing:(void (^)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))progressing
+                             completion:(void (^)(BOOL finished, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END

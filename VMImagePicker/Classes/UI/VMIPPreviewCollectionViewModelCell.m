@@ -12,18 +12,21 @@
 #import "VMIPAssetCellViewModel.h"
 
 #import <Masonry/Masonry.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionViewModel.h>
 
 @interface VMIPPreviewCollectionViewModelCell () <UIScrollViewDelegate>
 @property (weak, nonatomic) UIScrollView *previewScrollView;
 @property (weak, nonatomic) UIView *previewContentView;
 @property (weak, nonatomic) UIImageView *previewView;
+@property (assign, nonatomic) PHImageRequestID requestId;
 @end
 
 @implementation VMIPPreviewCollectionViewModelCell
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
+        _requestId = PHInvalidImageRequestID;
     }
     return self;
 }
@@ -35,9 +38,25 @@
         // 防止这里不必要的UI刷新。
         return;
     }
-    self.previewView.image = ((VMIPPreviewCellViewModel *)viewModel).assetCellViewModel.previewImage;
-    self.previewScrollView.contentSize = self.previewContentView.frame.size;
-//    [PHImageManager.defaultManager requestImageOfAsset:<#(nonnull PHAsset *)#> size:<#(CGSize)#> contentMode:<#(PHImageContentMode)#> completion:<#^(BOOL finished, BOOL inCloud, UIImage * _Nullable result, NSDictionary * _Nullable info)completion#>];
+    if (!viewModel) {
+        if (self.requestId) {
+            [PHImageManager.defaultManager cancelImageRequest:self.requestId];
+            self.requestId = PHInvalidImageRequestID;
+        }
+        return;
+    }
+    @weakify(self);
+    VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
+//    self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
+    self.requestId = [PHImageManager.defaultManager requestImageOfAsset:cellViewModel.assetCellViewModel.asset progressing:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+    } completion:^(BOOL finished, UIImage * _Nullable result, NSDictionary * _Nullable info) {
+        if (!finished) {
+            return;
+        }
+        @strongify(self);
+        self.previewView.image = result;
+        self.requestId = PHInvalidImageRequestID;
+    }];
 }
 
 #pragma mark - Public

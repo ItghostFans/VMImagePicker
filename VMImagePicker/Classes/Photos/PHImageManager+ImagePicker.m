@@ -49,4 +49,23 @@
     }];
 }
 
+- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
+                            progressing:(void (^)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))progressing
+                             completion:(void (^)(BOOL finished, UIImage *_Nullable result, NSDictionary *_Nullable info))completion {
+    PHImageRequestOptions *option = PHImageRequestOptions.new;
+    option.networkAccessAllowed = YES;
+    option.progressHandler = ^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+        if (!progressing) {
+            return;
+        }
+        progressing(progress, error, stop, info);
+    };
+    return [self requestImageDataAndOrientationForAsset:asset options:option resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, CGImagePropertyOrientation orientation, NSDictionary * _Nullable info) {
+        if (!completion) {
+            return;
+        }
+        completion(imageData.length, [UIImage imageWithData:imageData], info);
+    }];
+}
+
 @end
