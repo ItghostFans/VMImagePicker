@@ -8,6 +8,7 @@
 #import "VMIPPreviewCollectionController.h"
 #import "VMIPPreviewCollectionControllerViewModel.h"
 #import <ViewModel/CollectionViewModel.h>
+#import <ViewModel/ColumnRowFlowLayout.h>
 #import "VMImagePickerStyle.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
@@ -24,6 +25,14 @@
     [self styleUI];
     [self.view addSubview:self.collectionView];
     self.collectionView.frame = self.view.bounds;
+    self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    ColumnRowFlowLayout *collectionViewFlowLayout = ColumnRowFlowLayout.new;
+    collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    collectionViewFlowLayout.columnCount = 1;
+    collectionViewFlowLayout.rowCount = 1;
+    self.collectionView.pagingEnabled = YES;
+    self.collectionView.collectionViewLayout = collectionViewFlowLayout;
+    collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
     self.viewModel.collectionViewModel.collectionView = self.collectionView;
 }
 
