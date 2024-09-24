@@ -10,15 +10,17 @@
 #import "VMIPPreviewCollectionController.h"
 #import "VMIPPreviewCollectionControllerViewModel.h"
 #import "VMIPAssetCellViewModel.h"
+#import "VMImagePickerStyle.h"
+#import "VMIPNavigationBarStyle.h"
+#import "VMImagePickerController.h"
+#import "VMIPAssetToolBarView.h"
+#import "VMIPPreviewCellViewModel.h"
+
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
 #import <ViewModel/CollectionViewModel+UICollectionViewDelegate.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
-#import "VMImagePickerStyle.h"
-#import "VMIPNavigationBarStyle.h"
-#import "VMImagePickerController.h"
-#import "VMIPToolBarControlView.h"
 
 @interface VMIPAssetCollectionController () <UICollectionViewDelegate>
 @property (strong, nonatomic) VMImagePickerStyle *style;
@@ -62,19 +64,19 @@
     
     [RACObserve(self.viewModel, selectedCellViewModels) subscribeNext:^(id  _Nullable x) {
         @strongify(self);
-        VMIPToolBarControlView *controlView = self.controlBarButtonItem.customView;
+        VMIPAssetToolBarView *toolBarView = self.controlBarButtonItem.customView;
         NSString *title = [self.style titleWithControlThemeTitles:self.style.toolPreviewButtonTitles state:(UIControlStateNormal)];
         if ([title containsString:@"(%@)"]) {
             NSUInteger count = [x count];
             if (count) {
                 title = [NSString stringWithFormat:title, @(count)];
-                controlView.previewButton.enabled = YES;
+                toolBarView.previewButton.enabled = YES;
             } else {
                 title = [title stringByReplacingOccurrencesOfString:@"(%@)" withString:@""];
-                controlView.previewButton.enabled = NO;
+                toolBarView.previewButton.enabled = NO;
             }
         }
-        [controlView.previewButton setTitle:title forState:(UIControlStateNormal)];
+        [toolBarView.previewButton setTitle:title forState:(UIControlStateNormal)];
     }];
 }
 
@@ -114,14 +116,14 @@
     if (_controlBarButtonItem) {
         return _controlBarButtonItem;
     }
-    VMIPToolBarControlView *controlView = VMIPToolBarControlView.new;
-    controlView.style = self.style;
-    UIBarButtonItem *controlBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:controlView];
+    VMIPAssetToolBarView *toolBarView = VMIPAssetToolBarView.new;
+    toolBarView.style = self.style;
+    UIBarButtonItem *controlBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:toolBarView];
     _controlBarButtonItem = controlBarButtonItem;
     
-    [controlView.previewButton addTarget:self action:@selector(onPreviewClicked:) forControlEvents:(UIControlEventTouchUpInside)];
-    [controlView.originalButton addTarget:self action:@selector(onOriginalClicked:) forControlEvents:(UIControlEventTouchUpInside)];
-    [controlView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [toolBarView.previewButton addTarget:self action:@selector(onPreviewClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [toolBarView.originalButton addTarget:self action:@selector(onOriginalClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [toolBarView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     return controlBarButtonItem;
 }
 
@@ -130,8 +132,15 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [self.viewModel.collectionViewModel collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     if (self.navigationController) {
-        VMIPAssetCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.row];
-        VMIPPreviewCollectionControllerViewModel *viewModel = VMIPPreviewCollectionControllerViewModel.new;
+//        VMIPAssetCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.row];
+        CollectionViewModel *collectionViewModel = CollectionViewModel.new;
+        SectionViewModel *sectionViewModel = SectionViewModel.new;
+        for (VMIPAssetCellViewModel *assetCellViewModel in self.viewModel.sectionViewModel.viewModels) {
+            VMIPPreviewCellViewModel *cellViewModel = [[VMIPPreviewCellViewModel alloc] initWithAssetCellViewModel:assetCellViewModel];
+            [sectionViewModel addViewModel:cellViewModel];
+        }
+        [collectionViewModel.sectionViewModels addViewModel:sectionViewModel];
+        VMIPPreviewCollectionControllerViewModel *viewModel = [[VMIPPreviewCollectionControllerViewModel alloc] initWithCollectionViewModel:collectionViewModel];
         VMIPPreviewCollectionController *controller = VMIPPreviewCollectionController.new;
         controller.viewModel = viewModel;
         [self.navigationController pushViewController:controller animated:YES];

@@ -1,5 +1,5 @@
 //
-//  VMIPToolBarControlView.h
+//  VMIPAssetToolBarView.h
 //  VMImagePicker
 //
 //  Created by ItghostFan on 2024/9/8.
@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class VMImagePickerStyle;
 
-@interface VMIPToolBarControlView : UIView
+@interface VMIPAssetToolBarView : UIView
 
 @property (weak, nonatomic, readonly) UIButton *previewButton;
 @property (weak, nonatomic, readonly) UIButton *originalButton;

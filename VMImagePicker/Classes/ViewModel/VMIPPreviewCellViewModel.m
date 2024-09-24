@@ -2,7 +2,7 @@
 //  VMIPPreviewCellViewModel.m
 //  VMImagePicker
 //
-//  Created by ItghostFan on 2024/9/12.
+//  Created by ItghostFan on 2024/9/24.
 //
 
 #import "VMIPPreviewCellViewModel.h"
@@ -12,6 +12,8 @@
 #if __has_include("VMIPPreviewCollectionCellViewModel.h")
 #import "VMIPPreviewCollectionCellViewModel.h"
 #endif // #if __has_include("VMIPPreviewCollectionCellViewModel.h")
+
+#import "VMIPAssetCellViewModel.h"
 
 @interface VMIPPreviewCellViewModel ()
 
@@ -40,21 +42,12 @@
     return self;
 }
 
-#pragma mark - TableView
-
-#if __has_include("VMIPPreviewTableCellViewModel.h")
-- (Class)tableCellClass {
-    return VMIPPreviewTableCellViewModel.class;
+- (instancetype)initWithAssetCellViewModel:(VMIPAssetCellViewModel *)assetCellViewModel {
+    if (self = [self init]) {
+        _assetCellViewModel = assetCellViewModel;
+    }
+    return self;
 }
-#endif // #if __has_include("VMIPPreviewTableCellViewModel.h")
-
-#pragma mark - CollectionView
-
-#if __has_include("VMIPPreviewCollectionCellViewModel.h")
-- (Class)collectionCellClass {
-    return VMIPPreviewCollectionCellViewModel.class;
-}
-#endif // #if __has_include("VMIPPreviewCollectionCellViewModel.h")
 
 #pragma mark - Fowarding
 

@@ -16,7 +16,7 @@
 @interface VMIPAssetCollectionControllerViewModel () <IVMIPAssetCellViewModelSelectedDelegate>
 @property (strong, nonatomic) PHAssetCollection *assetCollection;
 @property (strong, nonatomic) PHFetchOptions *options;
-@property (weak, nonatomic, readonly) SectionViewModel *sectionViewModel;
+@property (weak, nonatomic) SectionViewModel *sectionViewModel;
 @property (strong, nonatomic) NSMutableArray *selectedCellViewModels;
 @end
 

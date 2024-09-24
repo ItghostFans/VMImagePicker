@@ -2,7 +2,7 @@
 //  VMIPPreviewCellViewModel.h
 //  VMImagePicker
 //
-//  Created by ItghostFan on 2024/9/12.
+//  Created by ItghostFan on 2024/9/24.
 //
 
 #import <ViewModel/CellViewModel+TableView.h>
@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMIPPreviewCellViewModel;
+@class VMIPAssetCellViewModel;
 
 @protocol IVMIPPreviewCellViewModelDelegate <ICellViewModelDelegate>
 @end
@@ -22,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPPreviewCellViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+@property (weak, nonatomic) VMIPAssetCellViewModel *assetCellViewModel;
+
+- (instancetype)initWithAssetCellViewModel:(VMIPAssetCellViewModel *)assetCellViewModel;
 
 @end
 

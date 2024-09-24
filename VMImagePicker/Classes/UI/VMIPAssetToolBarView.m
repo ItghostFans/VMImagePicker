@@ -1,22 +1,22 @@
 //
-//  VMIPToolBarControlView.m
+//  VMIPAssetToolBarView.m
 //  VMImagePicker
 //
 //  Created by ItghostFan on 2024/9/8.
 //
 
-#import "VMIPToolBarControlView.h"
+#import "VMIPAssetToolBarView.h"
 #import "VMImagePickerStyle.h"
 
 #import <Masonry/Masonry.h>
 
-@interface VMIPToolBarControlView ()
+@interface VMIPAssetToolBarView ()
 @property (weak, nonatomic) UIButton *previewButton;
 @property (weak, nonatomic) UIButton *originalButton;
 @property (weak, nonatomic) UIButton *doneButton;
 @end
 
-@implementation VMIPToolBarControlView
+@implementation VMIPAssetToolBarView
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
