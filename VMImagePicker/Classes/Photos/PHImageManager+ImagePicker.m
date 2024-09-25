@@ -64,7 +64,12 @@
         if (!completion) {
             return;
         }
-        completion(imageData.length, [UIImage imageWithData:imageData], info);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, NULL), ^{
+            UIImage *image = [UIImage imageWithData:imageData];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion(imageData.length, image, info);
+            });
+        });
     }];
 }
 

@@ -27,6 +27,12 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         _requestId = PHInvalidImageRequestID;
+        UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTap:)];
+        [self addGestureRecognizer:singleTap];
+        UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
+        doubleTap.numberOfTapsRequired = 2;
+        [singleTap requireGestureRecognizerToFail:doubleTap];
+        [self addGestureRecognizer:doubleTap];
     }
     return self;
 }
@@ -46,6 +52,8 @@
         return;
     }
     @weakify(self);
+    self.previewView.image = nil;
+    [self updateContentFrame];
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
 //    self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
     self.requestId = [PHImageManager.defaultManager requestImageOfAsset:cellViewModel.assetCellViewModel.asset progressing:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
@@ -64,6 +72,22 @@
 #pragma mark - Actions
 
 #pragma mark - Private
+
+- (void)updateContentFrame {
+    VMIPPreviewCellViewModel *viewModel = self.viewModel;
+    CGSize viewSize = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds.size;
+    CGSize imageSize = CGSizeMake(viewModel.assetCellViewModel.asset.pixelWidth, viewModel.assetCellViewModel.asset.pixelHeight);
+    CGFloat hFactor = viewSize.height / imageSize.height;
+    CGFloat wFactor = viewSize.width / imageSize.width;
+    CGFloat factor = hFactor;
+    if (wFactor < hFactor) {
+        factor = wFactor;
+    }
+    CGRect frame = CGRectMake(0.0f, 0.0f, imageSize.width * factor, imageSize.height * factor);
+    frame = CGRectOffset(frame, viewSize.width / 2 - CGRectGetMidX(frame), viewSize.height / 2 - CGRectGetMidY(frame));
+    self.previewContentView.frame = frame;
+    self.previewScrollView.maximumZoomScale = 1.0f / factor;
+}
 
 #pragma mark - Getter
 
@@ -86,10 +110,7 @@
         _previewContentView = previewContentView;
         _previewContentView.clipsToBounds = YES;
         _previewContentView.contentMode = UIViewContentModeScaleAspectFill;
-        CGRect frame = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds;
-        frame.origin = CGPointMake(0.0f, 0.0f);
         [self.previewScrollView addSubview:_previewContentView];
-        _previewContentView.frame = frame;
     }
     return _previewContentView;
 }
@@ -114,11 +135,29 @@
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-    
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+}
+
+#pragma mark - Actions
+
+- (void)singleTap:(UITapGestureRecognizer *)tap {
     
+}
+
+- (void)doubleTap:(UITapGestureRecognizer *)tap {
+    if (self.previewScrollView.zoomScale > self.previewScrollView.minimumZoomScale) {
+//        self.previewScrollView.contentInset = UIEdgeInsetsZero;
+        [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:YES];
+    } else {
+        CGSize viewSize = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds.size;
+        CGPoint touchPoint = [tap locationInView:self.previewView];
+        CGFloat zoomScale = MAX(self.previewScrollView.maximumZoomScale, 2.0f);
+        CGFloat zoomWidth = viewSize.width / zoomScale;
+        CGFloat zoomHeight = viewSize.height / zoomScale;
+        [self.previewScrollView zoomToRect:CGRectMake(touchPoint.x - zoomWidth / 2, touchPoint.y - zoomHeight / 2, zoomWidth, zoomHeight) animated:YES];
+    }
 }
 
 #pragma mark - CollectionViewModelCell
