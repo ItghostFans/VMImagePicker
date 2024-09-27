@@ -10,6 +10,7 @@
 #import "PHImageManager+ImagePicker.h"
 #import "VMIPPreviewCellViewModel.h"
 #import "VMIPAssetCellViewModel.h"
+#import "VMIPPreviewCollectionController.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
@@ -52,10 +53,10 @@
         return;
     }
     @weakify(self);
-    self.previewView.image = nil;
-    [self updateContentFrame];
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
-//    self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
+    self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
+    [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:NO];
+    [self updateContentFrame];
     self.requestId = [PHImageManager.defaultManager requestImageOfAsset:cellViewModel.assetCellViewModel.asset progressing:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
     } completion:^(BOOL finished, UIImage * _Nullable result, NSDictionary * _Nullable info) {
         if (!finished) {
@@ -95,6 +96,16 @@
     if (!_previewScrollView) {
         UIScrollView *previewScrollView = UIScrollView.new;
         _previewScrollView = previewScrollView;
+        
+        _previewScrollView.scrollsToTop = NO;
+        _previewScrollView.showsHorizontalScrollIndicator = NO;
+        _previewScrollView.showsVerticalScrollIndicator = YES;
+        _previewScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+        _previewScrollView.delaysContentTouches = NO;
+        _previewScrollView.canCancelContentTouches = YES;
+        _previewScrollView.alwaysBounceVertical = NO;
+        _previewScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+        
         _previewScrollView.delegate = self;
         [self.contentView addSubview:_previewScrollView];
         [_previewScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -135,6 +146,12 @@
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
+    // 调整中心点，以便能够正确移动到边界。
+    CGFloat viewWidth = CGRectGetWidth(scrollView.frame);
+    CGFloat viewHeight = CGRectGetHeight(scrollView.frame);
+    CGFloat offsetX = (viewWidth > scrollView.contentSize.width) ? ((viewWidth - scrollView.contentSize.width) / 2) : 0.0f;
+    CGFloat offsetY = (viewHeight > scrollView.contentSize.height) ? ((viewHeight - scrollView.contentSize.height) / 2) : 0.0f;
+    self.previewContentView.center = CGPointMake((scrollView.contentSize.width / 2) + offsetX, (scrollView.contentSize.height / 2) + offsetY);
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
@@ -143,12 +160,17 @@
 #pragma mark - Actions
 
 - (void)singleTap:(UITapGestureRecognizer *)tap {
-    
+    VMIPPreviewCollectionController *previewCollectionController = self;
+    do {
+        previewCollectionController = previewCollectionController.nextResponder;
+    } while (![previewCollectionController isKindOfClass:VMIPPreviewCollectionController.class]);
+    previewCollectionController.navigationController.navigationBarHidden = !previewCollectionController.navigationController.navigationBarHidden;
+    previewCollectionController.navigationController.toolbarHidden = !previewCollectionController.navigationController.toolbarHidden;
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)tap {
     if (self.previewScrollView.zoomScale > self.previewScrollView.minimumZoomScale) {
-//        self.previewScrollView.contentInset = UIEdgeInsetsZero;
+        self.previewScrollView.contentInset = UIEdgeInsetsZero;
         [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:YES];
     } else {
         CGSize viewSize = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds.size;

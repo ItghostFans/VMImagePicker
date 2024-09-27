@@ -9,6 +9,7 @@
 #import "VMIPPreviewCollectionControllerViewModel.h"
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
+#import <Masonry/Masonry.h>
 #import "VMImagePickerStyle.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
@@ -24,16 +25,24 @@
     [super viewDidLoad];
     [self styleUI];
     [self.view addSubview:self.collectionView];
-    self.collectionView.frame = self.view.bounds;
+    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
     self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-    ColumnRowFlowLayout *collectionViewFlowLayout = ColumnRowFlowLayout.new;
-    collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    collectionViewFlowLayout.columnCount = 1;
-    collectionViewFlowLayout.rowCount = 1;
-    self.collectionView.pagingEnabled = YES;
-    self.collectionView.collectionViewLayout = collectionViewFlowLayout;
-    collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
-    self.viewModel.collectionViewModel.collectionView = self.collectionView;
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent {
+    [super didMoveToParentViewController:parent];
+    if (parent) {
+        ColumnRowFlowLayout *collectionViewFlowLayout = ColumnRowFlowLayout.new;
+        collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+        collectionViewFlowLayout.columnCount = 1;
+        collectionViewFlowLayout.rowCount = 1;
+        self.collectionView.pagingEnabled = YES;
+        self.collectionView.collectionViewLayout = collectionViewFlowLayout;
+        collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
+        self.viewModel.collectionViewModel.collectionView = self.collectionView;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
