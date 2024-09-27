@@ -42,6 +42,9 @@
         self.collectionView.collectionViewLayout = collectionViewFlowLayout;
         collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
         self.viewModel.collectionViewModel.collectionView = self.collectionView;
+        if (self.previewIndexPath) {
+            [self.collectionView scrollToItemAtIndexPath:self.previewIndexPath atScrollPosition:(UICollectionViewScrollPositionNone) animated:NO];
+        }
     }
 }
 

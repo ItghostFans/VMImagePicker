@@ -132,7 +132,6 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [self.viewModel.collectionViewModel collectionView:collectionView didSelectItemAtIndexPath:indexPath];
     if (self.navigationController) {
-//        VMIPAssetCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.row];
         CollectionViewModel *collectionViewModel = CollectionViewModel.new;
         SectionViewModel *sectionViewModel = SectionViewModel.new;
         for (VMIPAssetCellViewModel *assetCellViewModel in self.viewModel.sectionViewModel.viewModels) {
@@ -143,6 +142,7 @@
         VMIPPreviewCollectionControllerViewModel *viewModel = [[VMIPPreviewCollectionControllerViewModel alloc] initWithCollectionViewModel:collectionViewModel];
         VMIPPreviewCollectionController *controller = VMIPPreviewCollectionController.new;
         controller.viewModel = viewModel;
+        controller.previewIndexPath = indexPath;
         [self.navigationController pushViewController:controller animated:YES];
     }
 }

@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, nullable) VMIPPreviewCollectionControllerViewModel *viewModel;
 #pragma clang diagnostic pop
 
+@property (strong, nonatomic, nullable) NSIndexPath *previewIndexPath;
+
 @end
 
 NS_ASSUME_NONNULL_END

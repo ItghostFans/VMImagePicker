@@ -46,7 +46,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             @strongify(self);
             [self collectionViewUpdate:^{
-                for (NSUInteger index = 0; index < 9; ++index) {
+//                for (NSUInteger index = 0; index < 9; ++index) {
                     for (PHAsset *asset in assets) {
                         VMIPAssetCellViewModel *cellViewModel = [[VMIPAssetCellViewModel alloc] initWithAsset:asset];
                         cellViewModel.selectedDelegate = self;
@@ -65,7 +65,7 @@
                             }
                         }];
                     }
-                }
+//                }
             } completion:^(BOOL finished) {
             }];
         });
