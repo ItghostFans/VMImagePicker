@@ -245,6 +245,24 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return _toolPreviewButtonTitles;
 }
 
+- (VMIPControlThemeTitles *)toolEditButtonTitles {
+    if (!_toolEditButtonTitles) {
+        NSString *title = VMIPLocalizedString(@"Edit", @"");
+        NSMutableDictionary *titles = NSMutableDictionary.new;
+        titles[@(UIControlStateNormal)] = title;
+        titles[@(UIControlStateHighlighted)] = title;
+        titles[@(UIControlStateDisabled)] = title;
+        titles[@(UIControlStateFocused)] = title;
+        titles[@(UIControlStateSelected)] = title;
+        _toolEditButtonTitles = @{
+            @(UIUserInterfaceStyleUnspecified): titles,
+            @(UIUserInterfaceStyleLight): titles,
+            @(UIUserInterfaceStyleDark): titles,
+        };
+    }
+    return _toolEditButtonTitles;
+}
+
 - (VMIPControlThemeTitles *)toolOriginalButtonTitles {
     if (!_toolOriginalButtonTitles) {
         NSString *title = VMIPLocalizedString(@"Original", @"");
@@ -261,6 +279,25 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         };
     }
     return _toolOriginalButtonTitles;
+}
+
+- (VMIPControlThemeImages *)toolOriginalButtonImages {
+    if (!_toolOriginalButtonImages) {
+        UIImage *imageNormal = [self imageNamed:@"circle.theme"];
+        UIImage *imageSelected = [self imageNamed:@"circle.inset.filled"];
+        NSMutableDictionary *images = NSMutableDictionary.new;
+        images[@(UIControlStateNormal)] = imageNormal;
+        images[@(UIControlStateHighlighted)] = imageNormal;
+        images[@(UIControlStateDisabled)] = imageNormal;
+        images[@(UIControlStateFocused)] = imageNormal;
+        images[@(UIControlStateSelected)] = imageSelected;
+        _toolOriginalButtonImages = @{
+            @(UIUserInterfaceStyleUnspecified): images,
+            @(UIUserInterfaceStyleLight): images,
+            @(UIUserInterfaceStyleDark): images,
+        };
+    }
+    return _toolOriginalButtonImages;
 }
 
 - (VMIPControlThemeTitles *)toolDoneButtonTitles {

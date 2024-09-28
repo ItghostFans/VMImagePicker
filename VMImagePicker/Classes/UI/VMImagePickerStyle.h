@@ -78,7 +78,9 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 @property (strong, nonatomic) VMIPControlThemeFonts *toolButtonTitleFonts;
 @property (strong, nonatomic) VMIPControlThemeColors *toolButtonTitleColors;
 @property (strong, nonatomic) VMIPControlThemeTitles *toolPreviewButtonTitles;
+@property (strong, nonatomic) VMIPControlThemeTitles *toolEditButtonTitles;
 @property (strong, nonatomic) VMIPControlThemeTitles *toolOriginalButtonTitles;
+@property (strong, nonatomic) VMIPControlThemeImages *toolOriginalButtonImages;
 @property (strong, nonatomic) VMIPControlThemeTitles *toolDoneButtonTitles;
 
 #pragma mark - Album

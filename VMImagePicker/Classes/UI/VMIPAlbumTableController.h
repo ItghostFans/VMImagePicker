@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, nullable) VMIPAlbumTableControllerViewModel *viewModel;
 #pragma clang diagnostic pop
 
-@property (strong, nonatomic, readonly, nonnull) VMImagePickerStyle *style;
+@property (weak, nonatomic, readonly) VMImagePickerStyle *style;
 
 @end
 

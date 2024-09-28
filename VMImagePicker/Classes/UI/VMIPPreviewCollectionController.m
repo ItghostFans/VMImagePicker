@@ -13,16 +13,21 @@
 #import "VMImagePickerStyle.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
+#import "VMIPPreviewToolBarView.h"
 
 @interface VMIPPreviewCollectionController ()
 @property (strong, nonatomic) VMImagePickerStyle *style;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
+@property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
 @end
 
 @implementation VMIPPreviewCollectionController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.toolbarItems = @[
+        self.controlBarButtonItem,
+    ];
     [self styleUI];
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -82,6 +87,33 @@
     return _style;
 }
 
-// TODO: 添加需要的View，建议使用懒加载
+- (UIBarButtonItem *)controlBarButtonItem {
+    if (_controlBarButtonItem) {
+        return _controlBarButtonItem;
+    }
+    VMIPPreviewToolBarView *toolBarView = VMIPPreviewToolBarView.new;
+    toolBarView.style = self.style;
+    UIBarButtonItem *controlBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:toolBarView];
+    _controlBarButtonItem = controlBarButtonItem;
+    
+    [toolBarView.editButton addTarget:self action:@selector(onEditClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [toolBarView.originalButton addTarget:self action:@selector(onOriginalClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [toolBarView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return controlBarButtonItem;
+}
+
+#pragma mark - Actions
+
+- (void)onEditClicked:(id)sender {
+    
+}
+
+- (void)onOriginalClicked:(id)sender {
+    
+}
+
+- (void)onDoneClicked:(id)sender {
+    
+}
 
 @end

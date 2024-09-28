@@ -1,22 +1,22 @@
 //
-//  VMIPAssetToolBarView.m
+//  VMIPPreviewToolBarView.m
 //  VMImagePicker
 //
 //  Created by ItghostFan on 2024/9/8.
 //
 
-#import "VMIPAssetToolBarView.h"
+#import "VMIPPreviewToolBarView.h"
 #import "VMImagePickerStyle.h"
 
 #import <Masonry/Masonry.h>
 
-@interface VMIPAssetToolBarView ()
-@property (weak, nonatomic) UIButton *previewButton;
+@interface VMIPPreviewToolBarView ()
+@property (weak, nonatomic) UIButton *editButton;
 @property (weak, nonatomic) UIButton *originalButton;
 @property (weak, nonatomic) UIButton *doneButton;
 @end
 
-@implementation VMIPAssetToolBarView
+@implementation VMIPPreviewToolBarView
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
@@ -35,20 +35,20 @@
 
 #pragma mark - Getter
 
-- (UIButton *)previewButton {
-    if (_previewButton) {
-        return _previewButton;
+- (UIButton *)editButton {
+    if (_editButton) {
+        return _editButton;
     }
-    UIButton *previewButton = UIButton.new;
-    _previewButton = previewButton;
-//    [self.style styleButton:_previewButton titles:self.style.toolPreviewButtonTitles];
-    [self.style styleButton:_previewButton titleColors:self.style.toolButtonTitleColors];
-    [self.style styleButton:_previewButton fonts:self.style.toolButtonTitleFonts];
-    [self addSubview:_previewButton];
-    [_previewButton mas_makeConstraints:^(MASConstraintMaker *make) {
+    UIButton *editButton = UIButton.new;
+    _editButton = editButton;
+    [self.style styleButton:_editButton titles:self.style.toolEditButtonTitles];
+    [self.style styleButton:_editButton titleColors:self.style.toolButtonTitleColors];
+    [self.style styleButton:_editButton fonts:self.style.toolButtonTitleFonts];
+    [self addSubview:_editButton];
+    [_editButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.leading.equalTo(self);
     }];
-    return previewButton;
+    return editButton;
 }
 
 - (UIButton *)originalButton {
