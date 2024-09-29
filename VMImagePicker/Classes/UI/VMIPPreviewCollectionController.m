@@ -7,16 +7,22 @@
 
 #import "VMIPPreviewCollectionController.h"
 #import "VMIPPreviewCollectionControllerViewModel.h"
-#import <ViewModel/CollectionViewModel.h>
-#import <ViewModel/ColumnRowFlowLayout.h>
-#import <Masonry/Masonry.h>
 #import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
 #import "VMIPPreviewToolBarView.h"
+#import "VMImagePickerConfig.h"
+#import "VMIPAssetCellViewModel.h"
+
+#import <ViewModel/CollectionViewModel.h>
+#import <ViewModel/ColumnRowFlowLayout.h>
+#import <Masonry/Masonry.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMIPPreviewCollectionController ()
-@property (strong, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerConfig *config;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
 @end
@@ -25,6 +31,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    @weakify(self);
     self.toolbarItems = @[
         self.controlBarButtonItem,
     ];
@@ -34,6 +41,12 @@
         make.edges.equalTo(self.view);
     }];
     self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    
+    [RACObserve(self.config, original) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        VMIPPreviewToolBarView *toolBarView = self.controlBarButtonItem.customView;
+        toolBarView.originalButton.selected = [x boolValue];
+    }];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
@@ -59,6 +72,8 @@
     self.navigationController.toolbarHidden = NO;
     self.navigationController.toolbar.subviews.firstObject.alpha = 0.3f;
     self.navigationController.toolbar.translucent = YES;
+    NSAssert([self.navigationController isKindOfClass:VMImagePickerController.class], @"Check!");
+    self.viewModel.delegate = self.navigationController;
 }
 
 #pragma mark - Public
@@ -80,11 +95,19 @@
         VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
         if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
             _style = imagePickerController.style;
-        } else {
-            _style = VMImagePickerStyle.new;
         }
     }
     return _style;
+}
+
+- (VMImagePickerConfig *)config {
+    if (!_config) {
+        VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
+        if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
+            _config = imagePickerController.config;
+        }
+    }
+    return _config;
 }
 
 - (UIBarButtonItem *)controlBarButtonItem {
@@ -109,11 +132,17 @@
 }
 
 - (void)onOriginalClicked:(id)sender {
-    
+    self.config.original = !self.config.original;
 }
 
 - (void)onDoneClicked:(id)sender {
-    
+    if ([self.viewModel.delegate respondsToSelector:@selector(viewModel:didSelectedAssets:)]) {
+        NSMutableArray *assets = [NSMutableArray arrayWithCapacity:self.viewModel.selectedCellViewModels.count];
+        for (VMIPAssetCellViewModel *assetCellViewModel in self.viewModel.selectedCellViewModels) {
+            [assets addObject:assetCellViewModel.asset];
+        }
+        [self.viewModel.delegate viewModel:self.viewModel didSelectedAssets:assets];
+    }
 }
 
 @end

@@ -11,6 +11,7 @@
 #import "VMIPPreviewCollectionControllerViewModel.h"
 #import "VMIPAssetCellViewModel.h"
 #import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
 #import "VMIPAssetToolBarView.h"
@@ -23,7 +24,8 @@
 #import <Masonry/Masonry.h>
 
 @interface VMIPAssetCollectionController () <UICollectionViewDelegate>
-@property (strong, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerConfig *config;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
 @end
@@ -78,6 +80,12 @@
         }
         [toolBarView.previewButton setTitle:title forState:(UIControlStateNormal)];
     }];
+    
+    [RACObserve(self.config, original) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        VMIPAssetToolBarView *toolBarView = self.controlBarButtonItem.customView;
+        toolBarView.originalButton.selected = [x boolValue];
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -86,6 +94,8 @@
     self.navigationController.toolbarHidden = NO;
     self.navigationController.toolbar.subviews.firstObject.alpha = 1.0f;
     self.navigationController.toolbar.translucent = NO;
+    NSAssert([self.navigationController isKindOfClass:VMImagePickerController.class], @"Check!");
+    self.viewModel.delegate = self.navigationController;
 }
 
 #pragma mark - Public
@@ -105,11 +115,19 @@
         VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
         if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
             _style = imagePickerController.style;
-        } else {
-            _style = VMImagePickerStyle.new;
         }
     }
     return _style;
+}
+
+- (VMImagePickerConfig *)config {
+    if (!_config) {
+        VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
+        if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
+            _config = imagePickerController.config;
+        }
+    }
+    return _config;
 }
 
 - (UIBarButtonItem *)controlBarButtonItem {
@@ -140,6 +158,7 @@
         }
         [collectionViewModel.sectionViewModels addViewModel:sectionViewModel];
         VMIPPreviewCollectionControllerViewModel *viewModel = [[VMIPPreviewCollectionControllerViewModel alloc] initWithCollectionViewModel:collectionViewModel];
+        viewModel.selectedCellViewModels = self.viewModel.selectedCellViewModels;   // 保证是一份选中的资源列表。
         VMIPPreviewCollectionController *controller = VMIPPreviewCollectionController.new;
         controller.viewModel = viewModel;
         controller.previewIndexPath = indexPath;
@@ -168,15 +187,20 @@
 #pragma mark - Actions
 
 - (void)onPreviewClicked:(id)sender {
-    
 }
 
 - (void)onOriginalClicked:(id)sender {
-    
+    self.config.original = !self.config.original;
 }
 
 - (void)onDoneClicked:(id)sender {
-    
+    if ([self.viewModel.delegate respondsToSelector:@selector(viewModel:didSelectedAssets:)]) {
+        NSMutableArray *assets = [NSMutableArray arrayWithCapacity:self.viewModel.selectedCellViewModels.count];
+        for (VMIPAssetCellViewModel *assetCellViewModel in self.viewModel.selectedCellViewModels) {
+            [assets addObject:assetCellViewModel.asset];
+        }
+        [self.viewModel.delegate viewModel:self.viewModel didSelectedAssets:assets];
+    }
 }
 
 @end

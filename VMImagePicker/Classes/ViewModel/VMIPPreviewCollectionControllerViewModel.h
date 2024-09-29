@@ -9,9 +9,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PHAsset;
 @class VMIPPreviewCollectionControllerViewModel;
+@class VMIPAssetCellViewModel;
 
 @protocol IVMIPPreviewCollectionControllerViewModelDelegate <IBaseViewModelDelegate>
+@optional
+- (void)viewModel:(VMIPPreviewCollectionControllerViewModel *)viewModel didSelectedAssets:(NSArray<__kindof PHAsset *> *)assets;
 @end
 
 @interface VMIPPreviewCollectionControllerViewModel : CollectionControllerViewModel
@@ -21,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPPreviewCollectionControllerViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+@property (weak, nonatomic) NSArray<__kindof VMIPAssetCellViewModel *> *selectedCellViewModels;    // 已经选中的资源
 
 @end
 

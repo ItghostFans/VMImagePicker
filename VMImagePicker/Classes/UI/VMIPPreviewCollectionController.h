@@ -10,6 +10,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMIPPreviewCollectionControllerViewModel;
+@class VMImagePickerStyle;
+@class VMImagePickerConfig;
 
 @interface VMIPPreviewCollectionController : CollectionController
 
@@ -19,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, nullable) VMIPPreviewCollectionControllerViewModel *viewModel;
 #pragma clang diagnostic pop
 
+@property (weak, nonatomic, readonly) VMImagePickerStyle *style;
+@property (weak, nonatomic, readonly) VMImagePickerConfig *config;
 @property (strong, nonatomic, nullable) NSIndexPath *previewIndexPath;
 
 @end

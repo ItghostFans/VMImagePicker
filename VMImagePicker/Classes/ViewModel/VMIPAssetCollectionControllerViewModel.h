@@ -11,10 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PHAsset;
+@class VMIPAssetCellViewModel;
 @class VMIPAssetCollectionControllerViewModel;
 @class SectionViewModel;
 
 @protocol IVMIPAssetCollectionControllerViewModelDelegate <IBaseViewModelDelegate>
+@optional
+- (void)viewModel:(VMIPAssetCollectionControllerViewModel *)viewModel didSelectedAssets:(NSArray<__kindof PHAsset *> *)assets;
 @end
 
 @interface VMIPAssetCollectionControllerViewModel : CollectionControllerViewModel
@@ -28,8 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (strong, nonatomic, readonly) PHAssetCollection *assetCollection;
 @property (strong, nonatomic, readonly) PHFetchOptions *options;
 @property (strong, nonatomic, readonly, nonnull) NSString *name;
-@property (strong, nonatomic, readonly) NSArray *selectedCellViewModels;
 @property (weak, nonatomic, readonly) SectionViewModel *sectionViewModel;
+
+@property (strong, nonatomic, readonly) NSArray<__kindof VMIPAssetCellViewModel *> *selectedCellViewModels;    // 已经选中的资源
 
 - (instancetype)initWithAssetCollection:(PHAssetCollection *)assetCollection
                                 options:(PHFetchOptions * _Nullable)options;

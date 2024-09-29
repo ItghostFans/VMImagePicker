@@ -7,7 +7,6 @@
 
 #import "VMIPAlbumTableController.h"
 #import "VMIPAlbumTableControllerViewModel.h"
-#import <ViewModel/TableViewModel+UITableViewDelegate.h>
 #import "VMIPAssetCollectionController.h"
 #import "VMIPAssetCollectionControllerViewModel.h"
 #import "VMIPAlbumCellViewModel.h"
@@ -15,8 +14,10 @@
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerController.h"
 
+#import <ViewModel/TableViewModel+UITableViewDelegate.h>
+
 @interface VMIPAlbumTableController () <UITableViewDelegate>
-@property (strong, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerStyle *style;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 @end
 
@@ -57,8 +58,6 @@
         VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
         if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
             _style = imagePickerController.style;
-        } else {
-            _style = VMImagePickerStyle.new;
         }
     }
     return _style;

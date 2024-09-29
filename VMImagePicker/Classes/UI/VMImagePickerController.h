@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMImagePickerStyle;
+@class VMImagePickerConfig;
 @class VMImagePickerController;
 
 UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickerControllerImages;
@@ -24,6 +25,7 @@ UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickerControllerImages;
 @interface VMImagePickerController : UINavigationController
 
 @property (strong, nonatomic, readonly, nonnull) VMImagePickerStyle *style;
+@property (strong, nonatomic, readonly, nonnull) VMImagePickerConfig *config;
 
 @property (weak, nonatomic, nullable) id<VMImagePickerControllerDelegate> imagePickerDelegate;
 

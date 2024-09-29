@@ -11,12 +11,16 @@
 #import "VMIPPreviewCellViewModel.h"
 #import "VMIPAssetCellViewModel.h"
 #import "VMIPPreviewCollectionController.h"
+#import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionViewModel.h>
 
 @interface VMIPPreviewCollectionViewModelCell () <UIScrollViewDelegate>
+@property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
+@property (weak, nonatomic) VMImagePickerConfig *vmipConfig;
 @property (weak, nonatomic) UIScrollView *previewScrollView;
 @property (weak, nonatomic) UIView *previewContentView;
 @property (weak, nonatomic) UIImageView *previewView;
@@ -91,6 +95,28 @@
 }
 
 #pragma mark - Getter
+
+- (VMImagePickerStyle *)vmipStyle {
+    if (!_vmipStyle) {
+        VMIPPreviewCollectionController *controller = (VMIPPreviewCollectionController *)self;
+        do {
+            controller = controller.nextResponder;
+        } while ([controller isKindOfClass:UIView.class]);
+        _vmipStyle = controller.style;
+    }
+    return _vmipStyle;
+}
+
+- (VMImagePickerConfig *)vmipConfig {
+    if (!_vmipConfig) {
+        VMIPPreviewCollectionController *controller = (VMIPPreviewCollectionController *)self;
+        do {
+            controller = controller.nextResponder;
+        } while ([controller isKindOfClass:UIView.class]);
+        _vmipConfig = controller.config;
+    }
+    return _vmipConfig;
+}
 
 - (UIScrollView *)previewScrollView {
     if (!_previewScrollView) {

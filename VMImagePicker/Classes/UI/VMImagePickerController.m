@@ -7,12 +7,16 @@
 
 #import "VMImagePickerController.h"
 #import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
+#import "VMIPAssetCollectionControllerViewModel.h"
+#import "VMIPPreviewCollectionControllerViewModel.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface VMImagePickerController ()
+@interface VMImagePickerController () <IVMIPAssetCollectionControllerViewModelDelegate, IVMIPPreviewCollectionControllerViewModelDelegate>
 @property (strong, nonatomic) VMImagePickerStyle *style;
+@property (strong, nonatomic) VMImagePickerConfig *config;
 @end
 
 @implementation VMImagePickerController
@@ -91,6 +95,19 @@
         _style = VMImagePickerStyle.new;
     }
     return _style;
+}
+
+- (VMImagePickerConfig *)config {
+    if (!_config) {
+        _config = VMImagePickerConfig.new;
+    }
+    return _config;
+}
+
+#pragma mark - IVMIPAssetCollectionControllerViewModelDelegate, IVMIPPreviewCollectionControllerViewModelDelegate
+
+- (void)viewModel:(id)viewModel didSelectedAssets:(NSArray<__kindof PHAsset *> *)assets {
+    
 }
 
 @end
