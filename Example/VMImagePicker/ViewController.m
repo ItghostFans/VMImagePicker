@@ -16,7 +16,7 @@
 #import <VMImagePicker/VMImagePickerController.h>
 #import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
 
-@interface ViewController ()
+@interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
 @end
 
@@ -44,6 +44,7 @@
             VMIPAlbumTableController *controller = VMIPAlbumTableController.new;
             controller.viewModel = viewModel;
             VMImagePickerController *imagePickerController = [[VMImagePickerController alloc] initWithRootViewController:controller];
+            imagePickerController.imagePickerDelegate = self;
 //            [self.navigationController pushViewController:controller animated:YES];
             [self presentViewController:imagePickerController animated:YES completion:^{
             }];
@@ -90,6 +91,16 @@
             break;
         }
     }
+}
+
+#pragma mark - VMImagePickerControllerDelegate
+
+- (void)imagePickerController:(VMImagePickerController *)controller didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
+    
+}
+
+- (void)imagePickerControllerDidCancel:(VMImagePickerController *)controller {
+    
 }
 
 @end

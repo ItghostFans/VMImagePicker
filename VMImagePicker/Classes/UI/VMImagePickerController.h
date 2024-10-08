@@ -24,7 +24,7 @@ UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickersKey;
 @protocol VMImagePickerControllerDelegate<NSObject>
 @optional
 - (void)imagePickerController:(VMImagePickerController *)controller didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey, id> *)info;
-- (void)imagePickerControllerDidCancel:(VMImagePickerController *)picker;
+- (void)imagePickerControllerDidCancel:(VMImagePickerController *)controller;
 
 @end
 
