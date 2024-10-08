@@ -6,6 +6,7 @@
 //
 
 #import "VMImagePickerController.h"
+#import "VMImagePicker+Private.h"
 #import "VMImagePickerStyle.h"
 #import "VMImagePickerConfig.h"
 #import "VMIPAssetCollectionControllerViewModel.h"
@@ -17,6 +18,7 @@
 @interface VMImagePickerController () <IVMIPAssetCollectionControllerViewModelDelegate, IVMIPPreviewCollectionControllerViewModelDelegate>
 @property (strong, nonatomic) VMImagePickerStyle *style;
 @property (strong, nonatomic) VMImagePickerConfig *config;
+@property (assign, nonatomic) VMImagePickerState state;
 @end
 
 @implementation VMImagePickerController
@@ -24,6 +26,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self styleUI];
+}
+
+- (void)dealloc {
+    switch (_state) {
+        case VMImagePickerStateNone: {
+            if ([_imagePickerDelegate respondsToSelector:@selector(imagePickerControllerDidCancel:)]) {
+                [_imagePickerDelegate imagePickerControllerDidCancel:self];
+            }
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 - (void)styleUI {
@@ -74,9 +90,9 @@
         make.top.leading.trailing.equalTo(self.toolbar);
         make.bottom.equalTo(self.toolbar).offset(0.0f);
     }];
-    @weakify(toolThemeView);
+    @weakify(toolThemeView, self);
     [[self rac_signalForSelector:@selector(viewSafeAreaInsetsDidChange)] subscribeNext:^(RACTuple * _Nullable x) {
-        @strongify(toolThemeView);
+        @strongify(toolThemeView, self);
         [toolThemeView mas_updateConstraints:^(MASConstraintMaker *make) {
             make.bottom.equalTo(self.toolbar).offset(self.view.safeAreaInsets.bottom);
         }];
@@ -107,9 +123,24 @@
 #pragma mark - IVMIPAssetCollectionControllerViewModelDelegate, IVMIPPreviewCollectionControllerViewModelDelegate
 
 - (void)viewModel:(id)viewModel didSelectedAssets:(NSArray<__kindof PHAsset *> *)assets {
-    
+    NSMutableArray<__kindof VMImagePicker *> *imagePickers = [NSMutableArray arrayWithCapacity:assets.count];
+    for (PHAsset *asset in assets) {
+        [imagePickers addObject:[[VMImagePicker alloc] initWithAsset:asset config:self.config]];
+    }
+    if ([self.imagePickerDelegate respondsToSelector:@selector(imagePickerController:didFinishPickingMediaWithInfo:)]) {
+        [self.imagePickerDelegate imagePickerController:self didFinishPickingMediaWithInfo:@{
+            VMImagePickersKey: imagePickers
+        }];
+    }
+    if (self.navigationController) {
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        [self dismissViewControllerAnimated:YES completion:^{
+        }];
+    }
+    self.state = VMImagePickerStateDone;
 }
 
 @end
 
-UIImagePickerControllerInfoKey const VMImagePickerControllerImages = @"VMImagePickerControllerImages";
+UIImagePickerControllerInfoKey const VMImagePickersKey = @"VMImagePickersKey";

@@ -9,11 +9,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, VMImagePickerState) {
+    VMImagePickerStateNone      = 0,
+    VMImagePickerStateCancel    = 1,
+    VMImagePickerStateDone      = 2,
+};
+
 @class VMImagePickerStyle;
 @class VMImagePickerConfig;
 @class VMImagePickerController;
 
-UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickerControllerImages;
+UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickersKey;
 
 @protocol VMImagePickerControllerDelegate<NSObject>
 @optional

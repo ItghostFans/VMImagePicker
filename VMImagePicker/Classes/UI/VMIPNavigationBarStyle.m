@@ -7,7 +7,7 @@
 
 #import "VMIPNavigationBarStyle.h"
 #import "VMImagePickerStyle.h"
-#import "VMImagePickerController.h"
+#import "VMImagePickerController+Private.h"
 
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -87,6 +87,7 @@
 #pragma mark - Private
 
 - (void)cancel {
+    self.imagePickerController.state = VMImagePickerStateCancel;
     if ([self.imagePickerController.imagePickerDelegate respondsToSelector:@selector(imagePickerControllerDidCancel:)]) {
         [self.imagePickerController.imagePickerDelegate imagePickerControllerDidCancel:self.imagePickerController];
     }
