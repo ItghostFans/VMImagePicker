@@ -64,11 +64,20 @@
     @weakify(self);
     CGSize size = UIScreen.mainScreen.bounds.size;
     CGFloat line = MIN(size.width, size.height);
-    _requestId = [PHImageManager.defaultManager requestImageOfAsset:_asset size:CGSizeMake(line / 2, line / 2) contentMode:(PHImageContentModeAspectFill) completion:^(BOOL finished, BOOL inCloud, UIImage * _Nullable result, NSDictionary * _Nullable info) {
+    _requestId = [PHImageManager.defaultManager requestImageOfAsset:_asset size:CGSizeMake(line / 2, line / 2) contentMode:(PHImageContentModeAspectFill) completion:^(BOOL finished, BOOL inCloud, BOOL degraded, UIImage * _Nullable result, NSDictionary * _Nullable info) {
         @strongify(self);
         NSAssert(NSThread.isMainThread, @"Not in main thread!");
+        if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
+            return;
+        }
+        if (!finished) {
+            return;
+        }
         self.previewImage = result;
         self.inCloud = inCloud;
+        if (!degraded) {
+            self.requestId = PHInvalidImageRequestID;
+        }
     }];
 }
 

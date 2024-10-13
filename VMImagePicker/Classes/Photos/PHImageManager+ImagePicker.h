@@ -11,14 +11,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface PHImageManager (ImagePicker)
 
-- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
+- (PHImageRequestID)requestImageOfAsset:(PHAsset * _Nonnull)asset
                                    size:(CGSize)size
                             contentMode:(PHImageContentMode)contentMode
-                             completion:(void (^)(BOOL finished, BOOL inCloud, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
+                             completion:(void (^ _Nonnull)(BOOL finished, BOOL inCloud, BOOL degraded, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
 
-- (PHImageRequestID)requestImageOfAsset:(PHAsset *)asset
-                            progressing:(void (^)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))progressing
-                             completion:(void (^)(BOOL finished, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
+- (PHImageRequestID)requestImageOfAsset:(PHAsset * _Nonnull)asset
+                            progressing:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))progressing
+                             completion:(void (^ _Nonnull)(BOOL finished, UIImage *_Nullable result, NSDictionary *_Nullable info))completion;
 
 @end
 

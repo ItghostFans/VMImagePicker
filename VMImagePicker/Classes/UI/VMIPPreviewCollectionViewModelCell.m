@@ -53,6 +53,9 @@
         [PHImageManager.defaultManager cancelImageRequest:self.requestId];
         self.requestId = PHInvalidImageRequestID;
     }
+    if (!viewModel) {
+        return;
+    }
     @weakify(self);
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
     self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
