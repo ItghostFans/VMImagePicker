@@ -65,17 +65,18 @@
 }
 
 - (UILabel *)nameLabel {
-    if (!_nameLabel) {
-        UILabel *nameLabel = UILabel.new;
-        _nameLabel = nameLabel;
-        _nameLabel.textColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellNameColors selected:NO];
-        _nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:NO];
-        [self.contentView addSubview:_nameLabel];
-        [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsMake(0.0f, 6.0f, 0.0f, 0.0f));
-        }];
+    if (_nameLabel) {
+        return _nameLabel;
     }
-    return _nameLabel;
+    UILabel *nameLabel = UILabel.new;
+    _nameLabel = nameLabel;
+    _nameLabel.textColor = [self.vmipStyle colorWithCellThemeColors:self.vmipStyle.albumCellNameColors selected:NO];
+    _nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:NO];
+    [self.contentView addSubview:_nameLabel];
+    [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(UIEdgeInsetsMake(0.0f, 6.0f, 0.0f, 0.0f));
+    }];
+    return nameLabel;
 }
 
 #pragma mark - TableViewModelCell

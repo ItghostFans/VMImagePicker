@@ -166,24 +166,6 @@
     }
 }
 
-#pragma mark - Forwarding
-
-- (BOOL)respondsToSelector:(SEL)aSelector {
-    if ([self.viewModel.collectionViewModel respondsToSelector:aSelector]) {
-        return YES;
-    }
-    return [super respondsToSelector:aSelector];
-}
-
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {
-    NSMethodSignature *methodSignature = [self.viewModel.collectionViewModel.class instanceMethodSignatureForSelector:aSelector];
-    return methodSignature;
-}
-
-- (void)forwardInvocation:(NSInvocation *)anInvocation {
-    [anInvocation invokeWithTarget:self.viewModel.collectionViewModel];
-}
-
 #pragma mark - Actions
 
 - (void)onPreviewClicked:(id)sender {

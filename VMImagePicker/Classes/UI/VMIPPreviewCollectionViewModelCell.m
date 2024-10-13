@@ -49,12 +49,9 @@
         // 防止这里不必要的UI刷新。
         return;
     }
-    if (!viewModel) {
-        if (self.requestId) {
-            [PHImageManager.defaultManager cancelImageRequest:self.requestId];
-            self.requestId = PHInvalidImageRequestID;
-        }
-        return;
+    if (self.requestId != PHInvalidImageRequestID) {
+        [PHImageManager.defaultManager cancelImageRequest:self.requestId];
+        self.requestId = PHInvalidImageRequestID;
     }
     @weakify(self);
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
@@ -67,6 +64,9 @@
             return;
         }
         @strongify(self);
+        if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
+            return;
+        }
         self.previewView.image = result;
         self.requestId = PHInvalidImageRequestID;
     }];
@@ -119,51 +119,54 @@
 }
 
 - (UIScrollView *)previewScrollView {
-    if (!_previewScrollView) {
-        UIScrollView *previewScrollView = UIScrollView.new;
-        _previewScrollView = previewScrollView;
-        
-        _previewScrollView.scrollsToTop = NO;
-        _previewScrollView.showsHorizontalScrollIndicator = NO;
-        _previewScrollView.showsVerticalScrollIndicator = YES;
-        _previewScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        _previewScrollView.delaysContentTouches = NO;
-        _previewScrollView.canCancelContentTouches = YES;
-        _previewScrollView.alwaysBounceVertical = NO;
-        _previewScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-        
-        _previewScrollView.delegate = self;
-        [self.contentView addSubview:_previewScrollView];
-        [_previewScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsZero);
-        }];
+    if (_previewScrollView) {
+        return _previewScrollView;
     }
-    return _previewScrollView;
+    UIScrollView *previewScrollView = UIScrollView.new;
+    _previewScrollView = previewScrollView;
+    
+    _previewScrollView.scrollsToTop = NO;
+    _previewScrollView.showsHorizontalScrollIndicator = NO;
+    _previewScrollView.showsVerticalScrollIndicator = YES;
+    _previewScrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _previewScrollView.delaysContentTouches = NO;
+    _previewScrollView.canCancelContentTouches = YES;
+    _previewScrollView.alwaysBounceVertical = NO;
+    _previewScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    
+    _previewScrollView.delegate = self;
+    [self.contentView addSubview:_previewScrollView];
+    [_previewScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(UIEdgeInsetsZero);
+    }];
+    return previewScrollView;
 }
 
 - (UIView *)previewContentView {
-    if (!_previewContentView) {
-        UIView *previewContentView = UIView.new;
-        _previewContentView = previewContentView;
-        _previewContentView.clipsToBounds = YES;
-        _previewContentView.contentMode = UIViewContentModeScaleAspectFill;
-        [self.previewScrollView addSubview:_previewContentView];
+    if (_previewContentView) {
+        return _previewContentView;
     }
-    return _previewContentView;
+    UIView *previewContentView = UIView.new;
+    _previewContentView = previewContentView;
+    _previewContentView.clipsToBounds = YES;
+    _previewContentView.contentMode = UIViewContentModeScaleAspectFill;
+    [self.previewScrollView addSubview:_previewContentView];
+    return previewContentView;
 }
 
 - (UIImageView *)previewView {
-    if (!_previewView) {
-        UIImageView *previewView = UIImageView.new;
-        _previewView = previewView;
-        _previewView.contentMode = UIViewContentModeScaleAspectFill;
-        _previewView.clipsToBounds = YES;
-        [self.previewContentView addSubview:_previewView];
-        [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsZero);
-        }];
+    if (_previewView) {
+        return _previewView;
     }
-    return _previewView;
+    UIImageView *previewView = UIImageView.new;
+    _previewView = previewView;
+    _previewView.contentMode = UIViewContentModeScaleAspectFill;
+    _previewView.clipsToBounds = YES;
+    [self.previewContentView addSubview:_previewView];
+    [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(UIEdgeInsetsZero);
+    }];
+    return previewView;
 }
 #pragma mark - UIScrollViewDelegate
 

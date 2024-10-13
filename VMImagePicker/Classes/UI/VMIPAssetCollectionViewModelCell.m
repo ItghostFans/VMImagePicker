@@ -88,37 +88,39 @@
 }
 
 - (UIImageView *)previewImageView {
-    if (!_previewImageView) {
-        UIImageView *previewImageView = UIImageView.new;
-        _previewImageView = previewImageView;
-        _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
-        _previewImageView.clipsToBounds = YES;
-        [self.contentView addSubview:_previewImageView];
-        [_previewImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.mas_equalTo(UIEdgeInsetsZero);
-        }];
+    if (_previewImageView) {
+        return _previewImageView;
     }
-    return _previewImageView;
+    UIImageView *previewImageView = UIImageView.new;
+    _previewImageView = previewImageView;
+    _previewImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _previewImageView.clipsToBounds = YES;
+    [self.contentView addSubview:_previewImageView];
+    [_previewImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(UIEdgeInsetsZero);
+    }];
+    return previewImageView;
 }
 
 - (UIButton *)selectedButton {
-    if (!_selectedButton) {
-        UIButton *selectedButton = UIButton.new;
-        _selectedButton = selectedButton;
-        [_selectedButton setBackgroundImage:[self.vmipStyle imageWithCellThemeImages:self.vmipStyle.assetSelectedImages selected:NO] forState:(UIControlStateNormal)];
-        [_selectedButton setBackgroundImage:[self.vmipStyle imageWithCellThemeImages:self.vmipStyle.assetSelectedImages selected:YES] forState:(UIControlStateSelected)];
-        [_selectedButton setTitleColor:[self.vmipStyle colorWithCellThemeColors:self.vmipStyle.assetSelectedTitleColors selected:NO] forState:(UIControlStateNormal)];
-        [_selectedButton setTitleColor:[self.vmipStyle colorWithCellThemeColors:self.vmipStyle.assetSelectedTitleColors selected:YES] forState:(UIControlStateSelected)];
-        _selectedButton.titleLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.assetSelectedTitleFonts selected:NO];
-        [self.contentView addSubview:_selectedButton];
-        [_selectedButton mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.size.mas_equalTo(CGSizeMake(20.0f, 20.0f));
-            make.trailing.equalTo(self.contentView).mas_equalTo(-6.0f);
-            make.top.equalTo(self.contentView).mas_equalTo(6.0f);
-        }];
-        [_selectedButton addTarget:self action:@selector(onSelectedClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    if (_selectedButton) {
+        return _selectedButton;
     }
-    return _selectedButton;
+    UIButton *selectedButton = UIButton.new;
+    _selectedButton = selectedButton;
+    [_selectedButton setBackgroundImage:[self.vmipStyle imageWithCellThemeImages:self.vmipStyle.assetSelectedImages selected:NO] forState:(UIControlStateNormal)];
+    [_selectedButton setBackgroundImage:[self.vmipStyle imageWithCellThemeImages:self.vmipStyle.assetSelectedImages selected:YES] forState:(UIControlStateSelected)];
+    [_selectedButton setTitleColor:[self.vmipStyle colorWithCellThemeColors:self.vmipStyle.assetSelectedTitleColors selected:NO] forState:(UIControlStateNormal)];
+    [_selectedButton setTitleColor:[self.vmipStyle colorWithCellThemeColors:self.vmipStyle.assetSelectedTitleColors selected:YES] forState:(UIControlStateSelected)];
+    _selectedButton.titleLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.assetSelectedTitleFonts selected:NO];
+    [self.contentView addSubview:_selectedButton];
+    [_selectedButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(20.0f, 20.0f));
+        make.trailing.equalTo(self.contentView).mas_equalTo(-6.0f);
+        make.top.equalTo(self.contentView).mas_equalTo(6.0f);
+    }];
+    [_selectedButton addTarget:self action:@selector(onSelectedClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return selectedButton;
 }
 
 #pragma mark - Actions

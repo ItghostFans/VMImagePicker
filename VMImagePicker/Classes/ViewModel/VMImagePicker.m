@@ -24,7 +24,11 @@
 }
 
 - (void)getAssetCallback:(void (^)(PHAsset *asset, VMImagePickerConfig *config, id object, NSData *data))callback {
-    
+    if (self.config.original) {
+        
+    } else {
+        
+    }
 }
 
 @end
