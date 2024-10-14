@@ -95,6 +95,13 @@
     frame = CGRectOffset(frame, viewSize.width / 2 - CGRectGetMidX(frame), viewSize.height / 2 - CGRectGetMidY(frame));
     self.previewContentView.frame = frame;
     self.previewScrollView.maximumZoomScale = 1.0f / factor;
+    // 以下保证放大后，能铺满整个View，否则可能会存在上下/左右留白。
+    if (imageSize.height < viewSize.height) {
+        self.previewScrollView.maximumZoomScale *= viewSize.height / imageSize.height;
+    } else
+    if (imageSize.width < viewSize.width) {
+        self.previewScrollView.maximumZoomScale *= viewSize.width / imageSize.width;
+    }
 }
 
 #pragma mark - Getter
