@@ -10,8 +10,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class PHAsset;
+@class VMImagePickerConfig;
 
 @interface VMImagePicker : NSObject
+
+- (void)getAssetCallback:(void (^ _Nonnull)(PHAsset *asset, VMImagePickerConfig *config, NSData *data))callback;
 
 @end
 

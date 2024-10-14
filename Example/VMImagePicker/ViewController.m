@@ -15,6 +15,7 @@
 #import <VMImagePicker/VMIPAlbumTableController.h>
 #import <VMImagePicker/VMImagePickerController.h>
 #import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
+#import <VMImagePicker/VMImagePicker.h>
 
 @interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
@@ -96,7 +97,22 @@
 #pragma mark - VMImagePickerControllerDelegate
 
 - (void)imagePickerController:(VMImagePickerController *)controller didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
-    
+    NSArray<__kindof VMImagePicker *> *imagePickers = info[VMImagePickersKey];
+    __block dispatch_queue_t getAssetsQueue = dispatch_queue_create("com.queue.get.assets", DISPATCH_QUEUE_SERIAL);
+    dispatch_group_t getAssetsGroup = dispatch_group_create();
+    for (VMImagePicker *imagePicker in imagePickers) {
+        dispatch_group_enter(getAssetsGroup);
+        dispatch_async(getAssetsQueue, ^{
+            // 任务排队执行Asset数据。
+            [imagePicker getAssetCallback:^(PHAsset * _Nonnull asset, VMImagePickerConfig * _Nonnull config, NSData * _Nonnull data) {
+                dispatch_group_leave(getAssetsGroup);
+            }];
+        });
+    }
+    dispatch_group_notify(getAssetsGroup, dispatch_get_main_queue(), ^{
+        getAssetsQueue = nil;
+        [imagePickers firstObject];
+    });
 }
 
 - (void)imagePickerControllerDidCancel:(VMImagePickerController *)controller {

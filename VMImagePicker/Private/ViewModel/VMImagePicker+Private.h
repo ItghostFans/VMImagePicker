@@ -6,13 +6,20 @@
 //
 
 #import "VMImagePicker.h"
+#import "VMImagePickerConfig.h"
+#import "PHImageManager+ImagePicker.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class VMImagePickerConfig;
 
 @interface VMImagePicker ()
+@property (strong, nonatomic) PHAsset *asset;
+@property (assign, nonatomic) VMImagePickerConfig *config;
+@property (assign, nonatomic) PHImageRequestID requestId;
+
 - (instancetype)initWithAsset:(PHAsset *)asset config:(VMImagePickerConfig *)config;
+
 @end
 
 NS_ASSUME_NONNULL_END
