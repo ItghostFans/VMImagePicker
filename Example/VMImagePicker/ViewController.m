@@ -16,6 +16,7 @@
 #import <VMImagePicker/VMImagePickerController.h>
 #import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
 #import <VMImagePicker/VMImagePicker.h>
+#import <VMImagePicker/VMImagePickerQueue.h>
 
 @interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
@@ -98,21 +99,19 @@
 
 - (void)imagePickerController:(VMImagePickerController *)controller didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey,id> *)info {
     NSArray<__kindof VMImagePicker *> *imagePickers = info[VMImagePickersKey];
-    __block dispatch_queue_t getAssetsQueue = dispatch_queue_create("com.queue.get.assets", DISPATCH_QUEUE_SERIAL);
-    dispatch_group_t getAssetsGroup = dispatch_group_create();
-    for (VMImagePicker *imagePicker in imagePickers) {
-        dispatch_group_enter(getAssetsGroup);
-        dispatch_async(getAssetsQueue, ^{
-            // 任务排队执行Asset数据。
-            [imagePicker getAssetCallback:^(PHAsset * _Nonnull asset, VMImagePickerConfig * _Nonnull config, NSData * _Nonnull data) {
-                dispatch_group_leave(getAssetsGroup);
-            }];
-        });
-    }
-    dispatch_group_notify(getAssetsGroup, dispatch_get_main_queue(), ^{
-        getAssetsQueue = nil;
-        [imagePickers firstObject];
-    });
+    VMImagePickerQueue *imagePickerQueue = [[VMImagePickerQueue alloc] initWithImagePickers:imagePickers];
+    [imagePickerQueue enumerateAssetsUsingBlock:^(PHAsset * _Nonnull asset, VMImagePickerConfig * _Nonnull config, VMImagePicker * _Nonnull imagePicker) {
+        switch (imagePicker.type) {
+            case VMImagePickerTypeData: {
+                NSLog(@"获取资源大小: %ld", [imagePicker.object length]);
+                break;
+            }
+            default: {
+                NSLog(@"获取资源未定义");
+                break;
+            }
+        }
+    }];
 }
 
 - (void)imagePickerControllerDidCancel:(VMImagePickerController *)controller {
