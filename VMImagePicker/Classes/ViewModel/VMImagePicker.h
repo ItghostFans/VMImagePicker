@@ -11,10 +11,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class PHAsset;
 @class VMImagePickerConfig;
+@class VMImagePicker;
+
+typedef NS_ENUM(NSInteger, VMImagePickerType) {
+    VMImagePickerTypeNone,
+    VMImagePickerTypeData,  // NSData
+    VMImagePickerTypePath,  // NSString
+};
+
+typedef void (^VMImagePickerGetAssetBlock)(PHAsset * _Nonnull asset, VMImagePickerConfig * _Nonnull config, VMImagePicker * _Nonnull imagePicker);
 
 @interface VMImagePicker : NSObject
 
-- (void)getAssetCallback:(void (^ _Nonnull)(PHAsset *asset, VMImagePickerConfig *config, NSData *data))callback;
+@property (assign, nonatomic, readonly) VMImagePickerType type;
+@property (strong, nonatomic, readonly) id object;              // Depend on property type.
+
+- (void)getAssetCallback:(VMImagePickerGetAssetBlock)callback;
 
 @end
 

@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class VMImagePickerConfig;
 
 @interface VMImagePicker (Jpeg)
-- (void)getJpegAssetCallback:(void (^ _Nonnull)(PHAsset *asset, VMImagePickerConfig *config, NSData *data))callback;
+- (void)getJpegAssetCallback:(VMImagePickerGetAssetBlock)callback;
 @end
 
 NS_ASSUME_NONNULL_END

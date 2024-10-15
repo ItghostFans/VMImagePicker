@@ -15,6 +15,10 @@
 #import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMImagePicker ()
+
+@property (assign, nonatomic) VMImagePickerType type;
+@property (strong, nonatomic) id object;
+
 @property (strong, nonatomic) PHAsset *asset;
 @property (assign, nonatomic) VMImagePickerConfig *config;
 @property (assign, nonatomic) PHImageRequestID requestId;
@@ -31,16 +35,17 @@
     return self;
 }
 
-- (void)getAssetCallback:(void (^ _Nonnull)(PHAsset *asset, VMImagePickerConfig *config, NSData *data))callback {
+- (void)getAssetCallback:(VMImagePickerGetAssetBlock)callback {
     switch (_asset.mediaType) {
         case PHAssetMediaTypeImage: {
             [self getJpegAssetCallback:callback];
             break;
         }
-        case PHAssetMediaTypeVideo: {
-            break;
-        }
+//        case PHAssetMediaTypeVideo: {
+//            break;
+//        }
         default: {
+            callback(self.asset, self.config, self);
             break;
         }
     }

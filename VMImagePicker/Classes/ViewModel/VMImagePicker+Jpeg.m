@@ -12,7 +12,7 @@
 
 @implementation VMImagePicker (Jpeg)
 
-- (void)getJpegAssetCallback:(void (^ _Nonnull)(PHAsset *asset, VMImagePickerConfig *config, NSData *data))callback {
+- (void)getJpegAssetCallback:(VMImagePickerGetAssetBlock)callback {
     @weakify(self);
     if (self.config.original) {
         PHImageRequestOptions *option = PHImageRequestOptions.new;
@@ -20,11 +20,13 @@
         self.requestId = [PHImageManager.defaultManager requestImageDataAndOrientationForAsset:self.asset options:option resultHandler:^(NSData * _Nullable imageData, NSString * _Nullable dataUTI, CGImagePropertyOrientation orientation, NSDictionary * _Nullable info) {
             @strongify(self);
             if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
-                callback(self.asset, self.config, nil);
+                callback(self.asset, self.config, self);
                 return;
             }
             self.requestId = PHInvalidImageRequestID;
-            callback(self.asset, self.config, imageData);
+            self.type = VMImagePickerTypeData;
+            self.object = imageData;
+            callback(self.asset, self.config, self);
         }];
     } else {
         PHImageRequestOptions *option = PHImageRequestOptions.new;
@@ -36,16 +38,20 @@
                 return;
             }
             if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
-                callback(self.asset, self.config, nil);
+                callback(self.asset, self.config, self);
                 return;
             }
             self.requestId = PHInvalidImageRequestID;
             VMImagePickerConfig *config = self.config;
             PHAsset *asset = self.asset;
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, (uintptr_t)NULL), ^{
+                @strongify(self);
                 NSData *data = UIImageJPEGRepresentation(result, config.compressionQuality);
+                self.type = VMImagePickerTypeData;
+                self.object = data;
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    callback(asset, config, data);
+                    @strongify(self);
+                    callback(asset, config, self);
                 });
             });
         }];

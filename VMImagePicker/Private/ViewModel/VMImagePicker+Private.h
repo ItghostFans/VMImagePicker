@@ -14,6 +14,10 @@ NS_ASSUME_NONNULL_BEGIN
 @class VMImagePickerConfig;
 
 @interface VMImagePicker ()
+
+@property (assign, nonatomic) VMImagePickerType type;
+@property (strong, nonatomic) id object;
+
 @property (strong, nonatomic) PHAsset *asset;
 @property (assign, nonatomic) VMImagePickerConfig *config;
 @property (assign, nonatomic) PHImageRequestID requestId;
