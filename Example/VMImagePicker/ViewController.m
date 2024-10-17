@@ -83,8 +83,15 @@
     switch (status) {
         case PHAuthorizationStatusNotDetermined: {
             [PHPhotoLibrary requestAlbumAuthorization:^(PHAuthorizationStatus status) {
-                @strongify(self);
-                [self loadAlbumIfNeed];
+                if (NSThread.mainThread) {
+                    @strongify(self);
+                    [self loadAlbumIfNeed];
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        @strongify(self);
+                        [self loadAlbumIfNeed];
+                    });
+                }
             }];
             break;
         }
@@ -104,6 +111,9 @@
         switch (imagePicker.type) {
             case VMImagePickerTypeData: {
                 NSLog(@"获取资源大小: %ld", [imagePicker.object length]);
+                break;
+            }
+            case VMImagePickerTypePath: {
                 break;
             }
             default: {

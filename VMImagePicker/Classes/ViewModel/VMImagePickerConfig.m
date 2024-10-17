@@ -12,4 +12,11 @@
 
 @implementation VMImagePickerConfig
 
+- (instancetype)init {
+    if (self = [super init]) {
+        _directory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"VMImagePicker"];
+    }
+    return self;
+}
+
 @end

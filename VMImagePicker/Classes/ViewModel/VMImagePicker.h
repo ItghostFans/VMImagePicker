@@ -25,6 +25,7 @@ typedef void (^VMImagePickerGetAssetBlock)(PHAsset * _Nonnull asset, VMImagePick
 
 @property (assign, nonatomic, readonly) VMImagePickerType type;
 @property (strong, nonatomic, readonly) id object;              // Depend on property type.
+@property (strong, nonatomic, readonly) NSError *error;
 
 - (void)getAssetCallback:(VMImagePickerGetAssetBlock)callback;
 

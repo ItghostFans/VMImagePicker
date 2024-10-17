@@ -17,12 +17,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (assign, nonatomic) VMImagePickerType type;
 @property (strong, nonatomic) id object;
+@property (strong, nonatomic) NSError *error;
 
 @property (strong, nonatomic) PHAsset *asset;
 @property (assign, nonatomic) VMImagePickerConfig *config;
 @property (assign, nonatomic) PHImageRequestID requestId;
 
 - (instancetype)initWithAsset:(PHAsset *)asset config:(VMImagePickerConfig *)config;
+
+- (NSString *)getDirectory:(NSString *)directory;
 
 @end
 
