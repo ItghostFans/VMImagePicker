@@ -45,6 +45,7 @@
         @strongify(self);
         NSArray *presets = [AVAssetExportSession exportPresetsCompatibleWithAsset:asset];
         NSURL *assetUrl = ((AVURLAsset *)asset).URL;
+        NSString *assetPath = [self.mp4Directory stringByAppendingPathComponent:assetUrl.lastPathComponent];
         if ([presets containsObject:presetQuality]) {
             AVAssetExportSession *session = [[AVAssetExportSession alloc] initWithAsset:asset presetName:presetQuality];
             session.shouldOptimizeForNetworkUse = YES;
@@ -62,12 +63,12 @@
             }
             
             if (assetUrl.lastPathComponent) {
-                session.outputURL = [NSURL fileURLWithPath:[self.mp4Directory stringByAppendingPathComponent:assetUrl.lastPathComponent]];
+                session.outputURL = [NSURL fileURLWithPath:assetPath];
             }
 
             [session exportAsynchronouslyWithCompletionHandler:^(void) {
                 @strongify(self);
-                self.object = session.outputURL.relativePath;
+                self.object = assetPath;
                 callback(self.asset, self.config, self);
             }];
         } else {
