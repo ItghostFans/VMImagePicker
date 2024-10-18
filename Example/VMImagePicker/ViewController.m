@@ -16,6 +16,7 @@
 #import <VMImagePicker/VMImagePickerController.h>
 #import <VMImagePicker/VMIPAlbumTableControllerViewModel.h>
 #import <VMImagePicker/VMImagePicker.h>
+#import <VMImagePicker/VMImagePickerConfig.h>
 #import <VMImagePicker/VMImagePickerQueue.h>
 
 @interface ViewController () <VMImagePickerControllerDelegate>
@@ -47,6 +48,7 @@
             controller.viewModel = viewModel;
             VMImagePickerController *imagePickerController = [[VMImagePickerController alloc] initWithRootViewController:controller];
             imagePickerController.imagePickerDelegate = self;
+            imagePickerController.config.count = 6;
 //            [self.navigationController pushViewController:controller animated:YES];
             [self presentViewController:imagePickerController animated:YES completion:^{
             }];

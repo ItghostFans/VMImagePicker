@@ -10,6 +10,7 @@
 #import "VMIPAssetCellViewModel.h"
 #import "VMIPAssetCollectionController.h"
 #import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
 
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
@@ -20,6 +21,7 @@
 
 @interface VMIPAssetCollectionViewModelCell ()
 @property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
+@property (weak, nonatomic) VMImagePickerConfig *vmipConfig;
 @property (weak, nonatomic) UIImageView *previewImageView;
 @property (weak, nonatomic) UIButton *selectedButton;
 @property (strong, nonatomic, nullable) RACCompoundDisposable *disposableBag;
@@ -87,6 +89,17 @@
     return _vmipStyle;
 }
 
+- (VMImagePickerConfig *)vmipConfig {
+    if (!_vmipConfig) {
+        VMIPAssetCollectionController *controller = (VMIPAssetCollectionController *)self;
+        do {
+            controller = controller.nextResponder;
+        } while ([controller isKindOfClass:UIView.class]);
+        _vmipConfig = controller.config;
+    }
+    return _vmipConfig;
+}
+
 - (UIImageView *)previewImageView {
     if (_previewImageView) {
         return _previewImageView;
@@ -127,7 +140,12 @@
 
 - (void)onSelectedClicked:(id)sender {
     VMIPAssetCellViewModel *viewModel = (VMIPAssetCellViewModel *)self.viewModel;
-    viewModel.selected = !viewModel.selected;
+    if (viewModel.selected) {
+        viewModel.selected = NO;
+    } else
+    if (!viewModel.selected && viewModel.selectedDelegate.selectedCellViewModels.count < self.vmipConfig.count) {
+        viewModel.selected = YES;
+    }
 }
 
 #pragma mark - CollectionViewModelCell
