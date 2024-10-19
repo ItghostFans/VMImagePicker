@@ -116,6 +116,7 @@
                 break;
             }
             case VMImagePickerTypePath: {
+                NSLog(@"获取资源路径: %@", imagePicker.object);
                 break;
             }
             default: {
