@@ -7,6 +7,9 @@
 
 #import "VMIPVideoFrameCollectionController.h"
 #import "VMIPVideoFrameCollectionControllerViewModel.h"
+
+#import <Masonry/Masonry.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionViewModel.h>
 
 @interface VMIPVideoFrameCollectionController ()
@@ -21,6 +24,12 @@
     [self.view addSubview:self.collectionView];
     self.collectionView.frame = self.view.bounds;
     self.viewModel.collectionViewModel.collectionView = self.collectionView;
+}
+
+- (void)setViewModel:(VMIPVideoFrameCollectionControllerViewModel *)viewModel {
+    [super setViewModel:viewModel];
+    [viewModel loadVideoCompletion:^(NSError * _Nonnull error) {
+    }];
 }
 
 #pragma mark - Public

@@ -31,6 +31,7 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '13.0'
 
   s.default_subspec = 'Photos'
+  s.preserve_paths = '**'
   
   s.subspec 'Photos' do |subspec|
     subspec.source_files = 'VMImagePicker/Classes/Photos/**/*', 'VMImagePicker/Private/Photos/**/*.h'
@@ -56,7 +57,7 @@ TODO: Add long description of the pod here.
 #   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  s.frameworks = 'UIKit', 'MapKit', 'Photos'
+  s.frameworks = 'UIKit', 'MapKit', 'Photos', 'AVFoundation'
   # s.dependency 'AFNetworking', '~> 2.3'
   s.dependency 'ViewModel'
 end

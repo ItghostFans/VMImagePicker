@@ -9,9 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class PHAsset;
+
 @class VMIPVideoFrameCollectionControllerViewModel;
 
 @protocol IVMIPVideoFrameCollectionControllerViewModelDelegate <IBaseViewModelDelegate>
+- (PHAsset *)assetOfViewModel:(VMIPVideoFrameCollectionControllerViewModel *)viewModel;
 @end
 
 @interface VMIPVideoFrameCollectionControllerViewModel : CollectionControllerViewModel
@@ -21,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPVideoFrameCollectionControllerViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+- (void)loadVideoCompletion:(void (^ _Nonnull)(NSError *error))completion;
 
 @end
 

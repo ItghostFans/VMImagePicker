@@ -7,6 +7,7 @@
 
 #import "VMIPPreviewCollectionController.h"
 #import "VMIPPreviewCollectionControllerViewModel.h"
+#import "VMIPPreviewCellViewModel.h"
 #import "VMImagePickerStyle.h"
 #import "VMImagePickerConfig.h"
 #import "VMIPNavigationBarStyle.h"
@@ -14,6 +15,8 @@
 #import "VMIPPreviewToolBarView.h"
 #import "VMImagePickerConfig.h"
 #import "VMIPAssetCellViewModel.h"
+#import "VMIPVideoEditController.h"
+#import "VMIPVideoEditViewModel.h"
 
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
@@ -128,7 +131,12 @@
 #pragma mark - Actions
 
 - (void)onEditClicked:(id)sender {
-    
+    NSIndexPath *indexPath = self.collectionView.indexPathsForVisibleItems.firstObject;
+    VMIPPreviewCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.item];
+    VMIPVideoEditController *controller = VMIPVideoEditController.new;
+    VMIPVideoEditViewModel *viewModel = [[VMIPVideoEditViewModel alloc] initWithAsset:cellViewModel.assetCellViewModel.asset];
+    controller.viewModel = viewModel;
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void)onOriginalClicked:(id)sender {
