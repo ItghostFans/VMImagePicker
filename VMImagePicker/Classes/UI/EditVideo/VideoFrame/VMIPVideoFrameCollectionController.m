@@ -22,14 +22,23 @@
     [super viewDidLoad];
     self.view.backgroundColor = UIColor.whiteColor;
     [self.view addSubview:self.collectionView];
-    self.collectionView.frame = self.view.bounds;
-    self.viewModel.collectionViewModel.collectionView = self.collectionView;
+    [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view);
+    }];
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent {
+    [super didMoveToParentViewController:parent];
+    if (parent) {
+        [parent.view layoutIfNeeded];
+        self.viewModel.collectionViewModel.collectionView = self.collectionView;
+        [self.viewModel loadVideoCompletion:^(NSError * _Nonnull error) {
+        }];
+    }
 }
 
 - (void)setViewModel:(VMIPVideoFrameCollectionControllerViewModel *)viewModel {
     [super setViewModel:viewModel];
-    [viewModel loadVideoCompletion:^(NSError * _Nonnull error) {
-    }];
 }
 
 #pragma mark - Public

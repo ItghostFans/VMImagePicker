@@ -67,6 +67,7 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 
 @interface VMImagePickerStyle : NSObject
 
+@property (strong, nonatomic) VMIPThemeColors *themeColors;
 @property (strong, nonatomic) VMIPThemeColors *navigationBarBkgColors;
 @property (strong, nonatomic) VMIPThemeFonts *navigationBarTitleFonts;
 @property (strong, nonatomic) VMIPThemeColors *navigationBarTitleColors;

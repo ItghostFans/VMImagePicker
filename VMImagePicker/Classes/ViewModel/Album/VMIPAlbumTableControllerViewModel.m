@@ -40,12 +40,12 @@
 #pragma mark - Private
 
 - (void)loadAlbums {
-    @weakify(self);
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, NULL), ^{
-        @strongify(self);
+//    @weakify(self);
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, NULL), ^{
+//        @strongify(self);
         NSArray<__kindof PHCollection *> *assetCollections = [PHAssetCollection fetchAssetCollectionsWithTypes:self.types subtypes:self.subtypes options:self.options];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            @strongify(self);
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//            @strongify(self);
             [self tableViewUpdate:^{
                 for (PHAssetCollection *assetCollection in assetCollections) {
                     VMIPAlbumCellViewModel *cellViewModel = [[VMIPAlbumCellViewModel alloc] initWithAssetCollection:assetCollection];
@@ -53,8 +53,8 @@
                 }
             } completion:^(BOOL finished) {
             }];
-        });
-    });
+//        });
+//    });
 }
 
 #pragma mark - Update TableView

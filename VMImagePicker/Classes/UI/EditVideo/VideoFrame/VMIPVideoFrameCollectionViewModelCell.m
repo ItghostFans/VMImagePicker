@@ -7,9 +7,17 @@
 
 #import "VMIPVideoFrameCollectionViewModelCell.h"
 #import "VMIPVideoFrameCollectionCellViewModel.h"
+#import "VMIPVideoFrameCellViewModel+Private.h"
+
+#import <AVFoundation/AVAssetImageGenerator.h>
+#import <AVFoundation/AVAssetTrack.h>
+#import <AVFoundation/AVTime.h>
+
+#import <Masonry/Masonry.h>
+#import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMIPVideoFrameCollectionViewModelCell ()
-// TODO: 添加需要的View，建议使用懒加载
+@property (weak, nonatomic) UIImageView *frameImageView;
 @end
 
 @implementation VMIPVideoFrameCollectionViewModelCell
@@ -25,12 +33,29 @@
 }
 
 - (void)setViewModel:(VMIPVideoFrameCollectionCellViewModel *)viewModel {
+    @weakify(self);
     BOOL same = self.viewModel == viewModel;
     [super setViewModel:viewModel];
     if (same) {
         // 防止这里不必要的UI刷新。
         return;
     }
+    VMIPVideoFrameCellViewModel *cellViewModel = viewModel;
+    NSValue *frameTime = [NSValue valueWithCMTime:cellViewModel.frameTime];
+    [cellViewModel.imageGenerator generateCGImagesAsynchronouslyForTimes:@[frameTime] completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
+        @strongify(self);
+        if (!image) {
+            NSAssert(!error, @"Generate Image Error %@", error);
+            return;
+        }
+        UIImage *frameImage = [[UIImage alloc] initWithCGImage:image];
+        RACTuple *tuple = [RACTuple tupleWithObjects:frameImage, [NSValue valueWithCMTime:requestedTime], nil];
+        if (NSThread.isMainThread) {
+            [self showFrameImageTuple:tuple];
+        } else {
+            [self performSelectorOnMainThread:@selector(showFrameImageTuple:) withObject:tuple waitUntilDone:NO];
+        }
+    }];
 }
 
 #pragma mark - Public
@@ -39,15 +64,35 @@
 
 #pragma mark - Private
 
+- (void)showFrameImageTuple:(RACTuple *)tuple {
+    RACTupleUnpack(UIImage *frameImage, NSValue *requestedTime) = tuple;
+    VMIPVideoFrameCellViewModel *cellViewModel = self.viewModel;
+    if (CMTimeCompare(requestedTime.CMTimeValue, cellViewModel.frameTime) != 0) {
+        return;
+    }
+    self.frameImageView.image = frameImage;
+}
+
 #pragma mark - Getter
 
-// TODO: 添加需要的View，建议使用懒加载
+- (UIImageView *)frameImageView {
+    if (_frameImageView) {
+        return _frameImageView;
+    }
+    UIImageView *frameImageView = UIImageView.new;
+    _frameImageView = frameImageView;
+    [self.contentView addSubview:_frameImageView];
+    [_frameImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.contentView);
+    }];
+    return frameImageView;
+}
 
 #pragma mark - CollectionViewModelCell
 
 + (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPVideoFrameCollectionCellViewModel *)viewModel {
-    NSAssert(NO, @"%@ %s Should Implement By Subclass!", NSStringFromClass(self.class), __FUNCTION__);
-    return CGSizeZero;
+    VMIPVideoFrameCellViewModel *cellViewModel = viewModel;
+    return cellViewModel.imageGenerator.maximumSize;
 }
 
 @end

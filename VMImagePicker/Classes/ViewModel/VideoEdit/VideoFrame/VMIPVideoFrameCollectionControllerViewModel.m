@@ -6,11 +6,14 @@
 //
 
 #import "VMIPVideoFrameCollectionControllerViewModel.h"
+#import "VMIPVideoFrameCellViewModel.h"
 
 #import <Photos/PHImageManager.h>
 
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionControllerViewModel.h>
+#import <ViewModel/CollectionViewModel.h>
+#import <ViewModel/UICollectionView+ViewModel.h>
 
 @interface VMIPVideoFrameCollectionControllerViewModel ()
 @property (assign, nonatomic) PHImageRequestID requestId;
@@ -19,7 +22,12 @@
 
 @implementation VMIPVideoFrameCollectionControllerViewModel
 
-
+- (instancetype)init {
+    if (self = [super init]) {
+        _frameInteval = 1.0f;
+    }
+    return self;
+}
 
 - (void)setDelegate:(id<IVMIPVideoFrameCollectionControllerViewModelDelegate>)delegate {
     [super setDelegate:delegate];
@@ -34,59 +42,70 @@
     option.networkAccessAllowed = YES;
     self.requestId = [PHImageManager.defaultManager requestAVAssetForVideo:asset options:option resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         @strongify(self);
-        if (self.requestId != [info[PHImageResultRequestIDKey] intValue]) {
-            return;
-        }
+        NSNumber *requestId = info[PHImageResultRequestIDKey];
         NSError *error = info[PHImageErrorKey];
         if (!error) {
             if ([info[PHImageCancelledKey] boolValue]) {
                 error = [NSError errorWithDomain:@"User Cancel Load Video!" code:0 userInfo:nil];
             } else {
-                AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-                imageGenerator.appliesPreferredTrackTransform = YES;
-                imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
-                imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
-                imageGenerator.maximumSize = CGSizeMake(640, 360);
-                
-                AVAssetTrack *videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-                CGFloat frameRate = videoTrack.nominalFrameRate;
-                NSMutableArray *frameFragments = NSMutableArray.new;
-                NSTimeInterval duration = asset.duration.value / asset.duration.timescale;
-                NSTimeInterval interval = (videoTrack.minFrameDuration.value / videoTrack.minFrameDuration.timescale);
-                uint64_t frames = duration / interval;
-                NSTimeInterval frameInterval = duration / 100;
-                for (NSInteger index = 0; index < 100; ++index) {
-                    NSValue *frameFragment = [NSValue valueWithCMTime:CMTimeMake(frameInterval * index, frameRate)];
-                    [frameFragments addObject:frameFragment];
+                RACTuple *tuple = [RACTuple tupleWithObjects:completion, asset, requestId, nil];
+                if (NSThread.isMainThread) {
+                    [self loadFramesAssetTuple:tuple];
+                } else {
+                    [self performSelectorOnMainThread:@selector(loadFramesAssetTuple:) withObject:tuple waitUntilDone:NO];
                 }
-                
-                [imageGenerator generateCGImagesAsynchronouslyForTimes:frameFragments completionHandler:^(CMTime requestedTime, CGImageRef  _Nullable image, CMTime actualTime, AVAssetImageGeneratorResult result, NSError * _Nullable error) {
-                    @strongify(self);
-                    if (!image) {
-                        NSAssert(!error, @"Generate Image Error %@", error);
-                        return;
-                    }
-                    UIImage *frameImage = [[UIImage alloc] initWithCGImage:image];
-                    if (NSThread.isMainThread) {
-                        [self addFrameImage:frameImage];
-                    } else {
-                        [self performSelector:@selector(addFrameImage:) onThread:NSThread.mainThread withObject:frameImage waitUntilDone:NO];
-                    }
-                }];
-                self.imageGenerator = imageGenerator;
             }
         }
         if (error) {
-            completion(error);
+            RACTuple *tuple = [RACTuple tupleWithObjects:completion, error, requestId, nil];
+            if (NSThread.isMainThread) {
+                [self loadFramesErrorTuple:tuple];
+            } else {
+                [self performSelectorOnMainThread:@selector(loadFramesErrorTuple:) withObject:tuple waitUntilDone:NO];
+            }
         }
-        self.requestId = PHInvalidImageRequestID;
     }];
 }
 
 #pragma mark - Private
 
-- (void)addFrameImage:(UIImage *)frameImage {
+- (void)loadFramesAssetTuple:(RACTuple *)tuple {
+    @weakify(self);
+    RACTupleUnpack(void (^completion)(NSError *error), AVAsset *asset, NSNumber *requestId) = tuple;
+    if (self.requestId != requestId.intValue) {
+        return;
+    }
+    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    imageGenerator.appliesPreferredTrackTransform = YES;
+    imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
+    imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
+    CGSize size = self.collectionViewModel.collectionView.frame.size;
+    imageGenerator.maximumSize = CGSizeMake(MIN(size.width, size.height), MIN(size.width, size.height));
     
+    NSTimeInterval duration = asset.duration.value / asset.duration.timescale;
+    uint64_t frameCount = duration / self.frameInteval;
+    [self.collectionViewModel.collectionView performBatchUpdates:^{
+        @strongify(self);
+//        AVAssetTrack *videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+//        CGFloat frameRate = videoTrack.nominalFrameRate;
+        for (uint64_t index = 0; index < frameCount; ++index) {
+            VMIPVideoFrameCellViewModel *cellViewModel = VMIPVideoFrameCellViewModel.new;
+            cellViewModel.frameTime = CMTimeMake(self.frameInteval * index * 1000, 1000);
+            cellViewModel.imageGenerator = imageGenerator;
+            [self.collectionViewModel.sectionViewModels[0] addViewModel:cellViewModel];
+        }
+    } completion:^(BOOL) {
+    } animationsEnabled:NO];
+    self.imageGenerator = imageGenerator;
+    completion(nil);
+}
+
+- (void)loadFramesErrorTuple:(RACTuple *)tuple {
+    RACTupleUnpack(void (^completion)(NSError *error), NSError *error, NSNumber *requestId) = tuple;
+    if (self.requestId != requestId.intValue) {
+        return;
+    }
+    completion(error);
 }
 
 @end

@@ -12,6 +12,8 @@
 #import <Photos/PHImageManager.h>
 
 #import <ReactiveObjC/ReactiveObjC.h>
+#import <ViewModel/CollectionViewModel.h>
+#import <ViewModel/SectionViewModel.h>
 
 @interface VMIPVideoEditViewModel () <IVMIPVideoFrameCollectionControllerViewModelDelegate>
 @property (assign, nonatomic) PHImageRequestID requestId;
@@ -24,7 +26,10 @@
     if (self = [self init]) {
         _requestId = PHInvalidImageRequestID;
         _asset = asset;
-        _frameViewModel = VMIPVideoFrameCollectionControllerViewModel.new;
+        CollectionViewModel *collectionViewModel = CollectionViewModel.new;
+        SectionViewModel *sectionViewModel = SectionViewModel.new;
+        [collectionViewModel.sectionViewModels addViewModel:sectionViewModel];
+        _frameViewModel = [[VMIPVideoFrameCollectionControllerViewModel alloc] initWithCollectionViewModel:collectionViewModel];
         _frameViewModel.delegate = self;
     }
     return self;

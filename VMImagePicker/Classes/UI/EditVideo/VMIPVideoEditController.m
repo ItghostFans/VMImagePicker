@@ -8,15 +8,24 @@
 #import "VMIPVideoEditController.h"
 #import "VMIPVideoEditViewModel.h"
 #import "VMIPVideoPlayer.h"
+#import "VMImagePickerStyle.h"
+#import "VMImagePickerConfig.h"
+#import "VMIPNavigationBarStyle.h"
 #import "VMIPVideoFrameCollectionController.h"
+#import "VMImagePickerController.h"
+#import "VMIPEditVideoCropView.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
 @interface VMIPVideoEditController ()
+@property (weak, nonatomic) VMImagePickerStyle *style;
+@property (weak, nonatomic) VMImagePickerConfig *config;
+@property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 
 @property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
 @property (weak, nonatomic) VMIPVideoFrameCollectionController *frameController;
+@property (weak, nonatomic) VMIPEditVideoCropView *cropView;
 
 @end
 
@@ -24,6 +33,23 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [self styleUI];
+    [self frameController];
+}
+
+- (void)didMoveToParentViewController:(UIViewController *)parent {
+    [super didMoveToParentViewController:parent];
+    [self.frameController didMoveToParentViewController:parent ? self : nil];
+    [self cropView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    self.navigationController.navigationBarHidden = NO;
+    self.navigationController.toolbarHidden = NO;
+    self.navigationController.toolbar.subviews.firstObject.alpha = 1.0f;
+    self.navigationController.toolbar.translucent = NO;
+    NSAssert([self.navigationController isKindOfClass:VMImagePickerController.class], @"Check!");
 }
 
 - (void)setViewModel:(VMIPVideoEditViewModel *)viewModel {
@@ -37,6 +63,36 @@
         [self.videoPlayer play];
     }];
     self.frameController.viewModel = _viewModel.frameViewModel;
+}
+
+#pragma mark - Private
+
+- (void)styleUI {
+    self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
+    self.navigationBarStyle = [[VMIPNavigationBarStyle alloc] initWithController:self];
+    [self.navigationBarStyle formatBackButtonWithStyle:self.style];
+}
+
+#pragma mark - Getter
+
+- (VMImagePickerStyle *)style {
+    if (!_style) {
+        VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
+        if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
+            _style = imagePickerController.style;
+        }
+    }
+    return _style;
+}
+
+- (VMImagePickerConfig *)config {
+    if (!_config) {
+        VMImagePickerController *imagePickerController = self.navigationController ?: self.parentViewController;
+        if ([imagePickerController isKindOfClass:VMImagePickerController.class]) {
+            _config = imagePickerController.config;
+        }
+    }
+    return _config;
 }
 
 - (VMIPVideoPlayer *)videoPlayer {
@@ -67,6 +123,24 @@
         make.top.equalTo(self.videoPlayer.mas_bottom);
     }];
     return frameController;
+}
+
+- (VMIPEditVideoCropView *)cropView {
+    if (_cropView) {
+        return _cropView;
+    }
+    VMIPEditVideoCropView *cropView = VMIPEditVideoCropView.new;
+    _cropView = cropView;
+    _cropView.style = self.style;
+    [self.view addSubview:_cropView];
+    CGFloat superWidth = CGRectGetWidth(self.view.bounds);
+    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration) / self.config.videoCropDuration;
+    [_cropView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.width.mas_equalTo(factor * self.config.videoCropDuration);
+        make.centerX.equalTo(self.view);
+        make.top.bottom.equalTo(self.frameController.view);
+    }];
+    return cropView;
 }
 
 @end

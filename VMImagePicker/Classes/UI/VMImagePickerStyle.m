@@ -40,6 +40,18 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return self;
 }
 
+- (VMIPThemeColors *)themeColors {
+    if (!_themeColors) {
+        UIColor *color = RGB_HEX_COLOR(0x00C7BE);
+        _themeColors = @{
+            @(UIUserInterfaceStyleUnspecified): color,
+            @(UIUserInterfaceStyleLight): color,
+            @(UIUserInterfaceStyleDark): color,
+        };
+    }
+    return _themeColors;
+}
+
 - (VMIPThemeColors *)navigationBarBkgColors {
     if (!_navigationBarBkgColors) {
         _navigationBarBkgColors = @{

@@ -8,7 +8,11 @@
 #import <ViewModel/CellViewModel+TableView.h>
 #import <ViewModel/CellViewModel+CollectionView.h>
 
+#import <CoreMedia/CMTime.h>
+
 NS_ASSUME_NONNULL_BEGIN
+
+@class AVAssetImageGenerator;
 
 @class VMIPVideoFrameCellViewModel;
 
@@ -22,6 +26,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic ignored "-Wobjc-property-synthesis"
 @property (weak, nonatomic, nullable) id<IVMIPVideoFrameCellViewModelDelegate> delegate;
 #pragma clang diagnostic pop
+
+@property (assign, nonatomic) CMTime frameTime;
+@property (weak, nonatomic) AVAssetImageGenerator *imageGenerator;
+@property (strong, nonatomic, readonly) UIImage *frameImage;
 
 @end
 

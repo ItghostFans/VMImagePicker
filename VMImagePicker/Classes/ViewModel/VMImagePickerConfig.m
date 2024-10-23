@@ -15,6 +15,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         _count = 99;
+        _videoCropDuration = 30;
         _directory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"VMImagePicker"];
     }
     return self;

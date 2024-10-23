@@ -9,11 +9,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class VMImagePickerStyle;
+@class VMImagePickerConfig;
 @class VMIPVideoEditViewModel;
 
 @interface VMIPVideoEditController : UIViewController
 
 @property (strong, nonatomic) VMIPVideoEditViewModel *viewModel;
+
+@property (strong, nonatomic, readonly, nonnull) VMImagePickerStyle *style;
+@property (strong, nonatomic, readonly, nonnull) VMImagePickerConfig *config;
 
 @end
 

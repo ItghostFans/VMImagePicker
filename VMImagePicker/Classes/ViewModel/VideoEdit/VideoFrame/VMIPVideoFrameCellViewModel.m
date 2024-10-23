@@ -23,6 +23,8 @@
 @property (strong, nonatomic) VMIPVideoFrameCollectionCellViewModel *collectionCellViewModel;
 #endif // #if __has_include("VMIPVideoFrameCollectionCellViewModel.h")
 
+@property (strong, nonatomic) UIImage *frameImage;
+
 @end
 
 @implementation VMIPVideoFrameCellViewModel
