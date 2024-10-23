@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface VMIPEditVideoCropView : UIView
 
+@property (assign, nonatomic, readonly) CGFloat barWidth;
 @property (weak, nonatomic) VMImagePickerStyle *style;
 
 @end

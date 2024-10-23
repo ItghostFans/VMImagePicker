@@ -134,7 +134,7 @@
     _cropView.style = self.style;
     [self.view addSubview:_cropView];
     CGFloat superWidth = CGRectGetWidth(self.view.bounds);
-    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration) / self.config.videoCropDuration;
+    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration - (_cropView.barWidth * 2)) / self.config.videoCropDuration;
     [_cropView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.width.mas_equalTo(factor * self.config.videoCropDuration);
         make.centerX.equalTo(self.view);

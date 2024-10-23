@@ -11,9 +11,14 @@
 #import <Masonry/Masonry.h>
 
 @interface VMIPEditVideoCropView ()
-@property (weak, nonatomic) UIImageView *beginBarView;
-@property (weak, nonatomic) UIImageView *endBarView;
+@property (weak, nonatomic) UIView *beginBarView;
+@property (weak, nonatomic) UIView *endBarView;
+@property (weak, nonatomic) UIView *topLineView;
+@property (weak, nonatomic) UIView *bottomLineView;
 @property (assign, nonatomic) CGFloat barWidth;
+@property (assign, nonatomic) CGFloat lineHeight;
+
+@property (assign, nonatomic) CGRect originalBounds;
 @end
 
 @implementation VMIPEditVideoCropView
@@ -21,38 +26,120 @@
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         _barWidth = 20.0f;
+        _lineHeight = 3.0f;
+        _originalBounds = CGRectZero;
     }
     return self;
 }
 
+- (void)setFrame:(CGRect)frame {
+    [super setFrame:frame];
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
+    if (CGRectEqualToRect(self.bounds, _originalBounds)) {
+        return;
+    }
+    _originalBounds = self.bounds;
     self.beginBarView.frame = CGRectMake(0.0f, 0.0f, _barWidth, CGRectGetHeight(self.bounds));
     self.endBarView.frame = CGRectMake(CGRectGetWidth(self.bounds) - _barWidth, 0.0f, _barWidth, CGRectGetHeight(self.bounds));
+    [self relayoutLines];
+}
+
+#pragma mark - Private
+
+- (void)relayoutLines {
+    CGFloat beginMaxX = CGRectGetMaxX(self.beginBarView.frame);
+    CGFloat endMinX = CGRectGetMinX(self.endBarView.frame);
+    self.topLineView.frame = CGRectMake(beginMaxX, 0.0f, endMinX - beginMaxX, _lineHeight);
+    self.bottomLineView.frame = CGRectMake(beginMaxX, CGRectGetHeight(self.bounds) - _lineHeight, endMinX - beginMaxX, _lineHeight);
+}
+
+#pragma mark - Actions
+
+- (void)onBeginPan:(UIPanGestureRecognizer *)pan {
+    CGPoint translation = [pan translationInView:self];
+    CGRect frame = self.beginBarView.frame;
+    frame.origin.x += translation.x;
+    
+    // 限制移动范围
+    frame.origin.x = MAX(0, MIN(frame.origin.x, CGRectGetMinX(self.endBarView.frame) - _barWidth));
+    
+    self.beginBarView.frame = frame;
+    [pan setTranslation:CGPointZero inView:self];
+    [self relayoutLines];
+    
+    if (pan.state == UIGestureRecognizerStateEnded) {
+        // 可以在这里添加结束拖动时的逻辑，比如回调
+    }
+}
+
+- (void)onEndPan:(UIPanGestureRecognizer *)pan {
+    CGPoint translation = [pan translationInView:self];
+    CGRect frame = self.endBarView.frame;
+    frame.origin.x += translation.x;
+    
+    // 限制移动范围
+    frame.origin.x = MAX(CGRectGetMaxX(self.beginBarView.frame), MIN(frame.origin.x, CGRectGetWidth(self.bounds) - _barWidth));
+    
+    self.endBarView.frame = frame;
+    [pan setTranslation:CGPointZero inView:self];
+    [self relayoutLines];
+    
+    if (pan.state == UIGestureRecognizerStateEnded) {
+        // 可以在这里添加结束拖动时的逻辑，比如回调
+    }
 }
 
 #pragma mark - Getter
 
-- (UIImageView *)beginBarView {
+- (UIView *)beginBarView {
     if (_beginBarView) {
         return _beginBarView;
     }
-    UIImageView *beginBarView = UIImageView.new;
+    UIView *beginBarView = UIView.new;
     _beginBarView = beginBarView;
     _beginBarView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
     [self addSubview:_beginBarView];
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onBeginPan:)];
+    [_beginBarView addGestureRecognizer:pan];
     return beginBarView;
 }
 
-- (UIImageView *)endBarView {
+- (UIView *)endBarView {
     if (_endBarView) {
         return _endBarView;
     }
-    UIImageView *endBarView = UIImageView.new;
+    UIView *endBarView = UIView.new;
     _endBarView = endBarView;
     _endBarView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
     [self addSubview:_endBarView];
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onEndPan:)];
+    [_endBarView addGestureRecognizer:pan];
     return endBarView;
+}
+
+- (UIView *)topLineView {
+    if (_topLineView) {
+        return _topLineView;
+    }
+    UIView *topLineView = UIView.new;
+    _topLineView = topLineView;
+    _topLineView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
+    [self addSubview:_topLineView];
+    return topLineView;
+}
+
+- (UIView *)bottomLineView {
+    if (_bottomLineView) {
+        return _bottomLineView;
+    }
+    UIView *bottomLineView = UIView.new;
+    _bottomLineView = bottomLineView;
+    _bottomLineView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
+    [self addSubview:_bottomLineView];
+    return bottomLineView;
 }
 
 @end
