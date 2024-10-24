@@ -32,10 +32,6 @@
     return self;
 }
 
-- (void)setFrame:(CGRect)frame {
-    [super setFrame:frame];
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     if (CGRectEqualToRect(self.bounds, _originalBounds)) {
@@ -45,6 +41,14 @@
     self.beginBarView.frame = CGRectMake(0.0f, 0.0f, _barWidth, CGRectGetHeight(self.bounds));
     self.endBarView.frame = CGRectMake(CGRectGetWidth(self.bounds) - _barWidth, 0.0f, _barWidth, CGRectGetHeight(self.bounds));
     [self relayoutLines];
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    UIView *view = [super hitTest:point withEvent:event];
+    if (view == self) {
+        return nil;
+    }
+    return view;
 }
 
 #pragma mark - Private

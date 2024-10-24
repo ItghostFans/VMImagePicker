@@ -80,7 +80,10 @@
     imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     CGSize size = self.collectionViewModel.collectionView.frame.size;
-    imageGenerator.maximumSize = CGSizeMake(MIN(size.width, size.height), MIN(size.width, size.height));
+    CGFloat vFactor = size.height / asset.naturalSize.height;
+    CGFloat hFactor = size.width / asset.naturalSize.width;
+    CGFloat factor = MIN(hFactor, vFactor);
+    imageGenerator.maximumSize = CGSizeMake(asset.naturalSize.width * factor, asset.naturalSize.height * factor);
     
     NSTimeInterval duration = asset.duration.value / asset.duration.timescale;
     uint64_t frameCount = duration / self.frameInteval;

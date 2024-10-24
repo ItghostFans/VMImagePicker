@@ -104,7 +104,8 @@
     [self.view addSubview:_videoPlayer];
     [_videoPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.trailing.equalTo(self.view);
-        make.height.equalTo(self.view).multipliedBy(0.6f);
+//        make.height.equalTo(self.view).multipliedBy(0.6f);
+        make.bottom.equalTo(self.frameController.view.mas_top);
     }];
     return videoPlayer;
 }
@@ -120,7 +121,8 @@
     [_frameController.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.trailing.equalTo(self.view);
         make.bottom.equalTo(self.view.mas_safeAreaLayoutGuideBottom);
-        make.top.equalTo(self.videoPlayer.mas_bottom);
+//        make.top.equalTo(self.videoPlayer.mas_bottom);
+        make.height.mas_equalTo(72.0f);
     }];
     return frameController;
 }
@@ -134,10 +136,17 @@
     _cropView.style = self.style;
     [self.view addSubview:_cropView];
     CGFloat superWidth = CGRectGetWidth(self.view.bounds);
-    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration - (_cropView.barWidth * 2)) / self.config.videoCropDuration;
+//    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration - (_cropView.barWidth * 2)) / self.config.videoCropDuration;
+//    CGFloat width = factor * self.config.videoCropDuration;
+//    CGFloat inset = (superWidth - width) / 2 + _cropView.barWidth;
+    CGFloat margins = 10.0f;
+    CGFloat inset = margins + _cropView.barWidth;
+    self.frameController.collectionView.contentInset = UIEdgeInsetsMake(0.0f, inset, 0.0f, inset);
     [_cropView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.width.mas_equalTo(factor * self.config.videoCropDuration);
-        make.centerX.equalTo(self.view);
+//        make.width.mas_equalTo(width);
+//        make.centerX.equalTo(self.view);
+        make.leading.equalTo(self.view).offset(margins);
+        make.trailing.equalTo(self.view).offset(-margins);
         make.top.bottom.equalTo(self.frameController.view);
     }];
     return cropView;
