@@ -24,7 +24,6 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        _frameInteval = 1.0f;
     }
     return self;
 }
@@ -86,15 +85,16 @@
     imageGenerator.maximumSize = CGSizeMake(asset.naturalSize.width * factor, asset.naturalSize.height * factor);
     
     NSTimeInterval duration = asset.duration.value / asset.duration.timescale;
-    uint64_t frameCount = duration / self.frameInteval;
+    NSTimeInterval frameInterval = duration / (self.videoCropFrameCount - 1); // 要获取第一帧和最后一帧
     [self.collectionViewModel.collectionView performBatchUpdates:^{
         @strongify(self);
 //        AVAssetTrack *videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
 //        CGFloat frameRate = videoTrack.nominalFrameRate;
-        for (uint64_t index = 0; index < frameCount; ++index) {
+        for (uint64_t index = 0; index < self.videoCropFrameCount; ++index) {
             VMIPVideoFrameCellViewModel *cellViewModel = VMIPVideoFrameCellViewModel.new;
-            cellViewModel.frameTime = CMTimeMake(self.frameInteval * index * 1000, 1000);
+            cellViewModel.frameTime = CMTimeMake(frameInterval * index * 1000, 1000);
             cellViewModel.imageGenerator = imageGenerator;
+            cellViewModel.videoCropFrameCount = self.videoCropFrameCount;
             [self.collectionViewModel.sectionViewModels[0] addViewModel:cellViewModel];
         }
     } completion:^(BOOL) {

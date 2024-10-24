@@ -16,6 +16,9 @@
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
+#import <ViewModel/CollectionViewModel.h>
+#import <ViewModel/SectionViewModel+CollectionView.h>
+
 @interface VMIPVideoFrameCollectionViewModelCell ()
 @property (weak, nonatomic) UIImageView *frameImageView;
 @end
@@ -81,6 +84,8 @@
     }
     UIImageView *frameImageView = UIImageView.new;
     _frameImageView = frameImageView;
+    _frameImageView.contentMode = UIViewContentModeScaleAspectFill;
+    _frameImageView.clipsToBounds = YES;
     [self.contentView addSubview:_frameImageView];
     [_frameImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.equalTo(self.contentView);
@@ -92,7 +97,11 @@
 
 + (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPVideoFrameCollectionCellViewModel *)viewModel {
     VMIPVideoFrameCellViewModel *cellViewModel = viewModel;
-    return cellViewModel.imageGenerator.maximumSize;
+    CGRect frame = viewModel.collectionSectionViewModel.collectionViewModel.collectionView.frame;
+    UIEdgeInsets contentInsets = viewModel.collectionSectionViewModel.collectionViewModel.collectionView.contentInset;
+    CGFloat cropWidth = CGRectGetWidth(frame) - contentInsets.left - contentInsets.right;
+    CGFloat cellWidth = cropWidth / cellViewModel.videoCropFrameCount;
+    return CGSizeMake(cellWidth, CGRectGetHeight(frame));
 }
 
 @end

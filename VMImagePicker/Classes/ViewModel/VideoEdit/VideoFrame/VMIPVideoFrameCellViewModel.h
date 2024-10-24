@@ -28,8 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic pop
 
 @property (assign, nonatomic) CMTime frameTime;
-@property (weak, nonatomic) AVAssetImageGenerator *imageGenerator;
-@property (strong, nonatomic, readonly) UIImage *frameImage;
+@property (weak, nonatomic, nullable) AVAssetImageGenerator *imageGenerator;
+@property (strong, nonatomic, readonly, nullable) UIImage *frameImage;
+@property (assign, nonatomic) NSInteger videoCropFrameCount;
+//@property (assign, nonatomic) CGSize prefferredSize;
 
 @end
 

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic) CGFloat compressionQuality;           // 图片压缩比。original==NO时使用。
 @property (assign, nonatomic) NSInteger count;                      // 获取资源数量。Default is 99
 @property (assign, nonatomic) NSInteger videoCropDuration;          // 视频截取时长。Default is 30s
+@property (assign, nonatomic) NSInteger videoCropFrameCount;        // 截取展示视频帧数量。Default is 10
 
 @property (strong, nonatomic) NSString *directory;          // 生成文件的路径，由外部提供。默认Caches/VMImagePicker
 

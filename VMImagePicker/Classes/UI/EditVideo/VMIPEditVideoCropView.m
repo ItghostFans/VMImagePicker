@@ -32,6 +32,16 @@
     return self;
 }
 
+- (CGFloat)begin {
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
+    return (CGRectGetMaxX(self.beginBarView.frame) - _barWidth) / width;
+}
+
+- (CGFloat)end {
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
+    return (CGRectGetMinX(self.endBarView.frame) - _barWidth) / width;
+}
+
 - (void)layoutSubviews {
     [super layoutSubviews];
     if (CGRectEqualToRect(self.bounds, _originalBounds)) {

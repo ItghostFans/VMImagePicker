@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic, nullable) id<IVMIPVideoFrameCollectionControllerViewModelDelegate> delegate;
 #pragma clang diagnostic pop
 
-@property (assign, nonatomic) NSTimeInterval frameInteval;      // Default 1 second.
+@property (assign, nonatomic) NSInteger videoCropFrameCount;
 
 - (void)loadVideoCompletion:(void (^ _Nonnull)(NSError *error))completion;
 

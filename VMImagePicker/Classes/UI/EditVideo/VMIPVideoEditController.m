@@ -12,6 +12,7 @@
 #import "VMImagePickerConfig.h"
 #import "VMIPNavigationBarStyle.h"
 #import "VMIPVideoFrameCollectionController.h"
+#import "VMIPVideoFrameCollectionControllerViewModel.h"
 #import "VMImagePickerController.h"
 #import "VMIPEditVideoCropView.h"
 
@@ -39,6 +40,7 @@
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
     [super didMoveToParentViewController:parent];
+    self.viewModel.frameViewModel.videoCropFrameCount = self.config.videoCropFrameCount;
     [self.frameController didMoveToParentViewController:parent ? self : nil];
     [self cropView];
 }
