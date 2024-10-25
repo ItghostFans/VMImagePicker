@@ -27,6 +27,8 @@
 @property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
 @property (weak, nonatomic) VMIPVideoFrameCollectionController *frameController;
 @property (weak, nonatomic) VMIPEditVideoCropView *cropView;
+@property (weak, nonatomic) UIView *timeIndicatorView;
+@property (assign, nonatomic) CGFloat timeIndicatorWidth;
 
 @end
 
@@ -34,6 +36,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    _timeIndicatorWidth = 2.0f;
     [self styleUI];
     [self frameController];
 }
@@ -63,6 +66,19 @@
         [self.videoPlayer replaceCurrentItemWithPlayerItem:playerItem];
         // TODO: 测试播放。
         [self.videoPlayer play];
+        [RACObserve(self.videoPlayer, time) subscribeNext:^(id  _Nullable x) {
+            @strongify(self);
+            if (self.videoPlayer.duration == 0.0f) {
+                return;
+            }
+            NSTimeInterval time = [x doubleValue];
+            CGFloat progress = time / self.videoPlayer.duration;
+            CGFloat offset = self.cropView.barWidth + ((CGRectGetWidth(self.cropView.frame) - (self.cropView.barWidth * 2) - self.timeIndicatorWidth) * progress);
+            [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self.cropView).offset(offset);
+            }];
+            [self.view layoutIfNeeded];
+        }];
     }];
     self.frameController.viewModel = _viewModel.frameViewModel;
 }
@@ -152,6 +168,22 @@
         make.top.bottom.equalTo(self.frameController.view);
     }];
     return cropView;
+}
+
+- (UIView *)timeIndicatorView {
+    if (_timeIndicatorView) {
+        return _timeIndicatorView;
+    }
+    UIView *timeIndicatorView = UIView.new;
+    _timeIndicatorView = timeIndicatorView;
+    _timeIndicatorView.backgroundColor = UIColor.redColor;
+    [self.view insertSubview:_timeIndicatorView belowSubview:self.cropView];
+    [_timeIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.equalTo(self.cropView);
+        make.width.mas_equalTo(self.timeIndicatorWidth);
+        make.leading.equalTo(self.cropView).offset(self.cropView.barWidth);
+    }];
+    return timeIndicatorView;
 }
 
 @end

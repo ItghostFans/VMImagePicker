@@ -57,7 +57,7 @@ TODO: Add long description of the pod here.
 #   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'
-  s.frameworks = 'UIKit', 'Photos', 'AVFoundation', 'CoreMedia'
+  s.frameworks = 'UIKit', 'Photos', 'AVFoundation', 'CoreMedia', 'QuartzCore'
   # s.dependency 'AFNetworking', '~> 2.3'
   s.dependency 'ViewModel'
 end

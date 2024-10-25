@@ -7,10 +7,16 @@
 
 #import "VMIPVideoPlayer.h"
 
+#import <ViewModel/WeakifyProxy.h>
+#import <AVFoundation/AVAsset.h>
+
 @interface VMIPVideoPlayer ()
+@property (assign, nonatomic) NSTimeInterval time;
 
 @property (strong, nonatomic) AVPlayer *videoPlayer;
 @property (weak, nonatomic) AVPlayerLayer *videoLayer;
+@property (strong, nonatomic) WeakifyProxy *timerProxy;
+@property (strong, nonatomic) CADisplayLink *displayLink;
 
 @end
 
@@ -18,6 +24,9 @@
 #pragma clang diagnostic ignored "-Wincomplete-implementation"
 @implementation VMIPVideoPlayer
 #pragma clang diagnostic pop
+
+@dynamic status;
+@dynamic currentItem;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -32,6 +41,23 @@
     }];
 }
 
+#pragma mark - AVPlayer
+
+- (void)play {
+    [self.videoPlayer play];
+    if (@available(iOS 15.0, *)) {
+        self.displayLink.preferredFrameRateRange = CAFrameRateRangeMake(24.0f, 60.0f, 30.0f);
+    } else {
+        self.displayLink.preferredFramesPerSecond = 2;
+    }
+    [self.displayLink addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
+}
+
+- (void)pause {
+    [self.videoPlayer pause];
+    _displayLink.paused = YES;
+}
+
 #pragma mark - Public Getter
 
 - (NSTimeInterval)time {
@@ -39,6 +65,9 @@
 }
 
 - (NSTimeInterval)duration {
+    if (self.currentItem.duration.timescale == 0) {
+        return 0.0f;
+    }
     return (NSTimeInterval)self.currentItem.duration.value / self.currentItem.duration.timescale;
 }
 
@@ -61,6 +90,38 @@
     _videoLayer = videoLayer;
     [self.layer addSublayer:_videoLayer];
     return videoLayer;
+}
+
+- (WeakifyProxy *)timerProxy {
+    if (_timerProxy) {
+        return _timerProxy;
+    }
+    _timerProxy = [[WeakifyProxy alloc] initWithTarget:self];
+    return _timerProxy;
+}
+
+- (CADisplayLink *)displayLink {
+    if (_displayLink) {
+        return _displayLink;
+    }
+    _displayLink = [CADisplayLink displayLinkWithTarget:self.timerProxy selector:@selector(onPlayDisplayLink:)];
+    return _displayLink;
+}
+
+#pragma mark - Player
+
+- (void)onPlayDisplayLink:(CADisplayLink *)displayLink {
+    if (self.videoPlayer.status != AVPlayerStatusReadyToPlay) {
+        return;
+    }
+    if (self.duration == 0.0f) {
+        return;
+    }
+    self.time = (NSTimeInterval)self.videoPlayer.currentTime.value / self.videoPlayer.currentTime.timescale;
+    if (self.duration <= self.time) {
+        [_displayLink invalidate];
+        _displayLink = nil;
+    }
 }
 
 #pragma mark - Forwarding
