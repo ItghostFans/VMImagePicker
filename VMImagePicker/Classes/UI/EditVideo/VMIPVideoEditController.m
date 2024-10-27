@@ -15,6 +15,7 @@
 #import "VMIPVideoFrameCollectionControllerViewModel.h"
 #import "VMImagePickerController.h"
 #import "VMIPEditVideoCropView.h"
+#import "VMIPEditVideoTimeIndicatorView.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
@@ -25,10 +26,12 @@
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 
 @property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
+@property (weak, nonatomic) UIButton *playButton;
 @property (weak, nonatomic) VMIPVideoFrameCollectionController *frameController;
 @property (weak, nonatomic) VMIPEditVideoCropView *cropView;
-@property (weak, nonatomic) UIView *timeIndicatorView;
+@property (weak, nonatomic) VMIPEditVideoTimeIndicatorView *timeIndicatorView;
 @property (assign, nonatomic) CGFloat timeIndicatorWidth;
+@property (assign, nonatomic) BOOL progressing;                // 调进度YES
 
 @end
 
@@ -46,6 +49,11 @@
     self.viewModel.frameViewModel.videoCropFrameCount = self.config.videoCropFrameCount;
     [self.frameController didMoveToParentViewController:parent ? self : nil];
     [self cropView];
+    [[[RACSignal combineLatest:@[RACObserve(self, progressing), RACObserve(self.videoPlayer, status)]] takeUntil:self.rac_willDeallocSignal] subscribeNext:^(RACTuple * _Nullable x) {
+        @selector(self);
+        RACTupleUnpack(NSNumber *progressing, NSNumber *status) = x;
+        self.playButton.hidden = status.integerValue == VMIPVideoPlayerStatusPlaying;
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -64,8 +72,6 @@
     } completion:^(NSError * _Nonnull error, AVPlayerItem * _Nonnull playerItem) {
         @strongify(self);
         [self.videoPlayer replaceCurrentItemWithPlayerItem:playerItem];
-        // TODO: 测试播放。
-        [self.videoPlayer play];
         [RACObserve(self.videoPlayer, time) subscribeNext:^(id  _Nullable x) {
             @strongify(self);
             if (self.videoPlayer.duration == 0.0f) {
@@ -73,7 +79,7 @@
             }
             NSTimeInterval time = [x doubleValue];
             CGFloat progress = time / self.videoPlayer.duration;
-            CGFloat offset = self.cropView.barWidth + ((CGRectGetWidth(self.cropView.frame) - (self.cropView.barWidth * 2) - self.timeIndicatorWidth) * progress);
+            CGFloat offset = self.cropView.barWidth + (self.timeIndicatorOffsetWidth * progress);
             [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
                 make.leading.equalTo(self.cropView).offset(offset);
             }];
@@ -81,6 +87,59 @@
         }];
     }];
     self.frameController.viewModel = _viewModel.frameViewModel;
+    
+}
+
+#pragma mark - Actions
+
+- (void)onPlayClicked:(UIButton *)playButton {
+    if (self.videoPlayer.time == self.videoPlayer.duration) {
+        [self.videoPlayer seekToTime:0.0f completion:^(BOOL finished) {
+        }];
+    }
+    [self.videoPlayer play];
+}
+
+- (void)onTimeIndicatorPan:(UIPanGestureRecognizer *)pan {
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            self.progressing = YES;
+            [self.videoPlayer pause];
+        }
+        case UIGestureRecognizerStateChanged: {
+            CGPoint translation = [pan translationInView:self.view];
+            CGRect timeIndicatorFrameInCropView = [self.view convertRect:self.timeIndicatorView.frame toView:self.cropView];
+            CGFloat x = CGRectGetMinX(timeIndicatorFrameInCropView);
+            x += translation.x;
+            [pan setTranslation:CGPointZero inView:self.view];
+            
+            CGFloat offsetMin = self.cropView.barWidth;
+            CGFloat offsetMax = self.cropView.barWidth + self.timeIndicatorOffsetWidth;
+            CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
+            [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
+                make.leading.equalTo(self.cropView).offset(offset);
+            }];
+            [self.view layoutIfNeeded];
+            CGFloat progress = (offset - self.cropView.barWidth) / self.timeIndicatorOffsetWidth;
+            [self.videoPlayer seekToTime:progress * self.videoPlayer.duration completion:^(BOOL finished) {
+            }];
+            break;
+        }
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled: {
+            self.progressing = NO;
+            [self.videoPlayer play];
+            break;
+        }
+        case UIGestureRecognizerStateEnded: {
+            self.progressing = NO;
+            [self.videoPlayer play];
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 #pragma mark - Private
@@ -89,6 +148,10 @@
     self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
     self.navigationBarStyle = [[VMIPNavigationBarStyle alloc] initWithController:self];
     [self.navigationBarStyle formatBackButtonWithStyle:self.style];
+}
+
+- (CGFloat)timeIndicatorOffsetWidth {
+    return CGRectGetWidth(self.cropView.frame) - (self.cropView.barWidth * 2) - self.timeIndicatorWidth;
 }
 
 #pragma mark - Getter
@@ -126,6 +189,22 @@
         make.bottom.equalTo(self.frameController.view.mas_top);
     }];
     return videoPlayer;
+}
+
+- (UIButton *)playButton {
+    if (_playButton) {
+        return _playButton;
+    }
+    UIButton *playButton = UIButton.new;
+    _playButton = playButton;
+    [self.style styleButton:_playButton images:self.style.videoEditPlayImages];
+    [self.view insertSubview:_playButton aboveSubview:self.videoPlayer];
+    [_playButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(80.0f, 80.0f));
+        make.center.equalTo(self.videoPlayer);
+    }];
+    [_playButton addTarget:self action:@selector(onPlayClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return playButton;
 }
 
 - (VMIPVideoFrameCollectionController *)frameController {
@@ -170,19 +249,22 @@
     return cropView;
 }
 
-- (UIView *)timeIndicatorView {
+- (VMIPEditVideoTimeIndicatorView *)timeIndicatorView {
     if (_timeIndicatorView) {
         return _timeIndicatorView;
     }
-    UIView *timeIndicatorView = UIView.new;
+    VMIPEditVideoTimeIndicatorView *timeIndicatorView = VMIPEditVideoTimeIndicatorView.new;
     _timeIndicatorView = timeIndicatorView;
     _timeIndicatorView.backgroundColor = UIColor.redColor;
+    _timeIndicatorView.hitTestInset = UIEdgeInsetsMake(0.0f, 20.0f, 0.0f, 20.0f);
     [self.view insertSubview:_timeIndicatorView belowSubview:self.cropView];
     [_timeIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.equalTo(self.cropView);
         make.width.mas_equalTo(self.timeIndicatorWidth);
         make.leading.equalTo(self.cropView).offset(self.cropView.barWidth);
     }];
+    UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTimeIndicatorPan:)];
+    [_timeIndicatorView addGestureRecognizer:pan];
     return timeIndicatorView;
 }
 

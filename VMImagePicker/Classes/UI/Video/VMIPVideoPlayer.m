@@ -12,6 +12,7 @@
 
 @interface VMIPVideoPlayer ()
 @property (assign, nonatomic) NSTimeInterval time;
+@property (assign, nonatomic) VMIPVideoPlayerStatus status;
 
 @property (strong, nonatomic) AVPlayer *videoPlayer;
 @property (weak, nonatomic) AVPlayerLayer *videoLayer;
@@ -25,7 +26,7 @@
 @implementation VMIPVideoPlayer
 #pragma clang diagnostic pop
 
-@dynamic status;
+@dynamic error;
 @dynamic currentItem;
 
 - (void)layoutSubviews {
@@ -34,7 +35,10 @@
 }
 
 - (void)seekToTime:(NSTimeInterval)time completion:(void (^ _Nullable)(BOOL finished))completion {
-    [self.videoPlayer seekToTime:CMTimeMake(time * 1000, 1000) completionHandler:^(BOOL finished) {
+    [self.videoPlayer seekToTime:CMTimeMakeWithSeconds(time, 1000)
+                 toleranceBefore:kCMTimeZero
+                  toleranceAfter:kCMTimePositiveInfinity
+               completionHandler:^(BOOL finished) {
         if (completion) {
             completion(finished);
         }
@@ -43,14 +47,54 @@
 
 #pragma mark - AVPlayer
 
+- (void)replaceCurrentItemWithPlayerItem:(AVPlayerItem *)playerItem {
+    [self.videoPlayer replaceCurrentItemWithPlayerItem:playerItem];
+    switch (self.videoPlayer.status) {
+        case AVPlayerStatusReadyToPlay: {
+            self.status = VMIPVideoPlayerStatusReady;
+            break;
+        }
+        case AVPlayerStatusFailed: {
+            self.status = VMIPVideoPlayerStatusError;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
+}
+
 - (void)play {
     [self.videoPlayer play];
+    if (_displayLink) {
+        _displayLink.paused = NO;
+        return;
+    }
     if (@available(iOS 15.0, *)) {
         self.displayLink.preferredFrameRateRange = CAFrameRateRangeMake(24.0f, 60.0f, 30.0f);
     } else {
         self.displayLink.preferredFramesPerSecond = 2;
     }
     [self.displayLink addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
+}
+
+#pragma mark - AVPlayer Private
+
+- (void)updateByTimeControlStatus {
+    switch (self.videoPlayer.timeControlStatus) {
+        case AVPlayerTimeControlStatusPaused: {
+            if (self.status != VMIPVideoPlayerStatusPause) {
+                self.status = VMIPVideoPlayerStatusPause;
+            }
+            break;
+        }
+        case AVPlayerTimeControlStatusPlaying: {
+            if (self.status != VMIPVideoPlayerStatusPlaying) {
+                self.status = VMIPVideoPlayerStatusPlaying;
+            }
+            break;
+        }
+    }
 }
 
 - (void)pause {
@@ -111,16 +155,25 @@
 #pragma mark - Player
 
 - (void)onPlayDisplayLink:(CADisplayLink *)displayLink {
-    if (self.videoPlayer.status != AVPlayerStatusReadyToPlay) {
-        return;
-    }
-    if (self.duration == 0.0f) {
+//    if (self.videoPlayer.status != AVPlayerStatusReadyToPlay) {
+//        return;
+//    }
+//    if (self.duration == 0.0f) {
+//        return;
+//    }
+    if (self.videoPlayer.error) {
+        self.status = VMIPVideoPlayerStatusError;
+        [_displayLink invalidate];
+        _displayLink = nil;
         return;
     }
     self.time = (NSTimeInterval)self.videoPlayer.currentTime.value / self.videoPlayer.currentTime.timescale;
     if (self.duration <= self.time) {
+        self.status = VMIPVideoPlayerStatusEnd;
         [_displayLink invalidate];
         _displayLink = nil;
+    } else {
+        [self updateByTimeControlStatus];
     }
 }
 

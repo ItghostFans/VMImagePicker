@@ -99,6 +99,10 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 @property (strong, nonatomic) VMIPCellThemeColors *assetSelectedTitleColors;
 @property (strong, nonatomic) VMIPCellThemeFonts *assetSelectedTitleFonts;
 
+#pragma mark - VideoEdit
+@property (strong, nonatomic) VMIPCellThemeImages *videoEditPlayImages;
+@property (strong, nonatomic) VMIPCellThemeImages *videoEditPauseImages;
+
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors;
 - (UIFont *)fontWithThemeFonts:(VMIPThemeFonts *)themeFonts;
 - (UIFont *)fontWithControlThemeFonts:(VMIPControlThemeFonts *)themeFonts state:(UIControlState)state;

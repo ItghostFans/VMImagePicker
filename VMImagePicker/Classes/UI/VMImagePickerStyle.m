@@ -443,6 +443,42 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return _assetSelectedTitleFonts;
 }
 
+#pragma mark - VideoEdit
+
+- (VMIPCellThemeImages *)videoEditPlayImages {
+    if (!_videoEditPlayImages) {
+        UIImage *normalImage = [self imageNamed:@"play.circle"];
+        _videoEditPlayImages = @{
+            @(UIUserInterfaceStyleLight): @{
+                @(NO): normalImage,
+                @(YES): normalImage,
+            },
+            @(UIUserInterfaceStyleDark): @{
+                @(NO): normalImage,
+                @(YES): normalImage,
+            },
+        };
+    }
+    return _videoEditPlayImages;
+}
+
+- (VMIPCellThemeImages *)videoEditPauseImages {
+    if (!_videoEditPauseImages) {
+        UIImage *normalImage = [self imageNamed:@""];
+        _videoEditPauseImages = @{
+            @(UIUserInterfaceStyleLight): @{
+                @(NO): normalImage,
+                @(YES): normalImage,
+            },
+            @(UIUserInterfaceStyleDark): @{
+                @(NO): normalImage,
+                @(YES): normalImage,
+            },
+        };
+    }
+    return _videoEditPauseImages;
+}
+
 #pragma mark - Public
 
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors {
