@@ -34,9 +34,13 @@
     self.videoLayer.frame = self.bounds;
 }
 
+- (void)dealloc {
+    [_displayLink invalidate];
+}
+
 - (void)seekToTime:(NSTimeInterval)time completion:(void (^ _Nullable)(BOOL finished))completion {
     [self.videoPlayer seekToTime:CMTimeMakeWithSeconds(time, 1000)
-                 toleranceBefore:kCMTimeZero
+                 toleranceBefore:kCMTimePositiveInfinity
                   toleranceAfter:kCMTimePositiveInfinity
                completionHandler:^(BOOL finished) {
         if (completion) {

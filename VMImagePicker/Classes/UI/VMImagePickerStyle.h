@@ -85,7 +85,7 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 @property (strong, nonatomic) VMIPControlThemeTitles *toolDoneButtonTitles;
 
 #pragma mark - Album
-@property (assign, nonatomic) NSString *albumTitle;
+@property (strong, nonatomic) NSString *albumTitle;
 @property (assign, nonatomic) CGFloat albumCellHeight;
 
 @property (strong, nonatomic) VMIPCellThemeColors *albumCellBkgColors;

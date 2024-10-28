@@ -1,11 +1,11 @@
 //
-//  VMIPVideoEditViewModel.h
+//  VMIPVideoViewModel.h
 //  VMImagePicker
 //
-//  Created by ItghostFan on 2024/10/20.
+//  Created by ItghostFan on 2024/10/27.
 //
 
-#import <ViewModel/BaseViewModel.h>
+#import <Foundation/Foundation.h>
 
 #import <Photos/PHImageManager.h>
 
@@ -13,11 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class PHAsset;
 @class AVPlayerItem;
-@class VMIPVideoFrameCollectionControllerViewModel;
 
-@interface VMIPVideoEditViewModel : BaseViewModel
-
-@property (strong, nonatomic, readonly) VMIPVideoFrameCollectionControllerViewModel *frameViewModel;
+@interface VMIPVideoViewModel : NSObject
 
 @property (weak, nonatomic, readonly) PHAsset *asset;
 

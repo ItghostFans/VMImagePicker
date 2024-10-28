@@ -14,6 +14,7 @@
 #endif // #if __has_include("VMIPPreviewCollectionCellViewModel.h")
 
 #import "VMIPAssetCellViewModel.h"
+#import "VMIPVideoViewModel.h"
 
 @interface VMIPPreviewCellViewModel ()
 
@@ -25,6 +26,7 @@
 @property (strong, nonatomic) VMIPPreviewCollectionCellViewModel *collectionCellViewModel;
 #endif // #if __has_include("VMIPPreviewCollectionCellViewModel.h")
 
+@property (strong, nonatomic) VMIPVideoViewModel *videoViewModel;
 @end
 
 @implementation VMIPPreviewCellViewModel
@@ -45,8 +47,14 @@
 - (instancetype)initWithAssetCellViewModel:(VMIPAssetCellViewModel *)assetCellViewModel {
     if (self = [self init]) {
         _assetCellViewModel = assetCellViewModel;
+        _videoViewModel = [[VMIPVideoViewModel alloc] initWithAsset:_assetCellViewModel.asset];
     }
     return self;
+}
+
+- (PHImageRequestID)loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
+                 completion:(void (^ _Nonnull)(NSError *error, AVPlayerItem *playerItem))completion {
+    return [_videoViewModel loading:loading completion:completion];
 }
 
 #pragma mark - Fowarding

@@ -20,6 +20,7 @@
 
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
+#import <ViewModel/UICollectionView+ViewModel.h>
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -63,9 +64,12 @@
         self.collectionView.collectionViewLayout = collectionViewFlowLayout;
         collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
         self.viewModel.collectionViewModel.collectionView = self.collectionView;
-        if (self.previewIndexPath) {
-            [self.collectionView scrollToItemAtIndexPath:self.previewIndexPath atScrollPosition:(UICollectionViewScrollPositionNone) animated:NO];
-        }
+        [self.collectionView performBatchUpdates:^{
+        } completion:^(BOOL) {
+            if (self.previewIndexPath) {
+                [self.collectionView scrollToItemAtIndexPath:self.previewIndexPath atScrollPosition:(UICollectionViewScrollPositionNone) animated:NO];
+            }
+        } animationsEnabled:NO];
     }
 }
 

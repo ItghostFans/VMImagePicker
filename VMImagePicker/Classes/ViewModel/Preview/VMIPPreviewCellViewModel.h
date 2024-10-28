@@ -8,8 +8,11 @@
 #import <ViewModel/CellViewModel+TableView.h>
 #import <ViewModel/CellViewModel+CollectionView.h>
 
+#import <Photos/PHImageManager.h>
+
 NS_ASSUME_NONNULL_BEGIN
 
+@class AVPlayerItem;
 @class VMIPPreviewCellViewModel;
 @class VMIPAssetCellViewModel;
 
@@ -27,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) VMIPAssetCellViewModel *assetCellViewModel;
 
 - (instancetype)initWithAssetCellViewModel:(VMIPAssetCellViewModel *)assetCellViewModel;
+
+- (PHImageRequestID)loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
+                 completion:(void (^ _Nonnull)(NSError *error, AVPlayerItem *playerItem))completion;
 
 @end
 

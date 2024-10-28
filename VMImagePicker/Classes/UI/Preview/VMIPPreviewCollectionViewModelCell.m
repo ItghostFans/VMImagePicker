@@ -13,6 +13,7 @@
 #import "VMIPPreviewCollectionController.h"
 #import "VMImagePickerStyle.h"
 #import "VMImagePickerConfig.h"
+#import "VMIPVideoPlayer.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
@@ -25,6 +26,8 @@
 @property (weak, nonatomic) UIView *previewContentView;
 @property (weak, nonatomic) UIImageView *previewView;
 @property (assign, nonatomic) PHImageRequestID requestId;
+@property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
+@property (weak, nonatomic) UIButton *playButton;
 @end
 
 @implementation VMIPPreviewCollectionViewModelCell
@@ -58,26 +61,72 @@
     }
     @weakify(self);
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
-    self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
-    [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:NO];
-    [self updateContentFrame];
-    self.requestId = [PHImageManager.defaultManager requestImageOfAsset:cellViewModel.assetCellViewModel.asset progressing:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
-    } completion:^(BOOL finished, UIImage * _Nullable result, NSDictionary * _Nullable info) {
-        if (!finished) {
-            return;
+    self.previewScrollView.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeImage;
+    self.videoPlayer.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeVideo;
+    self.playButton.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeVideo;
+    switch (cellViewModel.assetCellViewModel.asset.mediaType) {
+        case PHAssetMediaTypeImage: {
+            self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
+            [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:NO];
+            [self updateContentFrame];
+            self.requestId = [PHImageManager.defaultManager requestImageOfAsset:cellViewModel.assetCellViewModel.asset progressing:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+            } completion:^(BOOL finished, UIImage * _Nullable result, NSDictionary * _Nullable info) {
+                if (!finished) {
+                    return;
+                }
+                @strongify(self);
+                if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
+                    return;
+                }
+                self.previewView.image = result;
+                self.requestId = PHInvalidImageRequestID;
+            }];
+            break;
         }
-        @strongify(self);
-        if ([info[PHImageResultRequestIDKey] intValue] != self.requestId) {
-            return;
+        case PHAssetMediaTypeVideo: {
+            self.requestId = [cellViewModel loading:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+            } completion:^(NSError * _Nonnull error, AVPlayerItem * _Nonnull playerItem) {
+                @strongify(self);
+                [self.videoPlayer replaceCurrentItemWithPlayerItem:playerItem];
+//                [RACObserve(self.videoPlayer, time) subscribeNext:^(id  _Nullable x) {
+//                    @strongify(self);
+//                    if (self.videoPlayer.duration == 0.0f) {
+//                        return;
+//                    }
+//                    NSTimeInterval time = [x doubleValue];
+//                    CGFloat progress = time / self.videoPlayer.duration;
+//                    CGFloat offset = self.cropView.barWidth + (self.timeIndicatorOffsetWidth * progress);
+//                    [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
+//                        make.leading.equalTo(self.cropView).offset(offset);
+//                    }];
+//                    [self.view layoutIfNeeded];
+//                }];
+                self.requestId = PHInvalidImageRequestID;
+            }];
+            [[RACObserve(self.videoPlayer, status) takeUntil:[self rac_signalForSelector:@selector(prepareForReuse)]] subscribeNext:^(id  _Nullable x) {
+                @strongify(self);
+                VMIPVideoPlayerStatus status = [x integerValue];
+                self.playButton.hidden = status == VMIPVideoPlayerStatusPlaying;
+            }];
+            break;
         }
-        self.previewView.image = result;
-        self.requestId = PHInvalidImageRequestID;
-    }];
+        default: {
+            break;
+        }
+    }
 }
 
 #pragma mark - Public
 
 #pragma mark - Actions
+
+- (void)onPlayClicked:(UIButton *)playButton {
+    if (self.videoPlayer.time == self.videoPlayer.duration) {
+        [self.videoPlayer seekToTime:0.0f completion:^(BOOL finished) {
+        }];
+    }
+    [self.videoPlayer play];
+}
 
 #pragma mark - Private
 
@@ -127,6 +176,8 @@
     }
     return _vmipConfig;
 }
+
+#pragma mark - Getter Image
 
 - (UIScrollView *)previewScrollView {
     if (_previewScrollView) {
@@ -178,6 +229,38 @@
     }];
     return previewView;
 }
+
+#pragma mark - Getter Video
+
+- (VMIPVideoPlayer *)videoPlayer {
+    if (_videoPlayer) {
+        return _videoPlayer;
+    }
+    VMIPVideoPlayer *videoPlayer = VMIPVideoPlayer.new;
+    _videoPlayer = videoPlayer;
+    [self.contentView addSubview:_videoPlayer];
+    [_videoPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.contentView);
+    }];
+    return videoPlayer;
+}
+
+- (UIButton *)playButton {
+    if (_playButton) {
+        return _playButton;
+    }
+    UIButton *playButton = UIButton.new;
+    _playButton = playButton;
+    [self.vmipStyle styleButton:_playButton images:self.vmipStyle.videoEditPlayImages];
+    [self.contentView insertSubview:_playButton aboveSubview:self.videoPlayer];
+    [_playButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.size.mas_equalTo(CGSizeMake(80.0f, 80.0f));
+        make.center.equalTo(self.videoPlayer);
+    }];
+    [_playButton addTarget:self action:@selector(onPlayClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return playButton;
+}
+
 #pragma mark - UIScrollViewDelegate
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {

@@ -31,7 +31,6 @@
 @property (weak, nonatomic) VMIPEditVideoCropView *cropView;
 @property (weak, nonatomic) VMIPEditVideoTimeIndicatorView *timeIndicatorView;
 @property (assign, nonatomic) CGFloat timeIndicatorWidth;
-@property (assign, nonatomic) BOOL progressing;                // 调进度YES
 
 @end
 
@@ -46,13 +45,14 @@
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
     [super didMoveToParentViewController:parent];
+    @weakify(self);
     self.viewModel.frameViewModel.videoCropFrameCount = self.config.videoCropFrameCount;
     [self.frameController didMoveToParentViewController:parent ? self : nil];
     [self cropView];
-    [[[RACSignal combineLatest:@[RACObserve(self, progressing), RACObserve(self.videoPlayer, status)]] takeUntil:self.rac_willDeallocSignal] subscribeNext:^(RACTuple * _Nullable x) {
-        @selector(self);
-        RACTupleUnpack(NSNumber *progressing, NSNumber *status) = x;
-        self.playButton.hidden = status.integerValue == VMIPVideoPlayerStatusPlaying;
+    [[RACObserve(self.videoPlayer, status) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        VMIPVideoPlayerStatus status = [x integerValue];
+        self.playButton.hidden = status == VMIPVideoPlayerStatusPlaying;
     }];
 }
 
@@ -103,7 +103,6 @@
 - (void)onTimeIndicatorPan:(UIPanGestureRecognizer *)pan {
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
-            self.progressing = YES;
             [self.videoPlayer pause];
         }
         case UIGestureRecognizerStateChanged: {
@@ -127,12 +126,10 @@
         }
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            self.progressing = NO;
             [self.videoPlayer play];
             break;
         }
         case UIGestureRecognizerStateEnded: {
-            self.progressing = NO;
             [self.videoPlayer play];
             break;
         }
