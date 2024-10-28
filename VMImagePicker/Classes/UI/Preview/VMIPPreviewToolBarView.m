@@ -27,9 +27,9 @@
 - (void)didMoveToSuperview {
     [super didMoveToSuperview];
     if (self.superview) {
-        [self mas_makeConstraints:^(MASConstraintMaker *make) {
-            make.edges.equalTo(self.superview);
-        }];
+//        [self mas_makeConstraints:^(MASConstraintMaker *make) {
+//            make.edges.equalTo(self.superview);
+//        }];
     }
 }
 
