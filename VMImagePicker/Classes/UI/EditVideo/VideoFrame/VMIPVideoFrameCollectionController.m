@@ -11,6 +11,7 @@
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionViewModel.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface VMIPVideoFrameCollectionController ()
 // TODO: 添加需要的View，建议使用懒加载
@@ -23,7 +24,7 @@
     self.view.backgroundColor = UIColor.whiteColor;
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
+        make.directionalEdges.equalTo(self.view);
     }];
 }
 

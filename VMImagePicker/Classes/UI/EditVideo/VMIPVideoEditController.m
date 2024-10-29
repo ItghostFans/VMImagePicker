@@ -17,6 +17,8 @@
 #import "VMIPEditVideoCropView.h"
 #import "VMIPEditVideoTimeIndicatorView.h"
 
+#import <VMLocalization/VMLocalization.h>
+
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -235,7 +237,7 @@
 //    CGFloat inset = (superWidth - width) / 2 + _cropView.barWidth;
     CGFloat margins = 10.0f;
     CGFloat inset = margins + _cropView.barWidth;
-    self.frameController.collectionView.contentInset = UIEdgeInsetsMake(0.0f, inset, 0.0f, inset);
+    self.frameController.collectionView.contentInset = UIDirectionalEdgesInsetsMake(0.0f, inset, 0.0f, inset);
     [_cropView mas_makeConstraints:^(MASConstraintMaker *make) {
 //        make.width.mas_equalTo(width);
 //        make.centerX.equalTo(self.view);

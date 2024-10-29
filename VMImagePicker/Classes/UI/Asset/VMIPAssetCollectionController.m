@@ -20,6 +20,8 @@
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
 #import <ViewModel/CollectionViewModel+UICollectionViewDelegate.h>
+#import <VMLocalization/VMLocalization.h>
+
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
 
@@ -58,7 +60,7 @@
     if (collectionViewFlowLayout.rowCount) {
         collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     }
-    collectionViewFlowLayout.contentInset = UIEdgeInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
+    collectionViewFlowLayout.contentInset = UIDirectionalEdgesInsetsMake(10.0f, 5.0f, 10.0f, 5.0f);
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     collectionViewFlowLayout.viewModel = self.viewModel.collectionViewModel;
     self.collectionView.delegate = self;

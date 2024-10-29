@@ -311,6 +311,7 @@
 				"${BUILT_PRODUCTS_DIR}/ReactiveObjC/ReactiveObjC.framework",
 				"${BUILT_PRODUCTS_DIR}/TZImagePickerController/TZImagePickerController.framework",
 				"${BUILT_PRODUCTS_DIR}/VMImagePicker/VMImagePicker.framework",
+				"${BUILT_PRODUCTS_DIR}/VMLocalization/VMLocalization.framework",
 				"${BUILT_PRODUCTS_DIR}/ViewModel/ViewModel.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
@@ -319,6 +320,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ReactiveObjC.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/TZImagePickerController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/VMImagePicker.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/VMLocalization.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ViewModel.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;

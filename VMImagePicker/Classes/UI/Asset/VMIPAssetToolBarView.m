@@ -10,6 +10,8 @@
 
 #import <Masonry/Masonry.h>
 
+#import <VMLocalization/VMLocalization.h>
+
 @interface VMIPAssetToolBarView ()
 @property (weak, nonatomic) UIButton *previewButton;
 @property (weak, nonatomic) UIButton *originalButton;
@@ -24,13 +26,12 @@
     return self;
 }
 
-- (void)didMoveToSuperview {
-    [super didMoveToSuperview];
-    if (self.superview) {
-//        [self mas_makeConstraints:^(MASConstraintMaker *make) {
-//            make.edges.equalTo(self.superview);
-//        }];
-    }
+- (CGSize)intrinsicContentSize {
+    UINavigationController *navigationController = self;
+    do {
+        navigationController = navigationController.nextResponder;
+    } while (navigationController && ![navigationController isKindOfClass:UINavigationController.class]);
+    return navigationController.toolbar.frame.size;
 }
 
 #pragma mark - Getter
@@ -57,8 +58,8 @@
     }
     UIButton *originalButton = UIButton.new;
     _originalButton = originalButton;
-    _originalButton.contentEdgeInsets = UIEdgeInsetsMake(0.0f, 3.0f, 0.0f, 0.0f);
-    _originalButton.imageEdgeInsets = UIEdgeInsetsMake(0.0f, -6.0f, 0.0f, 0.0f);
+    _originalButton.contentEdgeInsets = UIDirectionalEdgesInsetsMake(0.0f, 3.0f, 0.0f, 0.0f);
+    _originalButton.imageEdgeInsets = UIDirectionalEdgesInsetsMake(0.0f, -6.0f, 0.0f, 0.0f);
     [self.style styleButton:_originalButton titles:self.style.toolOriginalButtonTitles];
     [self.style styleButton:_originalButton titleColors:self.style.toolButtonTitleColors];
     [self.style styleButton:_originalButton fonts:self.style.toolButtonTitleFonts];

@@ -18,6 +18,7 @@
 
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/SectionViewModel+CollectionView.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface VMIPVideoFrameCollectionViewModelCell ()
 @property (weak, nonatomic) UIImageView *frameImageView;
@@ -88,7 +89,7 @@
     _frameImageView.clipsToBounds = YES;
     [self.contentView addSubview:_frameImageView];
     [_frameImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.contentView);
+        make.directionalEdges.equalTo(self.contentView);
     }];
     return frameImageView;
 }

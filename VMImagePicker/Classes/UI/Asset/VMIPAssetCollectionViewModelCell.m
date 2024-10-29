@@ -14,6 +14,7 @@
 
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <Masonry/Masonry.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface VMIPAssetCellViewModel ()
 @property (assign, nonatomic) BOOL selected;
@@ -110,7 +111,7 @@
     _previewImageView.clipsToBounds = YES;
     [self.contentView addSubview:_previewImageView];
     [_previewImageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsZero);
+        make.directionalEdges.mas_equalTo(UIEdgeInsetsZero);
     }];
     return previewImageView;
 }

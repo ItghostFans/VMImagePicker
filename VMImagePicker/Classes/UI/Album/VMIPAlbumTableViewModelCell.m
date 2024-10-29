@@ -13,6 +13,7 @@
 
 #import <Masonry/Masonry.h>
 #import <ViewModel/TableViewModel.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface VMIPAlbumTableViewModelCell ()
 @property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
@@ -74,7 +75,7 @@
     _nameLabel.font = [self.vmipStyle fontWithCellFonts:self.vmipStyle.albumCellNameFonts selected:NO];
     [self.contentView addSubview:_nameLabel];
     [_nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsMake(0.0f, 6.0f, 0.0f, 0.0f));
+        make.directionalEdges.mas_equalTo(UIEdgeInsetsMake(0.0f, 6.0f, 0.0f, 0.0f));
     }];
     return nameLabel;
 }

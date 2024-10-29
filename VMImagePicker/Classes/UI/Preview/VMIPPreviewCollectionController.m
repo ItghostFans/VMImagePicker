@@ -21,6 +21,8 @@
 #import <ViewModel/CollectionViewModel.h>
 #import <ViewModel/ColumnRowFlowLayout.h>
 #import <ViewModel/UICollectionView+ViewModel.h>
+#import <VMLocalization/VMLocalization.h>
+
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -42,7 +44,7 @@
     [self styleUI];
     [self.view addSubview:self.collectionView];
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.view);
+        make.directionalEdges.equalTo(self.view);
     }];
     self.collectionView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     

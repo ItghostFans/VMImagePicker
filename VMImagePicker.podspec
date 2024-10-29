@@ -33,6 +33,11 @@ TODO: Add long description of the pod here.
   s.default_subspec = 'Photos'
   s.preserve_paths = '**'
   
+  s.subspec 'Localization' do |subspec|
+    subspec.source_files = 'VMImagePicker/Classes/Localization/**/*', 'VMImagePicker/Private/Localization/**/*.h'
+    subspec.private_header_files = 'VMImagePicker/Private/Localization/**/*.h'
+  end
+  
   s.subspec 'Photos' do |subspec|
     subspec.source_files = 'VMImagePicker/Classes/Photos/**/*', 'VMImagePicker/Private/Photos/**/*.h'
     subspec.private_header_files = 'VMImagePicker/Private/Photos/**/*.h'
@@ -49,7 +54,9 @@ TODO: Add long description of the pod here.
     subspec.private_header_files = 'VMImagePicker/Private/UI/**/*.h'
     subspec.resource = 'VMImagePicker/VMImagePicker.bundle'
     subspec.dependency 'VMImagePicker/ViewModel'
+    subspec.dependency 'VMImagePicker/Localization'
     subspec.dependency 'Masonry'
+    subspec.dependency 'VMLocalization'
   end
   
 #   s.resource_bundles = {

@@ -10,6 +10,7 @@ target 'VMImagePicker_Example' do
   pod 'VMImagePicker/UI', :path => '../'
   
   pod 'ViewModel', :path => '../../ViewModel'
+  pod 'VMLocalization', :path => '../../VMLocalization'
 #  pod 'ViewModel'#, '1.0.1'
   pod 'TZImagePickerController'
 

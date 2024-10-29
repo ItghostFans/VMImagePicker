@@ -18,6 +18,7 @@
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 #import <ViewModel/CollectionViewModel.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface VMIPPreviewCollectionViewModelCell () <UIScrollViewDelegate>
 @property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
@@ -57,6 +58,8 @@
         self.requestId = PHInvalidImageRequestID;
     }
     if (!viewModel) {
+        [self.videoPlayer removeFromSuperview];
+        [self.playButton removeFromSuperview];
         return;
     }
     @weakify(self);
@@ -198,7 +201,7 @@
     _previewScrollView.delegate = self;
     [self.contentView addSubview:_previewScrollView];
     [_previewScrollView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsZero);
+        make.directionalEdges.mas_equalTo(UIEdgeInsetsZero);
     }];
     return previewScrollView;
 }
@@ -225,7 +228,7 @@
     _previewView.clipsToBounds = YES;
     [self.previewContentView addSubview:_previewView];
     [_previewView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.mas_equalTo(UIEdgeInsetsZero);
+        make.directionalEdges.mas_equalTo(UIEdgeInsetsZero);
     }];
     return previewView;
 }
@@ -240,7 +243,7 @@
     _videoPlayer = videoPlayer;
     [self.contentView addSubview:_videoPlayer];
     [_videoPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.contentView);
+        make.directionalEdges.equalTo(self.contentView);
     }];
     return videoPlayer;
 }
