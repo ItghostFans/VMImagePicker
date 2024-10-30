@@ -42,7 +42,7 @@
     [super viewDidLoad];
     _timeIndicatorWidth = 2.0f;
     [self styleUI];
-    [self frameController];
+    self.frameController.viewModel = _viewModel.frameViewModel;
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
@@ -88,7 +88,6 @@
             [self.view layoutIfNeeded];
         }];
     }];
-    self.frameController.viewModel = _viewModel.frameViewModel;
     
 }
 

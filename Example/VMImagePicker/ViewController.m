@@ -18,9 +18,11 @@
 #import <VMImagePicker/VMImagePicker.h>
 #import <VMImagePicker/VMImagePickerConfig.h>
 #import <VMImagePicker/VMImagePickerQueue.h>
+#import <VMLocalization/VMLocalization.h>
 
 @interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
+@property (weak, nonatomic) UITextView *inputTextView;
 @end
 
 @implementation ViewController
@@ -28,6 +30,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.openImagePickerButton addTarget:self action:@selector(onOpenImagePickerClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [self inputTextView];
 }
 
 #pragma mark - Private
@@ -75,6 +78,22 @@
     }
     NSLocalizedString(@"(%@/%@)", nil);
     return _openImagePickerButton;
+}
+
+- (UITextView *)inputTextView {
+    if (_inputTextView) {
+        return _inputTextView;
+    }
+    UITextView *inputTextView = UITextView.new;
+    _inputTextView = inputTextView;
+    _inputTextView.flipsTextAlignment = YES;
+    [self.view addSubview:_inputTextView];
+    [_inputTextView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.view.mas_safeAreaLayoutGuideTop);
+        make.leading.trailing.equalTo(self.view);
+        make.bottom.equalTo(self.openImagePickerButton.mas_top);
+    }];
+    return inputTextView;
 }
 
 #pragma mark - Actions

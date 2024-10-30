@@ -126,6 +126,9 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 - (VMIPControlThemeImages *)navigationBarBackButtonImages {
     if (!_navigationBarBackButtonImages) {
         UIImage *image = [self imageNamed:@"chevron.backward"];
+        if ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:UIView.appearance.semanticContentAttribute] == UIUserInterfaceLayoutDirectionRightToLeft) {
+            image = [image imageFlippedForRightToLeftLayoutDirection];
+        }
         NSMutableDictionary *images = NSMutableDictionary.new;
         images[@(UIControlStateNormal)] = image;
         images[@(UIControlStateHighlighted)] = image;
@@ -334,7 +337,7 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 - (NSString *)albumTitle {
     if (!_albumTitle) {
-        _albumTitle = VMIPLocalizedString(@"Albums", @"");
+        _albumTitle = VMIPLocalizedString(@"Album", @"");
     }
     return _albumTitle;
 }
