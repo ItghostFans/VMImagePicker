@@ -115,6 +115,7 @@
     UIView *beginBarView = UIView.new;
     _beginBarView = beginBarView;
     _beginBarView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
+    _beginBarView.backgroundColor = UIColor.blueColor;
     [self addSubview:_beginBarView];
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onBeginPan:)];
     [_beginBarView addGestureRecognizer:pan];

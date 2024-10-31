@@ -23,6 +23,8 @@
 @interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
 @property (weak, nonatomic) UITextView *inputTextView;
+@property (weak, nonatomic) UIProgressView *progressView;
+@property (weak, nonatomic) UISlider *slider;
 @end
 
 @implementation ViewController
@@ -31,6 +33,8 @@
     [super viewDidLoad];
     [self.openImagePickerButton addTarget:self action:@selector(onOpenImagePickerClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     [self inputTextView];
+    [self progressView];
+    [self slider];
 }
 
 #pragma mark - Private
@@ -69,7 +73,8 @@
     if (!_openImagePickerButton) {
         UIButton *openImagePickerButton = UIButton.new;
         _openImagePickerButton = openImagePickerButton;
-        [_openImagePickerButton setTitleColor:UIColor.blackColor forState:(UIControlStateNormal)];
+        [_openImagePickerButton setTitleColor:[UIColor colorWithRed:0.0f green:(CGFloat)0xC7 / 255.0f blue:(CGFloat)0xBE / 255.0f alpha:1.0f] forState:(UIControlStateNormal)];
+        [_openImagePickerButton setImage:[UIImage imageNamed:@"photo.circle"] forState:(UIControlStateNormal)];
         [_openImagePickerButton setTitle:NSLocalizedString(@"Open", nil) forState:(UIControlStateNormal)];
         [self.view addSubview:_openImagePickerButton];
         [_openImagePickerButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -94,6 +99,37 @@
         make.bottom.equalTo(self.openImagePickerButton.mas_top);
     }];
     return inputTextView;
+}
+
+- (UISlider *)slider {
+    if (_slider) {
+        return _slider;
+    }
+    UISlider *slider = UISlider.new;
+    _slider = slider;
+    _slider.maximumValue = 100;
+    _slider.minimumValue = 0;
+    [self.view addSubview:_slider];
+    [_slider mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.progressView.mas_bottom).offset(10.0f);
+        make.leading.trailing.equalTo(self.view);
+    }];
+    return slider;
+}
+
+- (UIProgressView *)progressView {
+    if (_progressView) {
+        return _progressView;
+    }
+    UIProgressView *progressView = UIProgressView.new;
+    _progressView = progressView;
+    _progressView.progress = 0.7f;
+    [self.view addSubview:_progressView];
+    [_progressView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.openImagePickerButton.mas_bottom).offset(10.0f);
+        make.leading.trailing.equalTo(self.view);
+    }];
+    return progressView;
 }
 
 #pragma mark - Actions

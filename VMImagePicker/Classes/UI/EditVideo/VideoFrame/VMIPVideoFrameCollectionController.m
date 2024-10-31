@@ -13,21 +13,6 @@
 #import <ViewModel/CollectionViewModel.h>
 #import <VMLocalization/VMLocalization.h>
 
-@interface VMIPVideoFrameCollectionFlowLayout : UICollectionViewFlowLayout
-@end
-
-@implementation VMIPVideoFrameCollectionFlowLayout
-
-- (UIUserInterfaceLayoutDirection)developmentLayoutDirection {
-    return self.flipsHorizontallyInOppositeLayoutDirection ? UIUserInterfaceLayoutDirectionRightToLeft : UIUserInterfaceLayoutDirectionLeftToRight;
-}
-
-- (BOOL)flipsHorizontallyInOppositeLayoutDirection {
-    return [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:UIView.appearance.semanticContentAttribute] == UIUserInterfaceLayoutDirectionRightToLeft;
-}
-
-@end
-
 @interface VMIPVideoFrameCollectionController ()
 // TODO: 添加需要的View，建议使用懒加载
 @end
@@ -41,7 +26,7 @@
 //    if ([UIView userInterfaceLayoutDirectionForSemanticContentAttribute:UIView.appearance.semanticContentAttribute] == UIUserInterfaceLayoutDirectionRightToLeft) {
 //        self.collectionView.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
 //    }
-    VMIPVideoFrameCollectionFlowLayout *collectionViewFlowLayout = VMIPVideoFrameCollectionFlowLayout.new;
+    LeftToRightCollectionViewFlowLayout *collectionViewFlowLayout = LeftToRightCollectionViewFlowLayout.new;
     collectionViewFlowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     self.collectionView.collectionViewLayout = collectionViewFlowLayout;
     [self.collectionView mas_makeConstraints:^(MASConstraintMaker *make) {
