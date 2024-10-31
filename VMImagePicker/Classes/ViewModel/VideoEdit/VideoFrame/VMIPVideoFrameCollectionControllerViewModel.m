@@ -47,7 +47,10 @@
             if ([info[PHImageCancelledKey] boolValue]) {
                 error = [NSError errorWithDomain:@"User Cancel Load Video!" code:0 userInfo:nil];
             } else {
-                RACTuple *tuple = [RACTuple tupleWithObjects:completion, asset, requestId, nil];
+                AVAssetTrack *videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+//                CGFloat frameRate = videoTrack.nominalFrameRate;
+                AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+                RACTuple *tuple = [RACTuple tupleWithObjects:completion, imageGenerator, [NSValue valueWithCMTime:asset.duration], [NSValue valueWithCGSize:videoTrack.naturalSize], requestId, nil];
                 if (NSThread.isMainThread) {
                     [self loadFramesAssetTuple:tuple];
                 } else {
@@ -70,26 +73,23 @@
 
 - (void)loadFramesAssetTuple:(RACTuple *)tuple {
     @weakify(self);
-    RACTupleUnpack(void (^completion)(NSError *error), AVAsset *asset, NSNumber *requestId) = tuple;
+    RACTupleUnpack(void (^completion)(NSError *error), AVAssetImageGenerator *imageGenerator, NSValue *duration, NSValue *naturalSize, NSNumber *requestId) = tuple;
     if (self.requestId != requestId.intValue) {
         return;
     }
-    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
     imageGenerator.appliesPreferredTrackTransform = YES;
     imageGenerator.requestedTimeToleranceBefore = kCMTimeZero;
     imageGenerator.requestedTimeToleranceAfter = kCMTimeZero;
     CGSize size = self.collectionViewModel.collectionView.frame.size;
-    CGFloat vFactor = size.height / asset.naturalSize.height;
-    CGFloat hFactor = size.width / asset.naturalSize.width;
+    CGFloat vFactor = size.height / naturalSize.CGSizeValue.height;
+    CGFloat hFactor = size.width / naturalSize.CGSizeValue.width;
     CGFloat factor = MIN(hFactor, vFactor);
-    imageGenerator.maximumSize = CGSizeMake(asset.naturalSize.width * factor, asset.naturalSize.height * factor);
+    imageGenerator.maximumSize = CGSizeMake(naturalSize.CGSizeValue.width * factor, naturalSize.CGSizeValue.height * factor);
     
-    NSTimeInterval duration = asset.duration.value / asset.duration.timescale;
-    NSTimeInterval frameInterval = duration / (self.videoCropFrameCount - 1); // 要获取第一帧和最后一帧
+    NSTimeInterval videoDuration = duration.CMTimeValue.value / duration.CMTimeValue.timescale;
+    NSTimeInterval frameInterval = videoDuration / (self.videoCropFrameCount - 1); // 要获取第一帧和最后一帧
     [self.collectionViewModel.collectionView performBatchUpdates:^{
         @strongify(self);
-//        AVAssetTrack *videoTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
-//        CGFloat frameRate = videoTrack.nominalFrameRate;
         for (uint64_t index = 0; index < self.videoCropFrameCount; ++index) {
             VMIPVideoFrameCellViewModel *cellViewModel = VMIPVideoFrameCellViewModel.new;
             cellViewModel.frameTime = CMTimeMakeWithSeconds(frameInterval * index, 1000);

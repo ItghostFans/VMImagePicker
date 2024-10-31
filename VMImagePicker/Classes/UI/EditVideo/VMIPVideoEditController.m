@@ -83,7 +83,7 @@
             CGFloat progress = time / self.videoPlayer.duration;
             CGFloat offset = self.cropView.barWidth + (self.timeIndicatorOffsetWidth * progress);
             [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.leading.equalTo(self.cropView).offset(offset);
+                make.left.equalTo(self.cropView).offset(offset);
             }];
             [self.view layoutIfNeeded];
         }];
@@ -117,7 +117,7 @@
             CGFloat offsetMax = self.cropView.barWidth + self.timeIndicatorOffsetWidth;
             CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
             [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.leading.equalTo(self.cropView).offset(offset);
+                make.left.equalTo(self.cropView).offset(offset);
             }];
             [self.view layoutIfNeeded];
             CGFloat progress = (offset - self.cropView.barWidth) / self.timeIndicatorOffsetWidth;
@@ -259,7 +259,7 @@
     [_timeIndicatorView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.bottom.equalTo(self.cropView);
         make.width.mas_equalTo(self.timeIndicatorWidth);
-        make.leading.equalTo(self.cropView).offset(self.cropView.barWidth);
+        make.left.equalTo(self.cropView).offset(self.cropView.barWidth);
     }];
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTimeIndicatorPan:)];
     [_timeIndicatorView addGestureRecognizer:pan];
