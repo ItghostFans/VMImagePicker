@@ -38,6 +38,10 @@ typedef NS_ENUM(NSInteger, VMIPVideoPlayerStatus) {
 - (void)play;
 - (void)pause;
 
+#pragma mark - AVPlayerLayer
+
+@property (strong, nonatomic) AVLayerVideoGravity videoGravity;
+
 @end
 
 NS_ASSUME_NONNULL_END

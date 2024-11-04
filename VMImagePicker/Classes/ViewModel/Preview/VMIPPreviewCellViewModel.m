@@ -57,6 +57,9 @@
     return [_videoViewModel loading:loading completion:completion];
 }
 
+- (void)pauseVideoIfNeed {
+}
+
 #pragma mark - Fowarding
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector {

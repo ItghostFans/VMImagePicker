@@ -16,6 +16,7 @@
 #import "VMImagePickerController.h"
 #import "VMIPEditVideoCropView.h"
 #import "VMIPEditVideoTimeIndicatorView.h"
+#import "VMIPVideoHandler.h"
 
 #import <VMLocalization/VMLocalization.h>
 
@@ -28,7 +29,9 @@
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
 
 @property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
-@property (weak, nonatomic) UIButton *playButton;
+@property (assign, nonatomic) VMIPVideoPlayerStatus playerStatus;
+@property (strong, nonatomic) VMIPVideoHandler *videoPlayHandler;
+
 @property (weak, nonatomic) VMIPVideoFrameCollectionController *frameController;
 @property (weak, nonatomic) VMIPEditVideoCropView *cropView;
 @property (weak, nonatomic) VMIPEditVideoTimeIndicatorView *timeIndicatorView;
@@ -43,19 +46,14 @@
     _timeIndicatorWidth = 2.0f;
     [self styleUI];
     self.frameController.viewModel = _viewModel.frameViewModel;
+    _videoPlayHandler = [[VMIPVideoHandler alloc] initWithVideoPlayer:self.videoPlayer style:self.style];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
     [super didMoveToParentViewController:parent];
-    @weakify(self);
     self.viewModel.frameViewModel.videoCropFrameCount = self.config.videoCropFrameCount;
     [self.frameController didMoveToParentViewController:parent ? self : nil];
     [self cropView];
-    [[RACObserve(self.videoPlayer, status) takeUntil:self.rac_willDeallocSignal] subscribeNext:^(id  _Nullable x) {
-        @strongify(self);
-        VMIPVideoPlayerStatus status = [x integerValue];
-        self.playButton.hidden = status == VMIPVideoPlayerStatusPlaying;
-    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -91,20 +89,13 @@
     
 }
 
-#pragma mark - Actions
-
-- (void)onPlayClicked:(UIButton *)playButton {
-    if (self.videoPlayer.time == self.videoPlayer.duration) {
-        [self.videoPlayer seekToTime:0.0f completion:^(BOOL finished) {
-        }];
-    }
-    [self.videoPlayer play];
-}
-
 - (void)onTimeIndicatorPan:(UIPanGestureRecognizer *)pan {
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
-            [self.videoPlayer pause];
+            self.playerStatus = self.videoPlayer.status;
+            if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
+                [self.videoPlayer pause];
+            }
         }
         case UIGestureRecognizerStateChanged: {
             CGPoint translation = [pan translationInView:self.view];
@@ -127,11 +118,15 @@
         }
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            [self.videoPlayer play];
+            if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
+                [self.videoPlayer play];
+            }
             break;
         }
         case UIGestureRecognizerStateEnded: {
-            [self.videoPlayer play];
+            if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
+                [self.videoPlayer play];
+            }
             break;
         }
         default: {
@@ -183,26 +178,9 @@
     [self.view addSubview:_videoPlayer];
     [_videoPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.leading.top.trailing.equalTo(self.view);
-//        make.height.equalTo(self.view).multipliedBy(0.6f);
         make.bottom.equalTo(self.frameController.view.mas_top);
     }];
     return videoPlayer;
-}
-
-- (UIButton *)playButton {
-    if (_playButton) {
-        return _playButton;
-    }
-    UIButton *playButton = UIButton.new;
-    _playButton = playButton;
-    [self.style styleButton:_playButton images:self.style.videoEditPlayImages];
-    [self.view insertSubview:_playButton aboveSubview:self.videoPlayer];
-    [_playButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(80.0f, 80.0f));
-        make.center.equalTo(self.videoPlayer);
-    }];
-    [_playButton addTarget:self action:@selector(onPlayClicked:) forControlEvents:(UIControlEventTouchUpInside)];
-    return playButton;
 }
 
 - (VMIPVideoFrameCollectionController *)frameController {

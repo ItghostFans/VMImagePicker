@@ -28,6 +28,7 @@
 
 @dynamic error;
 @dynamic currentItem;
+@dynamic videoGravity;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -36,6 +37,13 @@
 
 - (void)dealloc {
     [_displayLink invalidate];
+}
+
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    if (CGRectContainsPoint(self.videoLayer.videoRect, point)) {
+        return [super hitTest:point withEvent:event];
+    }
+    return nil;
 }
 
 - (void)seekToTime:(NSTimeInterval)time completion:(void (^ _Nullable)(BOOL finished))completion {
@@ -103,6 +111,7 @@
 
 - (void)pause {
     [self.videoPlayer pause];
+    self.status = VMIPVideoPlayerStatusPause;
     _displayLink.paused = YES;
 }
 

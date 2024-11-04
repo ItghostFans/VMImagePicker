@@ -139,10 +139,22 @@
 - (void)onEditClicked:(id)sender {
     NSIndexPath *indexPath = self.collectionView.indexPathsForVisibleItems.firstObject;
     VMIPPreviewCellViewModel *cellViewModel = self.viewModel.collectionViewModel.sectionViewModels[indexPath.section][indexPath.item];
-    VMIPVideoEditController *controller = VMIPVideoEditController.new;
-    VMIPVideoEditViewModel *viewModel = [[VMIPVideoEditViewModel alloc] initWithAsset:cellViewModel.assetCellViewModel.asset];
-    controller.viewModel = viewModel;
-    [self.navigationController pushViewController:controller animated:YES];
+    switch (cellViewModel.assetCellViewModel.asset.mediaType) {
+        case PHAssetMediaTypeImage: {
+            break;
+        }
+        case PHAssetMediaTypeVideo: {
+            [cellViewModel pauseVideoIfNeed];
+            VMIPVideoEditController *controller = VMIPVideoEditController.new;
+            VMIPVideoEditViewModel *viewModel = [[VMIPVideoEditViewModel alloc] initWithAsset:cellViewModel.assetCellViewModel.asset];
+            controller.viewModel = viewModel;
+            [self.navigationController pushViewController:controller animated:YES];
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 - (void)onOriginalClicked:(id)sender {

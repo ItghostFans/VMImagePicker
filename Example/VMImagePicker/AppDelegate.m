@@ -12,15 +12,6 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    // Override point for customization after application launch.
-    NSArray<__kindof NSString *> *preferredLanguages = NSLocale.preferredLanguages;
-    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
-//    if ([languageCode isEqualToString:@"ar"]) {
-//        UIView.appearance.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
-//        UICollectionView.appearance.semanticContentAttribute = UISemanticContentAttributeForceRightToLeft;
-//    }
-    UIUserInterfaceLayoutDirection layoutDirection = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:UIView.appearance.semanticContentAttribute];
-    UISemanticContentAttribute semanticContentAttribute = UIView.appearance.semanticContentAttribute;
     return YES;
 }
 

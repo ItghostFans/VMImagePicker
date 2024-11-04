@@ -14,6 +14,7 @@
 #import "VMImagePickerStyle.h"
 #import "VMImagePickerConfig.h"
 #import "VMIPVideoPlayer.h"
+#import "VMIPVideoHandler.h"
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
@@ -23,12 +24,13 @@
 @interface VMIPPreviewCollectionViewModelCell () <UIScrollViewDelegate>
 @property (weak, nonatomic) VMImagePickerStyle *vmipStyle;
 @property (weak, nonatomic) VMImagePickerConfig *vmipConfig;
+@property (weak, nonatomic) UIView *actionView;
 @property (weak, nonatomic) UIScrollView *previewScrollView;
 @property (weak, nonatomic) UIView *previewContentView;
 @property (weak, nonatomic) UIImageView *previewView;
 @property (assign, nonatomic) PHImageRequestID requestId;
 @property (weak, nonatomic) VMIPVideoPlayer *videoPlayer;
-@property (weak, nonatomic) UIButton *playButton;
+@property (strong, nonatomic) VMIPVideoHandler *videoPlayHandler;
 @end
 
 @implementation VMIPPreviewCollectionViewModelCell
@@ -37,11 +39,11 @@
     if (self = [super initWithFrame:frame]) {
         _requestId = PHInvalidImageRequestID;
         UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(singleTap:)];
-        [self addGestureRecognizer:singleTap];
+        [self.actionView addGestureRecognizer:singleTap];
         UITapGestureRecognizer *doubleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(doubleTap:)];
         doubleTap.numberOfTapsRequired = 2;
         [singleTap requireGestureRecognizerToFail:doubleTap];
-        [self addGestureRecognizer:doubleTap];
+        [self.actionView addGestureRecognizer:doubleTap];
     }
     return self;
 }
@@ -58,15 +60,18 @@
         self.requestId = PHInvalidImageRequestID;
     }
     if (!viewModel) {
+        [self.videoPlayer pause];
         [self.videoPlayer removeFromSuperview];
-        [self.playButton removeFromSuperview];
         return;
     }
     @weakify(self);
     VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)viewModel);
+    [[[cellViewModel rac_signalForSelector:@selector(pauseVideoIfNeed)] takeUntil:[self rac_signalForSelector:@selector(prepareForReuse)]] subscribeNext:^(RACTuple * _Nullable x) {
+        @strongify(self);
+        [self.videoPlayer pause];
+    }];
     self.previewScrollView.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeImage;
     self.videoPlayer.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeVideo;
-    self.playButton.hidden = cellViewModel.assetCellViewModel.asset.mediaType != PHAssetMediaTypeVideo;
     switch (cellViewModel.assetCellViewModel.asset.mediaType) {
         case PHAssetMediaTypeImage: {
             self.previewView.image = cellViewModel.assetCellViewModel.previewImage;
@@ -106,11 +111,6 @@
 //                }];
                 self.requestId = PHInvalidImageRequestID;
             }];
-            [[RACObserve(self.videoPlayer, status) takeUntil:[self rac_signalForSelector:@selector(prepareForReuse)]] subscribeNext:^(id  _Nullable x) {
-                @strongify(self);
-                VMIPVideoPlayerStatus status = [x integerValue];
-                self.playButton.hidden = status == VMIPVideoPlayerStatusPlaying;
-            }];
             break;
         }
         default: {
@@ -122,14 +122,6 @@
 #pragma mark - Public
 
 #pragma mark - Actions
-
-- (void)onPlayClicked:(UIButton *)playButton {
-    if (self.videoPlayer.time == self.videoPlayer.duration) {
-        [self.videoPlayer seekToTime:0.0f completion:^(BOOL finished) {
-        }];
-    }
-    [self.videoPlayer play];
-}
 
 #pragma mark - Private
 
@@ -181,6 +173,19 @@
 }
 
 #pragma mark - Getter Image
+
+- (UIView *)actionView {
+    if (_actionView) {
+        return _actionView;
+    }
+    UIView *actionView = UIView.new;
+    _actionView = actionView;
+    [self.contentView addSubview:_actionView];
+    [_actionView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.mas_equalTo(UIEdgeInsetsZero);
+    }];
+    return actionView;
+}
 
 - (UIScrollView *)previewScrollView {
     if (_previewScrollView) {
@@ -245,23 +250,8 @@
     [_videoPlayer mas_makeConstraints:^(MASConstraintMaker *make) {
         make.directionalEdges.equalTo(self.contentView);
     }];
+    _videoPlayHandler = [[VMIPVideoHandler alloc] initWithVideoPlayer:_videoPlayer style:self.vmipStyle];
     return videoPlayer;
-}
-
-- (UIButton *)playButton {
-    if (_playButton) {
-        return _playButton;
-    }
-    UIButton *playButton = UIButton.new;
-    _playButton = playButton;
-    [self.vmipStyle styleButton:_playButton images:self.vmipStyle.videoEditPlayImages];
-    [self.contentView insertSubview:_playButton aboveSubview:self.videoPlayer];
-    [_playButton mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.size.mas_equalTo(CGSizeMake(80.0f, 80.0f));
-        make.center.equalTo(self.videoPlayer);
-    }];
-    [_playButton addTarget:self action:@selector(onPlayClicked:) forControlEvents:(UIControlEventTouchUpInside)];
-    return playButton;
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -294,16 +284,36 @@
 }
 
 - (void)doubleTap:(UITapGestureRecognizer *)tap {
-    if (self.previewScrollView.zoomScale > self.previewScrollView.minimumZoomScale) {
-        self.previewScrollView.contentInset = UIEdgeInsetsZero;
-        [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:YES];
-    } else {
-        CGSize viewSize = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds.size;
-        CGPoint touchPoint = [tap locationInView:self.previewView];
-        CGFloat zoomScale = MAX(self.previewScrollView.maximumZoomScale, 2.0f);
-        CGFloat zoomWidth = viewSize.width / zoomScale;
-        CGFloat zoomHeight = viewSize.height / zoomScale;
-        [self.previewScrollView zoomToRect:CGRectMake(touchPoint.x - zoomWidth / 2, touchPoint.y - zoomHeight / 2, zoomWidth, zoomHeight) animated:YES];
+    VMIPPreviewCellViewModel *cellViewModel = ((VMIPPreviewCellViewModel *)self.viewModel);
+    switch (cellViewModel.assetCellViewModel.asset.mediaType) {
+        case PHAssetMediaTypeImage: {
+            if (self.previewScrollView.zoomScale > self.previewScrollView.minimumZoomScale) {
+                self.previewScrollView.contentInset = UIEdgeInsetsZero;
+                [self.previewScrollView setZoomScale:self.previewScrollView.minimumZoomScale animated:YES];
+            } else {
+                CGSize viewSize = self.viewModel.collectionSectionViewModel.collectionViewModel.collectionView.bounds.size;
+                CGPoint touchPoint = [tap locationInView:self.previewView];
+                CGFloat zoomScale = MAX(self.previewScrollView.maximumZoomScale, 2.0f);
+                CGFloat zoomWidth = viewSize.width / zoomScale;
+                CGFloat zoomHeight = viewSize.height / zoomScale;
+                [self.previewScrollView zoomToRect:CGRectMake(touchPoint.x - zoomWidth / 2, touchPoint.y - zoomHeight / 2, zoomWidth, zoomHeight) animated:YES];
+            }
+            break;
+        }
+        case PHAssetMediaTypeVideo: {
+            if ([self.videoPlayer.videoGravity isEqualToString:AVLayerVideoGravityResizeAspect]) {
+                self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspectFill;
+                self.videoPlayer.userInteractionEnabled = NO;
+            } else
+            if ([self.videoPlayer.videoGravity isEqualToString:AVLayerVideoGravityResizeAspectFill]) {
+                self.videoPlayer.videoGravity = AVLayerVideoGravityResizeAspect;
+                self.videoPlayer.userInteractionEnabled = YES;
+            }
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 

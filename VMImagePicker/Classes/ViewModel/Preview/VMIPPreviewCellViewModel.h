@@ -34,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (PHImageRequestID)loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
                  completion:(void (^ _Nonnull)(NSError *error, AVPlayerItem *playerItem))completion;
 
+- (void)pauseVideoIfNeed;
+
 @end
 
 NS_ASSUME_NONNULL_END
