@@ -1,11 +1,11 @@
 //
-//  VMIPVideoEditController.m
+//  VMIPEditVideoController.m
 //  VMImagePicker
 //
 //  Created by ItghostFan on 2024/10/20.
 //
 
-#import "VMIPVideoEditController.h"
+#import "VMIPEditVideoController.h"
 #import "VMIPVideoEditViewModel.h"
 #import "VMIPVideoPlayer.h"
 #import "VMImagePickerStyle.h"
@@ -17,13 +17,15 @@
 #import "VMIPEditVideoCropView.h"
 #import "VMIPEditVideoTimeIndicatorView.h"
 #import "VMIPVideoHandler.h"
+#import "VMIPEditVideoToolBarView.h"
+#import "VMIPVideoViewModel.h"
 
 #import <VMLocalization/VMLocalization.h>
 
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface VMIPVideoEditController ()
+@interface VMIPEditVideoController ()
 @property (weak, nonatomic) VMImagePickerStyle *style;
 @property (weak, nonatomic) VMImagePickerConfig *config;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
@@ -37,12 +39,17 @@
 @property (weak, nonatomic) VMIPEditVideoTimeIndicatorView *timeIndicatorView;
 @property (assign, nonatomic) CGFloat timeIndicatorWidth;
 
+@property (weak, nonatomic) UIBarButtonItem *controlBarButtonItem;
+
 @end
 
-@implementation VMIPVideoEditController
+@implementation VMIPEditVideoController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.toolbarItems = @[
+        self.controlBarButtonItem,
+    ];
     _timeIndicatorWidth = 2.0f;
     [self styleUI];
     self.frameController.viewModel = _viewModel.frameViewModel;
@@ -87,6 +94,17 @@
         }];
     }];
     
+}
+
+- (void)onDoneClicked:(id)sender {
+    NSString *videoPreset = self.config.original ? AVAssetExportPresetHighestQuality : AVAssetExportPresetMediumQuality;
+    CGFloat begin = self.cropView.begin;
+    CGFloat end = self.cropView.end;
+    CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(begin * self.videoPlayer.duration * 1000, 1000), CMTimeMake((end - begin) * self.videoPlayer.duration * 1000, 1000));
+    [self.viewModel.videoViewModel exportVideoPreset:videoPreset timeRange:timeRange directory:self.config.directory loading:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
+    } completion:^(NSError * _Nullable error, NSString * _Nullable videoPath) {
+        NSLog(@"");
+    }];
 }
 
 - (void)onTimeIndicatorPan:(UIPanGestureRecognizer *)pan {
@@ -242,6 +260,19 @@
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onTimeIndicatorPan:)];
     [_timeIndicatorView addGestureRecognizer:pan];
     return timeIndicatorView;
+}
+
+- (UIBarButtonItem *)controlBarButtonItem {
+    if (_controlBarButtonItem) {
+        return _controlBarButtonItem;
+    }
+    VMIPEditVideoToolBarView *toolBarView = VMIPEditVideoToolBarView.new;
+    toolBarView.style = self.style;
+    UIBarButtonItem *controlBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:toolBarView];
+    _controlBarButtonItem = controlBarButtonItem;
+    
+    [toolBarView.doneButton addTarget:self action:@selector(onDoneClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    return controlBarButtonItem;
 }
 
 @end

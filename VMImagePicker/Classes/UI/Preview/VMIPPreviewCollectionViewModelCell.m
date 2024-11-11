@@ -319,8 +319,8 @@
 
 #pragma mark - CollectionViewModelCell
 
-+ (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPPreviewCollectionCellViewModel *)viewModel {
-    return *size;
++ (CGSize)cellSizeForSize:(CGSize)size viewModel:(VMIPPreviewCollectionCellViewModel *)viewModel {
+    return size;
 }
 
 @end

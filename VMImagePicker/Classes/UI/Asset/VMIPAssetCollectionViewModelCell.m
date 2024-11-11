@@ -151,7 +151,7 @@
 
 #pragma mark - CollectionViewModelCell
 
-+ (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPAssetCollectionCellViewModel *)viewModel {
++ (CGSize)cellSizeForSize:(CGSize)size viewModel:(VMIPAssetCollectionCellViewModel *)viewModel {
     return CGSizeZero;
 }
 

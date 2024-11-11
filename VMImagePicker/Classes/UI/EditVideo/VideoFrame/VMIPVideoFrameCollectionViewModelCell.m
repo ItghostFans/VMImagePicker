@@ -96,7 +96,7 @@
 
 #pragma mark - CollectionViewModelCell
 
-+ (CGSize)cellSizeForSize:(CGSize *)size viewModel:(VMIPVideoFrameCollectionCellViewModel *)viewModel {
++ (CGSize)cellSizeForSize:(CGSize)size viewModel:(VMIPVideoFrameCollectionCellViewModel *)viewModel {
     VMIPVideoFrameCellViewModel *cellViewModel = viewModel;
     CGRect frame = viewModel.collectionSectionViewModel.collectionViewModel.collectionView.frame;
     UIEdgeInsets contentInsets = viewModel.collectionSectionViewModel.collectionViewModel.collectionView.contentInset;

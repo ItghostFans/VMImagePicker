@@ -15,7 +15,7 @@
 #import "VMIPPreviewToolBarView.h"
 #import "VMImagePickerConfig.h"
 #import "VMIPAssetCellViewModel.h"
-#import "VMIPVideoEditController.h"
+#import "VMIPEditVideoController.h"
 #import "VMIPVideoEditViewModel.h"
 
 #import <ViewModel/CollectionViewModel.h>
@@ -145,7 +145,7 @@
         }
         case PHAssetMediaTypeVideo: {
             [cellViewModel pauseVideoIfNeed];
-            VMIPVideoEditController *controller = VMIPVideoEditController.new;
+            VMIPEditVideoController *controller = VMIPEditVideoController.new;
             VMIPVideoEditViewModel *viewModel = [[VMIPVideoEditViewModel alloc] initWithAsset:cellViewModel.assetCellViewModel.asset];
             controller.viewModel = viewModel;
             [self.navigationController pushViewController:controller animated:YES];

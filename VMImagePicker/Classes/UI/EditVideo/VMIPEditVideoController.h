@@ -1,5 +1,5 @@
 //
-//  VMIPVideoEditController.h
+//  VMIPEditVideoController.h
 //  VMImagePicker
 //
 //  Created by ItghostFan on 2024/10/20.
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class VMImagePickerConfig;
 @class VMIPVideoEditViewModel;
 
-@interface VMIPVideoEditController : UIViewController
+@interface VMIPEditVideoController : UIViewController
 
 @property (strong, nonatomic) VMIPVideoEditViewModel *viewModel;
 

@@ -82,7 +82,7 @@
 
 #pragma mark - TableViewModelCell
 
-+ (CGFloat)heightForWidth:(CGFloat *)width viewModel:(VMIPAlbumTableCellViewModel *)viewModel {
++ (CGFloat)heightForWidth:(CGFloat)width viewModel:(VMIPAlbumTableCellViewModel *)viewModel {
     VMIPAlbumTableController *controller = (VMIPAlbumTableController *)viewModel.tableSectionViewModel.tableViewModel.tableView;
     do {
         controller = controller.nextResponder;

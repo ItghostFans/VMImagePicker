@@ -14,10 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 @class PHAsset;
 @class AVPlayerItem;
 @class VMIPVideoFrameCollectionControllerViewModel;
+@class VMIPVideoViewModel;
 
 @interface VMIPVideoEditViewModel : BaseViewModel
 
 @property (strong, nonatomic, readonly) VMIPVideoFrameCollectionControllerViewModel *frameViewModel;
+@property (strong, nonatomic, readonly) VMIPVideoViewModel *videoViewModel;
 
 @property (weak, nonatomic, readonly) PHAsset *asset;
 

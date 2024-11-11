@@ -23,6 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (PHImageRequestID)loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
                  completion:(void (^ _Nonnull)(NSError *error, AVPlayerItem *playerItem))completion;
 
+- (PHImageRequestID)exportVideoPreset:(AVCaptureSessionPreset)videoPreset
+                            timeRange:(CMTimeRange)timeRange
+                            directory:(NSString *)directory
+                              loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
+                           completion:(void (^ _Nonnull)(NSError * _Nullable error, NSString * _Nullable videoPath))completion;
+
 @end
 
 NS_ASSUME_NONNULL_END
