@@ -89,13 +89,13 @@ heightMultiple:(CGFloat)heightMultiple
     frame.origin.x += translation.x;
     
     // 限制移动范围
-    frame.origin.x = MAX(0, MIN(frame.origin.x, CGRectGetMinX(self.endBarView.frame) - _barWidth));
+    frame.origin.x = MAX(0, MIN(frame.origin.x, CGRectGetMinX(self.endBarView.frame) - _barWidth - _timeIndicatorWidth));
     
     self.beginBarView.frame = frame;
     [pan setTranslation:CGPointZero inView:self];
     [self relayoutLines];
     
-    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2) - _timeIndicatorWidth;
     self.begin = (CGRectGetMaxX(self.beginBarView.frame) - _barWidth) / width;
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
@@ -120,14 +120,14 @@ heightMultiple:(CGFloat)heightMultiple
     frame.origin.x += translation.x;
     
     // 限制移动范围
-    frame.origin.x = MAX(CGRectGetMaxX(self.beginBarView.frame), MIN(frame.origin.x, CGRectGetWidth(self.bounds) - _barWidth));
+    frame.origin.x = MAX(CGRectGetMaxX(self.beginBarView.frame) + _timeIndicatorWidth, MIN(frame.origin.x, CGRectGetWidth(self.bounds) - _barWidth));
     
     self.endBarView.frame = frame;
     [pan setTranslation:CGPointZero inView:self];
     [self relayoutLines];
     
-    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
-    self.end = (CGRectGetMinX(self.endBarView.frame) - _barWidth) / width;
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2) - _timeIndicatorWidth;
+    self.end = (CGRectGetMinX(self.endBarView.frame) - _barWidth - _timeIndicatorWidth) / width;
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             [self.delegate cropView:self tapStartEnd:self.end];

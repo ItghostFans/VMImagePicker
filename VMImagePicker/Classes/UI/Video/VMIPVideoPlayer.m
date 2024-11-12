@@ -47,7 +47,7 @@
 }
 
 - (void)seekToTime:(NSTimeInterval)time completion:(void (^ _Nullable)(BOOL finished))completion {
-    [self.videoPlayer seekToTime:CMTimeMakeWithSeconds(time, 1000)
+    [self.videoPlayer seekToTime:CMTimeMake(time * 1000, 1000)
                  toleranceBefore:kCMTimePositiveInfinity
                   toleranceAfter:kCMTimePositiveInfinity
                completionHandler:^(BOOL finished) {

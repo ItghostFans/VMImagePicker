@@ -126,6 +126,12 @@
 }
 
 - (void)onTimeIndicatorPan:(UIPanGestureRecognizer *)pan {
+    @weakify(self);
+    CGPoint translation = [pan translationInView:self.view];
+    CGRect timeIndicatorFrameInCropView = [self.view convertRect:self.timeIndicatorView.frame toView:self.cropView];
+    CGFloat x = CGRectGetMinX(timeIndicatorFrameInCropView);
+    x += translation.x;
+    [pan setTranslation:CGPointZero inView:self.view];
     switch (pan.state) {
         case UIGestureRecognizerStateBegan: {
             self.playerStatus = self.videoPlayer.status;
@@ -134,26 +140,26 @@
             }
         }
         case UIGestureRecognizerStateChanged: {
-            CGPoint translation = [pan translationInView:self.view];
-            CGRect timeIndicatorFrameInCropView = [self.view convertRect:self.timeIndicatorView.frame toView:self.cropView];
-            CGFloat x = CGRectGetMinX(timeIndicatorFrameInCropView);
-            x += translation.x;
-            [pan setTranslation:CGPointZero inView:self.view];
-            
-            [self updateIndicatorTimeX:x];
+            [self updateIndicatorTimeX:x completion:nil];
             break;
         }
         case UIGestureRecognizerStateFailed:
         case UIGestureRecognizerStateCancelled: {
-            if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
-                [self.videoPlayer play];
-            }
+            [self updateIndicatorTimeX:x completion:^(BOOL finished) {
+                @strongify(self);
+                if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
+                    [self.videoPlayer play];
+                }
+            }];
             break;
         }
         case UIGestureRecognizerStateEnded: {
-            if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
-                [self.videoPlayer play];
-            }
+            [self updateIndicatorTimeX:x completion:^(BOOL finished) {
+                @strongify(self);
+                if (self.playerStatus == VMIPVideoPlayerStatusPlaying) {
+                    [self.videoPlayer play];
+                }
+            }];
             break;
         }
         default: {
@@ -222,19 +228,18 @@
     
     // 这里要处理播放进度不在当前区间的情况
     CGFloat x = CGRectGetMinX([self.view convertRect:self.timeIndicatorView.frame toView:self.cropView]);
-    [self updateIndicatorTimeX:x];
+    [self updateIndicatorTimeX:x completion:nil];
 }
 
-- (void)updateIndicatorTimeX:(CGFloat)x {
-    CGFloat offsetMin = self.cropView.barWidth + (self.cropView.begin * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)); // 这里要把播放指示器的宽度加回来，不然计算会有误差的。
-    CGFloat offsetMax = self.cropView.barWidth + (self.cropView.end * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)) - self.timeIndicatorWidth; // 这里要把播放指示器的宽度加回来，不然计算会有误差的。算完再减掉宽度。
+- (void)updateIndicatorTimeX:(CGFloat)x completion:(void (^ _Nullable)(BOOL finished))completion {
+    CGFloat offsetMin = self.cropView.barWidth + (self.cropView.begin * (self.timeIndicatorOffsetWidth));
+    CGFloat offsetMax = self.cropView.barWidth + (self.cropView.end * (self.timeIndicatorOffsetWidth));
     CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
     [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.cropView).offset(offset);
     }];
     CGFloat progress = (offset - self.cropView.barWidth) / self.timeIndicatorOffsetWidth;
-    [self.videoPlayer seekToTime:progress * self.videoPlayer.duration completion:^(BOOL finished) {
-    }];
+    [self.videoPlayer seekToTime:progress * self.videoPlayer.duration completion:completion];
 }
 
 - (void)styleUI {
@@ -306,6 +311,7 @@
     }
     VMIPEditVideoCropView *cropView = VMIPEditVideoCropView.new;
     _cropView = cropView;
+    _cropView.timeIndicatorWidth = self.timeIndicatorWidth;
     _cropView.style = self.style;
     _cropView.delegate = self;
     [self.view addSubview:_cropView];

@@ -25,6 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (assign, nonatomic, readonly) CGFloat begin;  // KVO
 @property (assign, nonatomic, readonly) CGFloat end;    // KVO
 
+@property (assign, nonatomic) CGFloat timeIndicatorWidth;
 @property (weak, nonatomic, nullable) VMImagePickerStyle *style;
 @property (weak, nonatomic, nullable) id<VMIPEditVideoCropViewDelegate> delegate;
 

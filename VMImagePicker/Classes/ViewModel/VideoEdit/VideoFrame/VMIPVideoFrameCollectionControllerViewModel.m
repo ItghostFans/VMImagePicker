@@ -92,7 +92,7 @@
         @strongify(self);
         for (uint64_t index = 0; index < self.videoCropFrameCount; ++index) {
             VMIPVideoFrameCellViewModel *cellViewModel = VMIPVideoFrameCellViewModel.new;
-            cellViewModel.frameTime = CMTimeMakeWithSeconds(frameInterval * index, 1000);
+            cellViewModel.frameTime = CMTimeMake(frameInterval * index * 1000, 1000);
             cellViewModel.imageGenerator = imageGenerator;
             cellViewModel.videoCropFrameCount = self.videoCropFrameCount;
             [self.collectionViewModel.sectionViewModels[0] addViewModel:cellViewModel];
