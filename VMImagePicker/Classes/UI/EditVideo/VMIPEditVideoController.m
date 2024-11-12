@@ -140,16 +140,7 @@
             x += translation.x;
             [pan setTranslation:CGPointZero inView:self.view];
             
-            CGFloat offsetMin = self.cropView.barWidth + (self.cropView.begin * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)); // 这里要把播放指示器的宽度加回来，不然计算会有误差的。
-            CGFloat offsetMax = self.cropView.barWidth + (self.cropView.end * self.timeIndicatorOffsetWidth);
-            CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
-            [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
-                make.left.equalTo(self.cropView).offset(offset);
-            }];
-            [self.view layoutIfNeeded];
-            CGFloat progress = (offset - self.cropView.barWidth) / self.timeIndicatorOffsetWidth;
-            [self.videoPlayer seekToTime:progress * self.videoPlayer.duration completion:^(BOOL finished) {
-            }];
+            [self updateIndicatorTimeX:x];
             break;
         }
         case UIGestureRecognizerStateFailed:
@@ -227,6 +218,22 @@
     }
     [self.timeButton mas_updateConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.cropView.mas_left).offset(pointAtCropView.x);
+    }];
+    
+    // 这里要处理播放进度不在当前区间的情况
+    CGFloat x = CGRectGetMinX([self.view convertRect:self.timeIndicatorView.frame toView:self.cropView]);
+    [self updateIndicatorTimeX:x];
+}
+
+- (void)updateIndicatorTimeX:(CGFloat)x {
+    CGFloat offsetMin = self.cropView.barWidth + (self.cropView.begin * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)); // 这里要把播放指示器的宽度加回来，不然计算会有误差的。
+    CGFloat offsetMax = self.cropView.barWidth + (self.cropView.end * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)) - self.timeIndicatorWidth; // 这里要把播放指示器的宽度加回来，不然计算会有误差的。算完再减掉宽度。
+    CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
+    [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.cropView).offset(offset);
+    }];
+    CGFloat progress = (offset - self.cropView.barWidth) / self.timeIndicatorOffsetWidth;
+    [self.videoPlayer seekToTime:progress * self.videoPlayer.duration completion:^(BOOL finished) {
     }];
 }
 
