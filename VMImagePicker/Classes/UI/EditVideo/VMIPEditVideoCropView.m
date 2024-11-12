@@ -30,6 +30,8 @@
     if (self = [super initWithFrame:frame]) {
         _barWidth = 20.0f;
         _lineHeight = 3.0f;
+        _begin = 0.0f;
+        _end = 1.0f;
         _originalBounds = CGRectZero;
     }
     return self;
@@ -61,6 +63,22 @@
     CGFloat endMinX = CGRectGetMinX(self.endBarView.frame);
     self.topLineView.frame = CGRectMake(beginMaxX, 0.0f, endMinX - beginMaxX, _lineHeight);
     self.bottomLineView.frame = CGRectMake(beginMaxX, CGRectGetHeight(self.bounds) - _lineHeight, endMinX - beginMaxX, _lineHeight);
+}
+
+- (void)addBar:(UIView *)bar
+heightMultiple:(CGFloat)heightMultiple
+  centerOffset:(CGFloat)centerOffset {
+    UIView *vLineView = UIView.new;
+    vLineView.clipsToBounds = YES;
+    vLineView.layer.cornerRadius = 1.0f;
+    vLineView.backgroundColor = [self.style colorWithThemeColors:self.style.editVideoCropBarColors];
+    [bar addSubview:vLineView];
+    [vLineView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.equalTo(bar);
+        make.centerX.equalTo(bar).offset(centerOffset);
+        make.height.equalTo(bar).multipliedBy(heightMultiple);
+        make.width.mas_equalTo(2.0f);
+    }];
 }
 
 #pragma mark - Actions
@@ -136,10 +154,12 @@
     UIView *beginBarView = UIView.new;
     _beginBarView = beginBarView;
     _beginBarView.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
-    _beginBarView.backgroundColor = UIColor.blueColor;
     [self addSubview:_beginBarView];
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onBeginPan:)];
     [_beginBarView addGestureRecognizer:pan];
+    [self addBar:_beginBarView heightMultiple:0.2f centerOffset:4.0f];
+    [self addBar:_beginBarView heightMultiple:0.1f centerOffset:0.0f];
+    [self addBar:_beginBarView heightMultiple:0.05f centerOffset:-4.0f];
     return beginBarView;
 }
 
@@ -153,6 +173,9 @@
     [self addSubview:_endBarView];
     UIPanGestureRecognizer *pan = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(onEndPan:)];
     [_endBarView addGestureRecognizer:pan];
+    [self addBar:_endBarView heightMultiple:0.05f centerOffset:4.0f];
+    [self addBar:_endBarView heightMultiple:0.1f centerOffset:0.0f];
+    [self addBar:_endBarView heightMultiple:0.2f centerOffset:-4.0f];
     return endBarView;
 }
 

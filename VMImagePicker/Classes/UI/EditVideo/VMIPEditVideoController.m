@@ -140,8 +140,8 @@
             x += translation.x;
             [pan setTranslation:CGPointZero inView:self.view];
             
-            CGFloat offsetMin = self.cropView.barWidth;
-            CGFloat offsetMax = self.cropView.barWidth + self.timeIndicatorOffsetWidth;
+            CGFloat offsetMin = self.cropView.barWidth + (self.cropView.begin * (self.timeIndicatorOffsetWidth + self.timeIndicatorWidth)); // 这里要把播放指示器的宽度加回来，不然计算会有误差的。
+            CGFloat offsetMax = self.cropView.barWidth + (self.cropView.end * self.timeIndicatorOffsetWidth);
             CGFloat offset = MIN(MAX(x, offsetMin), offsetMax);
             [self.timeIndicatorView mas_updateConstraints:^(MASConstraintMaker *make) {
                 make.left.equalTo(self.cropView).offset(offset);
@@ -326,8 +326,8 @@
     UIButton *timeButton = UIButton.new;
     _timeButton = timeButton;
     _timeButton.contentEdgeInsets = UIDirectionalEdgesInsetsMake(3.0f, 3.0f, 3.0f, 3.0f);
-    [self.style styleButton:_timeButton fonts:self.style.videoEditTimeButtonTitleFonts];
-    [self.style styleButton:_timeButton titleColors:self.style.videoEditTimeButtonTitleColors];
+    [self.style styleButton:_timeButton fonts:self.style.editVideoTimeButtonTitleFonts];
+    [self.style styleButton:_timeButton titleColors:self.style.editVideoTimeButtonTitleColors];
     _timeButton.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
     _timeButton.clipsToBounds = YES;
     _timeButton.layer.cornerRadius = 3.0f;

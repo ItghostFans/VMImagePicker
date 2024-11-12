@@ -71,7 +71,7 @@
     UIButton *playButton = UIButton.new;
     _playButton = playButton;
     _playButton.userInteractionEnabled = NO;
-    [self.style styleButton:_playButton images:self.style.videoEditPlayImages];
+    [self.style styleButton:_playButton images:self.style.editVideoPlayImages];
     [self.videoPlayer addSubview:_playButton];
     [_playButton mas_makeConstraints:^(MASConstraintMaker *make) {
         make.size.mas_equalTo(CGSizeMake(80.0f, 80.0f));

@@ -448,10 +448,10 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
 
 #pragma mark - VideoEdit
 
-- (VMIPCellThemeImages *)videoEditPlayImages {
-    if (!_videoEditPlayImages) {
+- (VMIPCellThemeImages *)editVideoPlayImages {
+    if (!_editVideoPlayImages) {
         UIImage *normalImage = [self imageNamed:@"play.circle"];
-        _videoEditPlayImages = @{
+        _editVideoPlayImages = @{
             @(UIUserInterfaceStyleLight): @{
                 @(NO): normalImage,
                 @(YES): normalImage,
@@ -462,13 +462,13 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
             },
         };
     }
-    return _videoEditPlayImages;
+    return _editVideoPlayImages;
 }
 
-- (VMIPCellThemeImages *)videoEditPauseImages {
-    if (!_videoEditPauseImages) {
+- (VMIPCellThemeImages *)editVideoPauseImages {
+    if (!_editVideoPauseImages) {
         UIImage *normalImage = [self imageNamed:@""];
-        _videoEditPauseImages = @{
+        _editVideoPauseImages = @{
             @(UIUserInterfaceStyleLight): @{
                 @(NO): normalImage,
                 @(YES): normalImage,
@@ -479,11 +479,11 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
             },
         };
     }
-    return _videoEditPauseImages;
+    return _editVideoPauseImages;
 }
 
-- (VMIPControlThemeColors *)videoEditTimeButtonTitleFonts {
-    if (!_videoEditTimeButtonTitleFonts) {
+- (VMIPControlThemeColors *)editVideoTimeButtonTitleFonts {
+    if (!_editVideoTimeButtonTitleFonts) {
         UIFont *font = [UIFont systemFontOfSize:12.0f weight:(UIFontWeightBold)];
         NSMutableDictionary *fonts = NSMutableDictionary.new;
         fonts[@(UIControlStateNormal)] = font;
@@ -491,17 +491,17 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         fonts[@(UIControlStateDisabled)] = font;
         fonts[@(UIControlStateFocused)] = font;
         fonts[@(UIControlStateSelected)] = font;
-        _videoEditTimeButtonTitleFonts = @{
+        _editVideoTimeButtonTitleFonts = @{
             @(UIUserInterfaceStyleUnspecified): fonts,
             @(UIUserInterfaceStyleLight): fonts,
             @(UIUserInterfaceStyleDark): fonts,
         };
     }
-    return _videoEditTimeButtonTitleFonts;
+    return _editVideoTimeButtonTitleFonts;
 }
 
-- (VMIPControlThemeColors *)videoEditTimeButtonTitleColors {
-    if (!_videoEditTimeButtonTitleColors) {
+- (VMIPControlThemeColors *)editVideoTimeButtonTitleColors {
+    if (!_editVideoTimeButtonTitleColors) {
         UIColor *color = RGB_HEX_COLOR(0xFFFFFF);
         NSMutableDictionary *colors = NSMutableDictionary.new;
         colors[@(UIControlStateNormal)] = color;
@@ -509,17 +509,29 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
         colors[@(UIControlStateDisabled)] = color;
         colors[@(UIControlStateFocused)] = color;
         colors[@(UIControlStateSelected)] = color;
-        NSMutableDictionary *videoEditTimeButtonTitleColors = NSMutableDictionary.new;
-        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleUnspecified)] = colors;
+        NSMutableDictionary *editVideoTimeButtonTitleColors = NSMutableDictionary.new;
+        editVideoTimeButtonTitleColors[@(UIUserInterfaceStyleUnspecified)] = colors;
         colors = colors.mutableCopy;
         colors[@(UIControlStateDisabled)] = UIColor.darkGrayColor;
-        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleLight)] = colors;
+        editVideoTimeButtonTitleColors[@(UIUserInterfaceStyleLight)] = colors;
         colors = colors.mutableCopy;
         colors[@(UIControlStateDisabled)] = UIColor.lightGrayColor;
-        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleDark)] = colors;
-        _videoEditTimeButtonTitleColors = videoEditTimeButtonTitleColors.copy;
+        editVideoTimeButtonTitleColors[@(UIUserInterfaceStyleDark)] = colors;
+        _editVideoTimeButtonTitleColors = editVideoTimeButtonTitleColors.copy;
     }
-    return _videoEditTimeButtonTitleColors;
+    return _editVideoTimeButtonTitleColors;
+}
+
+
+- (VMIPThemeColors *)editVideoCropBarColors {
+    if (!_editVideoCropBarColors) {
+        _editVideoCropBarColors = @{
+            @(UIUserInterfaceStyleUnspecified): UIColor.whiteColor,
+            @(UIUserInterfaceStyleLight): UIColor.whiteColor,
+            @(UIUserInterfaceStyleDark): UIColor.whiteColor,
+        };
+    }
+    return _editVideoCropBarColors;
 }
 
 #pragma mark - Public
