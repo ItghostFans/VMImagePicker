@@ -11,6 +11,9 @@
 #import <Masonry/Masonry.h>
 
 @interface VMIPEditVideoCropView ()
+@property (assign, nonatomic) CGFloat begin;
+@property (assign, nonatomic) CGFloat end;
+
 @property (weak, nonatomic) UIView *beginBarView;
 @property (weak, nonatomic) UIView *endBarView;
 @property (weak, nonatomic) UIView *topLineView;
@@ -30,16 +33,6 @@
         _originalBounds = CGRectZero;
     }
     return self;
-}
-
-- (CGFloat)begin {
-    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
-    return (CGRectGetMaxX(self.beginBarView.frame) - _barWidth) / width;
-}
-
-- (CGFloat)end {
-    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
-    return (CGRectGetMinX(self.endBarView.frame) - _barWidth) / width;
 }
 
 - (void)layoutSubviews {
@@ -84,8 +77,22 @@
     [pan setTranslation:CGPointZero inView:self];
     [self relayoutLines];
     
-    if (pan.state == UIGestureRecognizerStateEnded) {
-        // 可以在这里添加结束拖动时的逻辑，比如回调
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
+    self.begin = (CGRectGetMaxX(self.beginBarView.frame) - _barWidth) / width;
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            [self.delegate cropView:self tapStartBegin:self.begin];
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            [self.delegate cropView:self tapEndBegin:self.begin];
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 
@@ -101,8 +108,22 @@
     [pan setTranslation:CGPointZero inView:self];
     [self relayoutLines];
     
-    if (pan.state == UIGestureRecognizerStateEnded) {
-        // 可以在这里添加结束拖动时的逻辑，比如回调
+    CGFloat width = CGRectGetWidth(self.bounds) - (_barWidth * 2);
+    self.end = (CGRectGetMinX(self.endBarView.frame) - _barWidth) / width;
+    switch (pan.state) {
+        case UIGestureRecognizerStateBegan: {
+            [self.delegate cropView:self tapStartEnd:self.end];
+            break;
+        }
+        case UIGestureRecognizerStateEnded:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateFailed: {
+            [self.delegate cropView:self tapEndEnd:self.end];
+            break;
+        }
+        default: {
+            break;
+        }
     }
 }
 

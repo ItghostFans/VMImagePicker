@@ -25,7 +25,7 @@
 #import <Masonry/Masonry.h>
 #import <ReactiveObjC/ReactiveObjC.h>
 
-@interface VMIPEditVideoController ()
+@interface VMIPEditVideoController () <VMIPEditVideoCropViewDelegate>
 @property (weak, nonatomic) VMImagePickerStyle *style;
 @property (weak, nonatomic) VMImagePickerConfig *config;
 @property (strong, nonatomic) VMIPNavigationBarStyle *navigationBarStyle;
@@ -36,6 +36,8 @@
 
 @property (weak, nonatomic) VMIPVideoFrameCollectionController *frameController;
 @property (weak, nonatomic) VMIPEditVideoCropView *cropView;
+@property (weak, nonatomic) UIButton *timeButton;
+@property (strong, nonatomic) NSDateFormatter *timeFormatter;
 @property (weak, nonatomic) VMIPEditVideoTimeIndicatorView *timeIndicatorView;
 @property (assign, nonatomic) CGFloat timeIndicatorWidth;
 
@@ -54,6 +56,20 @@
     [self styleUI];
     self.frameController.viewModel = _viewModel.frameViewModel;
     _videoPlayHandler = [[VMIPVideoHandler alloc] initWithVideoPlayer:self.videoPlayer style:self.style];
+    
+    _timeFormatter = NSDateFormatter.new;
+    _timeFormatter.dateFormat = @"HH:mm:ss-SSS";
+    _timeFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en"];
+    
+    @weakify(self);
+    [RACObserve(self.cropView, begin) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        [self updateTime:[x doubleValue]];
+    }];
+    [RACObserve(self.cropView, end) subscribeNext:^(id  _Nullable x) {
+        @strongify(self);
+        [self updateTime:[x doubleValue]];
+    }];
 }
 
 - (void)didMoveToParentViewController:(UIViewController *)parent {
@@ -61,6 +77,7 @@
     self.viewModel.frameViewModel.videoCropFrameCount = self.config.videoCropFrameCount;
     [self.frameController didMoveToParentViewController:parent ? self : nil];
     [self cropView];
+    [self timeButton];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -93,8 +110,9 @@
             [self.view layoutIfNeeded];
         }];
     }];
-    
 }
+
+#pragma mark - Actions
 
 - (void)onDoneClicked:(id)sender {
     NSString *videoPreset = self.config.original ? AVAssetExportPresetHighestQuality : AVAssetExportPresetMediumQuality;
@@ -153,7 +171,64 @@
     }
 }
 
+#pragma mark - Delay
+
+- (void)hideTimeButton {
+    [UIView animateWithDuration:0.25f animations:^{
+        self.timeButton.alpha = 0.0f;
+    } completion:^(BOOL finished) {
+        self.timeButton.hidden = YES;
+    }];
+}
+
+#pragma mark - VMIPEditVideoCropViewDelegate
+
+- (void)cropView:(VMIPEditVideoCropView *)cropView tapStartBegin:(CGFloat)begin {
+    [self updateTime:begin];
+    self.timeButton.alpha = 1.0;
+    self.timeButton.hidden = NO;
+}
+
+- (void)cropView:(VMIPEditVideoCropView *)cropView tapEndBegin:(CGFloat)begin {
+    [self hideTimeButton];
+}
+
+- (void)cropView:(VMIPEditVideoCropView *)cropView tapStartEnd:(CGFloat)end {
+    [self updateTime:end];
+    self.timeButton.alpha = 1.0;
+    self.timeButton.hidden = NO;
+}
+
+- (void)cropView:(VMIPEditVideoCropView *)cropView tapEndEnd:(CGFloat)end {
+    [self hideTimeButton];
+}
+
 #pragma mark - Private
+
+- (void)updateTime:(CGFloat)position {
+    CGFloat width = CGRectGetWidth(self.cropView.bounds) - (self.cropView.barWidth * 2);
+    
+    NSTimeInterval time = position * self.videoPlayer.duration;
+    NSInteger second = time;
+    NSInteger nanosecond = (time - second) * 1000000000;
+    NSDate *date = [NSCalendar.currentCalendar dateWithEra:0 year:0 month:0 day:0 hour:0 minute:0 second:second nanosecond:nanosecond];
+    [self.timeButton setTitle:[_timeFormatter stringFromDate:date] forState:(UIControlStateNormal)];
+    CGFloat timeWidth = [self.timeButton sizeThatFits:CGSizeZero].width;
+    
+    CGPoint pointAtCropView = CGPointMake(position * width + self.cropView.barWidth, 0.0f);
+    CGPoint pointAtView = [self.cropView convertPoint:pointAtCropView toView:self.view];
+    if (pointAtView.x < timeWidth / 2) {
+        pointAtView.x = timeWidth / 2;
+        pointAtCropView = [self.view convertPoint:pointAtView toView:self.cropView];
+    }
+    if (pointAtView.x > CGRectGetWidth(self.view.frame) - timeWidth / 2) {
+        pointAtView.x = CGRectGetWidth(self.view.frame) - timeWidth / 2;
+        pointAtCropView = [self.view convertPoint:pointAtView toView:self.cropView];
+    }
+    [self.timeButton mas_updateConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.cropView.mas_left).offset(pointAtCropView.x);
+    }];
+}
 
 - (void)styleUI {
     self.view.backgroundColor = [self.style colorWithThemeColors:self.style.bkgColors];
@@ -225,6 +300,7 @@
     VMIPEditVideoCropView *cropView = VMIPEditVideoCropView.new;
     _cropView = cropView;
     _cropView.style = self.style;
+    _cropView.delegate = self;
     [self.view addSubview:_cropView];
     CGFloat superWidth = CGRectGetWidth(self.view.bounds);
 //    NSInteger factor = (NSInteger)(superWidth - self.config.videoCropDuration - (_cropView.barWidth * 2)) / self.config.videoCropDuration;
@@ -241,6 +317,30 @@
         make.top.bottom.equalTo(self.frameController.view);
     }];
     return cropView;
+}
+
+- (UIButton *)timeButton {
+    if (_timeButton) {
+        return _timeButton;
+    }
+    UIButton *timeButton = UIButton.new;
+    _timeButton = timeButton;
+    _timeButton.contentEdgeInsets = UIDirectionalEdgesInsetsMake(3.0f, 3.0f, 3.0f, 3.0f);
+    [self.style styleButton:_timeButton fonts:self.style.videoEditTimeButtonTitleFonts];
+    [self.style styleButton:_timeButton titleColors:self.style.videoEditTimeButtonTitleColors];
+    _timeButton.backgroundColor = [self.style colorWithThemeColors:self.style.themeColors];
+    _timeButton.clipsToBounds = YES;
+    _timeButton.layer.cornerRadius = 3.0f;
+    _timeButton.hidden = YES;
+    _timeButton.alpha = 0.0f;
+    [self.view addSubview:_timeButton];
+    [_timeButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerX.equalTo(self.cropView.mas_left).offset(self.cropView.barWidth);
+        make.leading.greaterThanOrEqualTo(self.view);
+        make.trailing.lessThanOrEqualTo(self.view);
+        make.bottom.equalTo(self.cropView.mas_top).offset(-2.0f);
+    }];
+    return timeButton;
 }
 
 - (VMIPEditVideoTimeIndicatorView *)timeIndicatorView {

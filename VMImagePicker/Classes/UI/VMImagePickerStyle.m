@@ -482,6 +482,46 @@ UIColor * RGBA_HEX_COLOR(int32_t rgba) {
     return _videoEditPauseImages;
 }
 
+- (VMIPControlThemeColors *)videoEditTimeButtonTitleFonts {
+    if (!_videoEditTimeButtonTitleFonts) {
+        UIFont *font = [UIFont systemFontOfSize:12.0f weight:(UIFontWeightBold)];
+        NSMutableDictionary *fonts = NSMutableDictionary.new;
+        fonts[@(UIControlStateNormal)] = font;
+        fonts[@(UIControlStateHighlighted)] = font;
+        fonts[@(UIControlStateDisabled)] = font;
+        fonts[@(UIControlStateFocused)] = font;
+        fonts[@(UIControlStateSelected)] = font;
+        _videoEditTimeButtonTitleFonts = @{
+            @(UIUserInterfaceStyleUnspecified): fonts,
+            @(UIUserInterfaceStyleLight): fonts,
+            @(UIUserInterfaceStyleDark): fonts,
+        };
+    }
+    return _videoEditTimeButtonTitleFonts;
+}
+
+- (VMIPControlThemeColors *)videoEditTimeButtonTitleColors {
+    if (!_videoEditTimeButtonTitleColors) {
+        UIColor *color = RGB_HEX_COLOR(0xFFFFFF);
+        NSMutableDictionary *colors = NSMutableDictionary.new;
+        colors[@(UIControlStateNormal)] = color;
+        colors[@(UIControlStateHighlighted)] = color;
+        colors[@(UIControlStateDisabled)] = color;
+        colors[@(UIControlStateFocused)] = color;
+        colors[@(UIControlStateSelected)] = color;
+        NSMutableDictionary *videoEditTimeButtonTitleColors = NSMutableDictionary.new;
+        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleUnspecified)] = colors;
+        colors = colors.mutableCopy;
+        colors[@(UIControlStateDisabled)] = UIColor.darkGrayColor;
+        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleLight)] = colors;
+        colors = colors.mutableCopy;
+        colors[@(UIControlStateDisabled)] = UIColor.lightGrayColor;
+        videoEditTimeButtonTitleColors[@(UIUserInterfaceStyleDark)] = colors;
+        _videoEditTimeButtonTitleColors = videoEditTimeButtonTitleColors.copy;
+    }
+    return _videoEditTimeButtonTitleColors;
+}
+
 #pragma mark - Public
 
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors {

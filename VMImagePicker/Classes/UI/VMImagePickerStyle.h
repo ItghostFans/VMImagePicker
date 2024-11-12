@@ -102,6 +102,8 @@ typedef NSDictionary<__kindof NSNumber *, __kindof VMIPCellAttributedTitles *> V
 #pragma mark - VideoEdit
 @property (strong, nonatomic) VMIPCellThemeImages *videoEditPlayImages;
 @property (strong, nonatomic) VMIPCellThemeImages *videoEditPauseImages;
+@property (strong, nonatomic) VMIPControlThemeFonts *videoEditTimeButtonTitleFonts;
+@property (strong, nonatomic) VMIPControlThemeColors *videoEditTimeButtonTitleColors;
 
 - (UIColor *)colorWithThemeColors:(VMIPThemeColors *)themeColors;
 - (UIFont *)fontWithThemeFonts:(VMIPThemeFonts *)themeFonts;
