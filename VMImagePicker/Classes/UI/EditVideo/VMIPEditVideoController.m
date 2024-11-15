@@ -115,13 +115,18 @@
 #pragma mark - Actions
 
 - (void)onDoneClicked:(id)sender {
+    @weakify(self);
     NSString *videoPreset = self.config.original ? AVAssetExportPresetHighestQuality : AVAssetExportPresetMediumQuality;
     CGFloat begin = self.cropView.begin;
     CGFloat end = self.cropView.end;
     CMTimeRange timeRange = CMTimeRangeMake(CMTimeMake(begin * self.videoPlayer.duration * 1000, 1000), CMTimeMake((end - begin) * self.videoPlayer.duration * 1000, 1000));
     [self.viewModel.videoViewModel exportVideoPreset:videoPreset timeRange:timeRange directory:self.config.directory loading:^(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info) {
     } completion:^(NSError * _Nullable error, NSString * _Nullable videoPath) {
-        NSLog(@"");
+        @strongify(self);
+        if (!error && videoPath.length) {
+            [self.viewModel.videoViewModel saveSystemVideoPath:videoPath location:nil completion:^(NSError * _Nullable error) {
+            }];
+        }
     }];
 }
 

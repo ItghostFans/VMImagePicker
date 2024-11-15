@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class PHAsset;
 @class AVPlayerItem;
+@class CLLocation;
 
 @interface VMIPVideoViewModel : NSObject
 
@@ -28,6 +29,10 @@ NS_ASSUME_NONNULL_BEGIN
                             directory:(NSString *)directory
                               loading:(void (^ _Nullable)(double progress, NSError * _Nullable error, BOOL * _Nonnull stop, NSDictionary * _Nullable info))loading
                            completion:(void (^ _Nonnull)(NSError * _Nullable error, NSString * _Nullable videoPath))completion;
+
+- (void)saveSystemVideoPath:(NSString * _Nonnull)videoPath
+                   location:(CLLocation * _Nullable)location
+                 completion:(void (^ _Nonnull)(NSError * _Nullable error))completion;
 
 @end
 

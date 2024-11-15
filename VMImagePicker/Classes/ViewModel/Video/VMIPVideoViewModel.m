@@ -9,6 +9,7 @@
 
 #import <Photos/PHAsset.h>
 #import <Photos/PHImageManager.h>
+#import <Photos/PHAssetChangeRequest.h>
 
 #import <ReactiveObjC/ReactiveObjC.h>
 
@@ -139,6 +140,24 @@
         }];
     }];
     return self.requestId;
+}
+
+- (void)saveSystemVideoPath:(NSString * _Nonnull)videoPath
+                   location:(CLLocation * _Nullable)location
+                 completion:(void (^ _Nonnull)(NSError * _Nullable error))completion {
+//    __block NSString *localIdentifier;
+    [PHPhotoLibrary.sharedPhotoLibrary performChanges:^{
+        PHAssetChangeRequest *request = [PHAssetChangeRequest creationRequestForAssetFromVideoAtFileURL:[NSURL fileURLWithPath:videoPath]];
+//        localIdentifier = request.placeholderForCreatedAsset.localIdentifier;
+        if (location) {
+            request.location = location;
+        }
+        request.creationDate = NSDate.date;
+    } completionHandler:^(BOOL success, NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(error);
+        });
+    }];
 }
 
 @end
