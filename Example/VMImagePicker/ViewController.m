@@ -18,10 +18,12 @@
 #import <VMImagePicker/VMImagePicker.h>
 #import <VMImagePicker/VMImagePickerConfig.h>
 #import <VMImagePicker/VMImagePickerQueue.h>
+#import <VMImagePicker/VMIPCameraCaptureController.h>
 #import <VMLocalization/VMLocalization.h>
 
 @interface ViewController () <VMImagePickerControllerDelegate>
 @property (weak, nonatomic) UIButton *openImagePickerButton;
+@property (weak, nonatomic) UIButton *captureImagePickerButton;
 @property (weak, nonatomic) UITextView *inputTextView;
 @property (weak, nonatomic) UIProgressView *progressView;
 @property (weak, nonatomic) UISlider *slider;
@@ -32,6 +34,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self.openImagePickerButton addTarget:self action:@selector(onOpenImagePickerClicked:) forControlEvents:(UIControlEventTouchUpInside)];
+    [self.captureImagePickerButton addTarget:self action:@selector(onCaptureImagePickerClicked:) forControlEvents:(UIControlEventTouchUpInside)];
     [self inputTextView];
     [self progressView];
     [self slider];
@@ -68,6 +71,22 @@
 }
 
 #pragma mark - Getter
+
+- (UIButton *)captureImagePickerButton {
+    if (_captureImagePickerButton) {
+        return _captureImagePickerButton;
+    }
+    UIButton *captureImagePickerButton = UIButton.new;
+    _captureImagePickerButton = captureImagePickerButton;
+    [_captureImagePickerButton setTitleColor:[UIColor colorWithRed:0.0f green:(CGFloat)0xC7 / 255.0f blue:(CGFloat)0xBE / 255.0f alpha:1.0f] forState:(UIControlStateNormal)];
+    [_captureImagePickerButton setTitle:NSLocalizedString(@"Capture", nil) forState:(UIControlStateNormal)];
+    [self.view addSubview:_captureImagePickerButton];
+    [_captureImagePickerButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.equalTo(self.openImagePickerButton.mas_bottom).offset(10.0f);
+        make.centerX.equalTo(self.view);
+    }];
+    return captureImagePickerButton;
+}
 
 - (UIButton *)openImagePickerButton {
     if (!_openImagePickerButton) {
@@ -126,7 +145,7 @@
     _progressView.progress = 0.7f;
     [self.view addSubview:_progressView];
     [_progressView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.openImagePickerButton.mas_bottom).offset(10.0f);
+        make.top.equalTo(self.captureImagePickerButton.mas_bottom).offset(10.0f);
         make.leading.trailing.equalTo(self.view);
     }];
     return progressView;
@@ -154,6 +173,40 @@
         }
         default: {
             [self loadAlbumIfNeed];
+            break;
+        }
+    }
+}
+
+- (void)onCaptureImagePickerClicked:(id)sender {
+    @weakify(self);
+    AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    switch (status) {
+        case AVAuthorizationStatusNotDetermined: {
+            [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+                @strongify(self);
+                if (granted) {
+                    if (NSThread.isMainThread) {
+                        [self onCaptureImagePickerClicked:sender];
+                    } else {
+                        [self performSelectorOnMainThread:@selector(onCaptureImagePickerClicked:) withObject:sender waitUntilDone:NO];
+                    }
+                }
+            }];
+            break;
+        }
+        case AVAuthorizationStatusRestricted: {
+            break;
+        }
+        case AVAuthorizationStatusDenied: {
+            break;
+        }
+        case AVAuthorizationStatusAuthorized: {
+            VMIPCameraCaptureController *controller = VMIPCameraCaptureController.new;
+            [self.navigationController pushViewController:controller animated:YES];
+            break;
+        }
+        default: {
             break;
         }
     }
