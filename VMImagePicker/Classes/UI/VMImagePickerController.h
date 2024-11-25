@@ -35,6 +35,9 @@ UIKIT_EXTERN UIImagePickerControllerInfoKey const VMImagePickersKey;
 
 @property (weak, nonatomic, nullable) id<VMImagePickerControllerDelegate> imagePickerDelegate;
 
+#pragma mark - UIImagePickerController
+@property (assign, nonatomic) UIImagePickerControllerCameraCaptureMode cameraCaptureMode;
+
 @end
 
 NS_ASSUME_NONNULL_END

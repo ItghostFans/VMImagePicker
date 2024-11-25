@@ -203,7 +203,10 @@
         }
         case AVAuthorizationStatusAuthorized: {
             VMIPCameraCaptureController *controller = VMIPCameraCaptureController.new;
-            [self.navigationController pushViewController:controller animated:YES];
+            VMImagePickerController *imagePickerController = [[VMImagePickerController alloc] initWithRootViewController:controller];
+            imagePickerController.imagePickerDelegate = self;
+            [self presentViewController:imagePickerController animated:YES completion:^{
+            }];
             break;
         }
         default: {

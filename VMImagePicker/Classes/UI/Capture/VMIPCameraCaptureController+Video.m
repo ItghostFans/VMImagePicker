@@ -11,9 +11,6 @@
 #import <AVFoundation/AVCaptureSession.h>
 
 @interface VMIPCameraCaptureController ()
-{
-    __strong AVCaptureSession *_session;
-}
 @end
 
 @implementation VMIPCameraCaptureController (Video)
