@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Actions
     __weak UIView *_actionView;
     __weak UIView *_focusView;
-    VMIPCameraFocusState _focusState;
+    NSTimeInterval _focusToken;
 }
 @property (strong, nonatomic) AVCaptureSession *session;
 @property (weak, nonatomic) AVCaptureDevice *cameraDevice;
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Actions
 @property (weak, nonatomic) UIView *actionView;
 @property (weak, nonatomic) UIView *focusView;
-@property (assign, nonatomic) VMIPCameraFocusState focusState;
+@property (assign, nonatomic) NSTimeInterval focusToken;
 @end
 
 NS_ASSUME_NONNULL_END

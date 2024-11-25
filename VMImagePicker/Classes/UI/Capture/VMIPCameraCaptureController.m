@@ -27,7 +27,7 @@
 #pragma mark - Actions
 @property (weak, nonatomic) UIView *actionView;
 @property (weak, nonatomic) UIView *focusView;
-@property (assign, nonatomic) VMIPCameraFocusState focusState;
+@property (assign, nonatomic) NSTimeInterval focusToken;
 
 @end
 
@@ -65,11 +65,6 @@
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     self.videoPreviewLayer.frame = self.view.bounds;
-}
-
-- (void)setFocusState:(VMIPCameraFocusState)focusState {
-    _focusState = focusState;
-    NSLog(@"FocusState %@", @(focusState));
 }
 
 #pragma mark - VMIPCameraCaptureControlDelegate

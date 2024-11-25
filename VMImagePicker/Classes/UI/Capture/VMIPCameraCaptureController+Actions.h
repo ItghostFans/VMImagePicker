@@ -9,12 +9,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, VMIPCameraFocusState) {
-    VMIPCameraFocusStateNone,
-    VMIPCameraFocusStateAppearing,
-    VMIPCameraFocusStateDisappearing,
-};
-
 @interface VMIPCameraCaptureController (Actions)
 
 - (void)addCaptureActions;

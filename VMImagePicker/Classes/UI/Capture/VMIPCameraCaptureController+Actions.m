@@ -38,22 +38,21 @@
     self.focusView.alpha = 1.0f;
     self.focusView.transform = CGAffineTransformIdentity;
     
+    NSTimeInterval focusToken = [NSDate.new timeIntervalSince1970];
+    _focusToken = focusToken;
     [UIView animateWithDuration:0.3f animations:^{
         self.focusView.transform = CGAffineTransformMakeScale(0.5f, 0.5f);
-        self.focusState = VMIPCameraFocusStateAppearing;
     } completion:^(BOOL finished) {
-        if (self.focusState != VMIPCameraFocusStateAppearing) {
+        if (self.focusToken != focusToken) {
             return;
         }
         [UIView animateWithDuration:0.2f animations:^{
             self.focusView.alpha = 0.0f;
-            self.focusState = VMIPCameraFocusStateDisappearing;
         } completion:^(BOOL finished) {
-            if (self.focusState != VMIPCameraFocusStateDisappearing) {
+            if (self.focusToken != focusToken) {
                 return;
             }
             self.focusView.transform = CGAffineTransformIdentity;
-            self.focusState = VMIPCameraFocusStateNone;
         }];
     }];
 }
