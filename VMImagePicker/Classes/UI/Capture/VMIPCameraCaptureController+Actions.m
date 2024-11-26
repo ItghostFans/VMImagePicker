@@ -15,15 +15,24 @@
 - (void)addCaptureActions {
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onTap:)];
     [self.actionView addGestureRecognizer:tap];
+    
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(onPinch:)];
+        [self.actionView addGestureRecognizer:pinch];
 }
 
 #pragma mark - Actions
 
+// 聚焦
 - (void)onTap:(UITapGestureRecognizer *)tap {
     CGPoint point = [tap locationInView:tap.view];
     
     NSError *error;
     if ([_cameraDevice lockForConfiguration:&error]) {
+        if ([_cameraDevice.activeFormat isVideoStabilizationModeSupported:AVCaptureVideoStabilizationModeCinematic]) {
+            [_videoPreviewLayer.connection setPreferredVideoStabilizationMode:AVCaptureVideoStabilizationModeCinematic];
+        } else if ([_cameraDevice.activeFormat isVideoStabilizationModeSupported:AVCaptureVideoStabilizationModeStandard]) {
+            [_videoPreviewLayer.connection setPreferredVideoStabilizationMode:AVCaptureVideoStabilizationModeStandard];
+        }
         if ([_cameraDevice isFocusPointOfInterestSupported] && [_cameraDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
             [_cameraDevice setFocusPointOfInterest:[_videoPreviewLayer captureDevicePointOfInterestForPoint:point]];
             [_cameraDevice setFocusMode:AVCaptureFocusModeAutoFocus];
@@ -55,6 +64,41 @@
             self.focusView.transform = CGAffineTransformIdentity;
         }];
     }];
+}
+
+// 变焦
+- (void)onPinch:(UIPinchGestureRecognizer *)pinch {
+    switch (pinch.state) {
+        case UIGestureRecognizerStateChanged: {
+            if (fabs(pinch.velocity) < 0.5f) {
+                pinch.scale = 1.0;
+                return;
+            }
+            NSError *error;
+            if ([_cameraDevice lockForConfiguration:&error]) {
+                CGFloat zoomFactor = 1.0f;
+                if (pinch.scale < 1.0f) {
+                    zoomFactor = _cameraDevice.videoZoomFactor / 1.05f;
+                } else
+                if (_cameraDevice.videoZoomFactor >= 1.0f) {
+                    zoomFactor = 1.05f * _cameraDevice.videoZoomFactor;
+                }
+                zoomFactor = MAX(1.0f, MIN(zoomFactor, _cameraDevice.activeFormat.videoMaxZoomFactor));
+                [_cameraDevice setVideoZoomFactor:zoomFactor];
+                [_cameraDevice unlockForConfiguration];
+            }
+            break;
+        }
+        case UIGestureRecognizerStateFailed:
+        case UIGestureRecognizerStateCancelled:
+        case UIGestureRecognizerStateEnded: {
+            pinch.scale = 1.0;
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 #pragma mark - Getter
